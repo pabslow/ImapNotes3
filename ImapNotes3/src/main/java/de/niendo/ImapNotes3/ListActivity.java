@@ -689,7 +689,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
+                    } catch (Error err) {
+                        // TODO Auto-generated catch block
+                        err.printStackTrace();
                     }
+
                     Intent res = new Intent();
                     String mPackage = Utilities.PackageName;
                     String mClass = ".AccountConfigurationActivity";

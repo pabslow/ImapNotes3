@@ -179,7 +179,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[4], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[5], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);

@@ -1,0 +1,2 @@
+* uses https://github.com/niendo1/richeditor-android
+* add check boxes
