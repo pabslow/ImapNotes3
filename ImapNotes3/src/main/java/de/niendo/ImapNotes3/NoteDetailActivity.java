@@ -347,7 +347,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.insertLink("link_url", "wasabeef");
                 break;
             case R.id.action_insert_checkbox:
-                editText.insertTodo();
+                editText.insertCheckbox("");
                 break;
             case R.id.action_insert_star:
                 editText.loadUrl("javascript:RE.prepareInsert();");

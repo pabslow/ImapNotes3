@@ -82,7 +82,9 @@ dependencies {
     implementation 'com.sun.mail:android-mail:1.6.7'
     implementation 'com.sun.mail:android-activation:1.6.7'
     implementation 'commons-io:commons-io:2.11.0'
-    implementation 'jp.wasabeef:richeditor-android:2.0.0'
+    //implementation 'jp.wasabeef:richeditor-android:2.0.0'
+    // for now we use a local extended clone, as there is no maven lib
+    implementation files('../../richeditor-android/richeditor/build/outputs/aar/richeditor-debug.aar')
     implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'org.jsoup:jsoup:1.15.3'
 
