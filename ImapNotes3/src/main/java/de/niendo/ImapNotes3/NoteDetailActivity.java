@@ -350,20 +350,16 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.insertCheckbox("");
                 break;
             case R.id.action_insert_star:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('&#11088;');");
+                editText.insertHTML("&#11088;");
                 break;
             case R.id.action_insert_question:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('&#10067;');");
+                editText.insertHTML("&#10067;");
                 break;
             case R.id.action_insert_exclamation:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('&#10071;');");
+                editText.insertHTML("&#10071;");
                 break;
             case R.id.action_insert_hline:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('<hr>');");
+                editText.insertHR_Line();
                 break;
         }
 
