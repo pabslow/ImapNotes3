@@ -54,4 +54,10 @@
     <item name="action_font_size_5" type="id" />
     <item name="action_font_size_6" type="id" />
     <item name="action_font_size_7" type="id" />
+    <item name="action_insert_table" type="id" />
+    <item name="action_insert_column" type="id" />
+    <item name="action_insert_row" type="id" />
+    <item name="action_delete_column" type="id" />
+    <item name="action_delete_row" type="id" />
+
 </resources>

@@ -190,6 +190,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[6], R.id.action_alignment, this));
         alignmentSpinner.setOnItemSelectedListener(this);
 
+        NDSpinner tableSpinner = findViewById(R.id.action_table);
+        tableSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[5], R.id.action_table, this));
+        tableSpinner.setOnItemSelectedListener(this);
+
         findViewById(R.id.action_undo).setOnClickListener(v -> editText.undo());
         findViewById(R.id.action_redo).setOnClickListener(v -> editText.redo());
 
@@ -361,6 +365,22 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             case R.id.action_insert_hline:
                 editText.insertHR_Line();
                 break;
+            case R.id.action_insert_table:
+                editText.insertTable(3, 3);
+                break;
+            case R.id.action_insert_column:
+                editText.addColumnToTable();
+                break;
+            case R.id.action_insert_row:
+                editText.addRowToTable();
+                break;
+            case R.id.action_delete_column:
+                editText.deleteColumnFromTable();
+                break;
+            case R.id.action_delete_row:
+                editText.deleteRowFromTable();
+                break;
+
         }
 
         // for color selection, it does not closes by itself

@@ -1,2 +1,3 @@
 * uses https://github.com/niendo1/richeditor-android
-* add check boxes
+* add checkboxes for ToDo lists
+* add table support

@@ -337,6 +337,31 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         break;
 
                 }
+                break;
+            case R.id.action_table:
+                switch (position) {
+                    case 0:
+                        row.setId(R.id.action_insert_table);
+                        icon.setImageResource(R.drawable.insert_table_2x2);
+                        break;
+                    case 1:
+                        row.setId(R.id.action_insert_column);
+                        icon.setImageResource(R.drawable.insert_column);
+                        break;
+                    case 2:
+                        row.setId(R.id.action_insert_row);
+                        icon.setImageResource(R.drawable.insert_row);
+                        break;
+                    case 3:
+                        row.setId(R.id.action_delete_column);
+                        icon.setImageResource(R.drawable.delete_column);
+                        break;
+                    case 4:
+                        row.setId(R.id.action_delete_row);
+                        icon.setImageResource(R.drawable.delete_row);
+                        break;
+                }
+                break;
         }
         return row;
     }

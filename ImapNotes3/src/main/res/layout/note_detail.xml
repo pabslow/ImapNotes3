@@ -76,6 +76,16 @@
                 android:contentDescription="@string/alignment"
                 android:minHeight="48dp"
                 android:title="@string/alignment" />
+
+            <de.niendo.ImapNotes3.Miscs.NDSpinner
+                android:id="@+id/action_table"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/EditorMenuBgColor"
+                android:contentDescription="@string/table"
+                android:minHeight="48dp"
+                android:title="@string/table" />
+
         </LinearLayout>
     </HorizontalScrollView>
 
