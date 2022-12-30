@@ -179,7 +179,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[5], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[6], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);
@@ -364,6 +364,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_hline:
                 editText.insertHR_Line();
+                break;
+            case R.id.action_insert_section:
+                editText.insertCollapsibleSection(getString(R.string.section), getString(R.string.content));
                 break;
             case R.id.action_insert_table:
                 editText.insertTable(3, 3);

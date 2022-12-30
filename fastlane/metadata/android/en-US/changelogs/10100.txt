@@ -1,3 +1,4 @@
 * uses https://github.com/niendo1/richeditor-android
 * add checkboxes for ToDo lists
 * add table support
+* add support for Collapsible Section

@@ -75,4 +75,6 @@
     <string name="shared_note_from">"geteilte Notiz von "</string>
     <string name="app_name">ImapNotes3</string>
     <string name="table">Tabelle</string>
+    <string name="section">Paragraf: Name</string>
+    <string name="content">Inhalt</string>
 </resources>

@@ -335,6 +335,10 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         row.setId(R.id.action_insert_hline);
                         icon.setImageResource(R.drawable.hline);
                         break;
+                    case 5:
+                        row.setId(R.id.action_insert_section);
+                        icon.setImageResource(R.drawable.insert_section);
+                        break;
 
                 }
                 break;

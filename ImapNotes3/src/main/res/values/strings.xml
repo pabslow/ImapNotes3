@@ -75,4 +75,6 @@
     <string name="share">Share</string>
     <string name="shared_note_from">"Shared note from "</string>
     <string name="table">Table</string>
+    <string name="section">section: name</string>
+    <string name="content">Content</string>
 </resources>
