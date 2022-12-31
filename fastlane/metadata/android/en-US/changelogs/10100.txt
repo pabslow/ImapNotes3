@@ -2,3 +2,4 @@
 * add checkboxes for ToDo lists
 * add table support
 * add support for Collapsible Section
+* use getHTML() as callback .. high performance win

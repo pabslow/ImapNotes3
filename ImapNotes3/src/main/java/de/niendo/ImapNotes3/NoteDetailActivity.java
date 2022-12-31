@@ -160,6 +160,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         // https://github.com/Andrew-Chen-Wang/RichEditorView/blob/master/Sources/RichEditorView/Resources/editor/rich_editor.js
         // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible_symbol
         editText = findViewById(R.id.bodyView);
+        editText.setHTML_asCallBack(true);
         editText.setPadding(10, 10, 10, 10);
         //    mEditor.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
@@ -502,29 +503,40 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
      */
     private void Save() {
         Log.d(TAG, "Save");
-        Intent intent = new Intent();
-        intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
-        Log.d(TAG, "Save html: " + editText.getHtml());
-        intent.putExtra(ListActivity.EDIT_ITEM_TXT, editText.getHtml());
-        intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
-        setResult(NoteDetailActivity.EDIT_BUTTON, intent);
-        finish();//finishing activity
+        editText.setOnJSDataListener(value -> {
+            Intent intent = new Intent();
+            intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
+            Log.d(TAG, "Save html: " + value);
+            intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
+            intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
+            setResult(NoteDetailActivity.EDIT_BUTTON, intent);
+            finish();//finishing activity
+        });
+
+        // data comes via callback
+        editText.getHtml();
     }
 
     private void Share() {
         Log.d(TAG, "Share");
-        Intent sendIntent = new Intent();
-        Spanned html = Html.fromHtml(editText.getHtml(), Html.FROM_HTML_MODE_COMPACT);
-        String[] tok = html.toString().split("\n", 2);
-        String title = getText(R.string.shared_note_from) + BuildConfig.APPLICATION_NAME + ": " + tok[0];
+        editText.setOnJSDataListener(value -> {
+            Intent sendIntent = new Intent();
+            Spanned html = Html.fromHtml(value, Html.FROM_HTML_MODE_COMPACT);
+            String[] tok = html.toString().split("\n", 2);
+            String title = getText(R.string.shared_note_from) + BuildConfig.APPLICATION_NAME + ": " + tok[0];
 
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.setType("text/html");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, html);
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.setType("text/html");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, html);
+            //ToDo test: sendIntent.putExtra(Intent.EXTRA_TEXT, value);
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
 
-        Intent shareIntent = Intent.createChooser(sendIntent, title);
-        startActivity(shareIntent);
+            Intent shareIntent = Intent.createChooser(sendIntent, title);
+            startActivity(shareIntent);
+        });
+        // data comes via callback
+        editText.getHtml();
+
     }
 
 // --Commented out by Inspection START (12/2/16 8:50 PM):
