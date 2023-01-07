@@ -77,4 +77,5 @@
     <string name="table">Table</string>
     <string name="section">section: name</string>
     <string name="content">Content</string>
+    <string name="select_link">Select a link</string>
 </resources>

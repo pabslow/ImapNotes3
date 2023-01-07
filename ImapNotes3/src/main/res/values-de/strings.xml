@@ -77,4 +77,5 @@
     <string name="table">Tabelle</string>
     <string name="section">Paragraf: Name</string>
     <string name="content">Inhalt</string>
+    <string name="select_link">Link/URL markieren</string>
 </resources>

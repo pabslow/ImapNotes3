@@ -310,36 +310,35 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         icon.setImageResource(R.drawable.checkbox);
                         break;
 
- /*                   case 0:
+ /*                 case 0:
                         row.setId(R.id.action_insert_image);
                         icon.setImageResource(R.drawable.insert_image);
                         break;
+*/
                     case 1:
                         row.setId(R.id.action_insert_link);
                         icon.setImageResource(R.drawable.insert_link);
                         break;
- */
-                    case 1:
+                    case 2:
                         row.setId(R.id.action_insert_star);
                         icon.setImageResource(R.drawable.star);
                         break;
-                    case 2:
+                    case 3:
                         row.setId(R.id.action_insert_exclamation);
                         icon.setImageResource(R.drawable.exclamation);
                         break;
-                    case 3:
+                    case 4:
                         row.setId(R.id.action_insert_question);
                         icon.setImageResource(R.drawable.question);
                         break;
-                    case 4:
+                    case 5:
                         row.setId(R.id.action_insert_hline);
                         icon.setImageResource(R.drawable.hline);
                         break;
-                    case 5:
+                    case 6:
                         row.setId(R.id.action_insert_section);
                         icon.setImageResource(R.drawable.insert_section);
                         break;
-
                 }
                 break;
             case R.id.action_table:
