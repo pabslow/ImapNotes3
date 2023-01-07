@@ -180,7 +180,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[7], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[8], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);
@@ -346,7 +346,22 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setNumbers();
                 break;
             case R.id.action_insert_image:
-                editText.insertImage("image_url", "dachshund");
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override public void onDataReceived(String value) {
+                        if(!value.isEmpty()) {
+                            String[] values = value.split(" ", 2);
+                            if (values.length == 2)
+                                editText.insertImage(values[0], values[1]);
+                            else
+                                editText.insertImage(value, "");
+                        }
+                        else
+                            Notifier.Show(R.string.select_link_image, getApplicationContext(), 1);
+                    }
+                });
+                editText.getSelectedText();
                 break;
             case R.id.action_insert_link:
                 // 1. get the selected text via callback

@@ -78,4 +78,5 @@
     <string name="section">Paragraf: Name</string>
     <string name="content">Inhalt</string>
     <string name="select_link">Link/URL markieren</string>
+    <string name="select_link_image">Link/URL eines Bildes markieren</string>
 </resources>

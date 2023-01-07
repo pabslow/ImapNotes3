@@ -3,4 +3,5 @@
 * add table support
 * add support for Collapsible Section
 * use getHTML() as callback .. high performance win
-* add insert Links
+* add insert links
+* add insert image
