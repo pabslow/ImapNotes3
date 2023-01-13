@@ -353,11 +353,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         if(!value.isEmpty()) {
                             String[] values = value.split(" ", 3);
                             if (values.length == 3)
-                                editText.insertImage(values[0], values[1], Integer.parseInt(values[2]));
+                                editText.insertImage(values[0], values[1], values[2],"");
                             else if (values.length == 2)
-                                editText.insertImage(values[0], values[1], -1);
+                                editText.insertImage(values[0], values[1],"auto","");
                             else
-                                editText.insertImage(value, "", -1);
+                                editText.insertImage(value, "", "auto","");
                         }
                         else
                             Notifier.Show(R.string.select_link_image, getApplicationContext(), 1);
