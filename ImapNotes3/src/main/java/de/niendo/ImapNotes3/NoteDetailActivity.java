@@ -487,7 +487,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         editText.setEditorBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
         editText.setEditorFontColor(getColor(R.color.EditorTxtColor));
         (findViewById(R.id.scrollView)).setBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
-        //invalidateOptionsMenu();
     }
 
     @SuppressLint("RestrictedApi")
