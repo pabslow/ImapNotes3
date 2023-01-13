@@ -5,3 +5,4 @@
 * use getHTML() as callback .. high performance win
 * add insert links
 * add insert image
+* add insert audio, video and youtube video
