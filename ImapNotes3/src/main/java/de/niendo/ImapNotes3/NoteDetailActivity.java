@@ -351,11 +351,13 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
                     @Override public void onDataReceived(String value) {
                         if(!value.isEmpty()) {
-                            String[] values = value.split(" ", 2);
-                            if (values.length == 2)
-                                editText.insertImage(values[0], values[1]);
+                            String[] values = value.split(" ", 3);
+                            if (values.length == 3)
+                                editText.insertImage(values[0], values[1], Integer.parseInt(values[2]));
+                            else if (values.length == 2)
+                                editText.insertImage(values[0], values[1], -1);
                             else
-                                editText.insertImage(value, "");
+                                editText.insertImage(value, "", -1);
                         }
                         else
                             Notifier.Show(R.string.select_link_image, getApplicationContext(), 1);
@@ -373,7 +375,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                             if (values.length == 2)
                                 editText.insertLink(values[0], values[0], values[1]);
                             else
-                                editText.insertLink(value, value, "");
+                                editText.insertLink(value, value, value);
                         }
                         else
                             Notifier.Show(R.string.select_link, getApplicationContext(), 1);
