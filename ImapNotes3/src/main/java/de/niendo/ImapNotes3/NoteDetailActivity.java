@@ -180,7 +180,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[8], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);
@@ -361,6 +361,48 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         }
                         else
                             Notifier.Show(R.string.select_link_image, getApplicationContext(), 1);
+                    }
+                });
+                editText.getSelectedText();
+                break;
+            case R.id.action_insert_audio:
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override public void onDataReceived(String value) {
+                        if(!value.isEmpty()) {
+                                editText.insertAudio(value);
+                        }
+                        else
+                            Notifier.Show(R.string.select_link_audio, getApplicationContext(), 1);
+                    }
+                });
+                editText.getSelectedText();
+                break;
+            case R.id.action_insert_video:
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override public void onDataReceived(String value) {
+                        if(!value.isEmpty()) {
+                           editText.insertVideo(value, "auto", "");
+                        }
+                        else
+                            Notifier.Show(R.string.select_link_video, getApplicationContext(), 1);
+                    }
+                });
+                editText.getSelectedText();
+                break;
+            case R.id.action_insert_youtube:
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override public void onDataReceived(String value) {
+                        if(!value.isEmpty()) {
+                             editText.insertYoutubeVideo(value);
+                        }
+                        else
+                            Notifier.Show(R.string.select_link_youtube, getApplicationContext(), 1);
                     }
                 });
                 editText.getSelectedText();

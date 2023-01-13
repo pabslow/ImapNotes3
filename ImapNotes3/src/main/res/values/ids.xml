@@ -41,6 +41,9 @@
     <item name="action_insert_bullets" type="id" />
     <item name="action_insert_numbers" type="id" />
     <item name="action_insert_image" type="id" />
+    <item name="action_insert_audio" type="id" />
+    <item name="action_insert_video" type="id" />
+    <item name="action_insert_youtube" type="id" />
     <item name="action_insert_link" type="id" />
     <item name="action_insert_checkbox" type="id" />
     <item name="action_insert_star" type="id" />

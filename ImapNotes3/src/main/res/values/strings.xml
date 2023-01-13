@@ -79,4 +79,7 @@
     <string name="content">Content</string>
     <string name="select_link">Select a link</string>
     <string name="select_link_image">Select a link to an image</string>
+    <string name="select_link_audio">Select a link to an audio stream</string>
+    <string name="select_link_video">Select a link to a video</string>
+    <string name="select_link_youtube">Select a link to an embed youtube video</string>
 </resources>
