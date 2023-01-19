@@ -389,7 +389,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                 value = value.replace("watch?v=","embed/");
                             // https://www.youtube.com/watch?v=3AeYHDZ2riI
                             // https://www.youtube.com/embed/3AeYHDZ2riI
-                           editText.insertVideo(value, "auto", "");
+                           editText.insertVideo(value, "video", "auto", "");
                         }
                         else
                             Notifier.Show(R.string.select_link_video, getApplicationContext(), 1);
