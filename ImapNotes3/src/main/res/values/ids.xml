@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="action_font_size" type="id" />
+    <item name="action_font_family" type="id" />
     <item name="action_txt_color" type="id" />
     <item name="action_bg_color" type="id" />
     <item name="action_removeFormat" type="id" />
@@ -57,6 +58,11 @@
     <item name="action_font_size_5" type="id" />
     <item name="action_font_size_6" type="id" />
     <item name="action_font_size_7" type="id" />
+    <item name="action_font_serif" type="id" />
+    <item name="action_font_sansserif" type="id" />
+    <item name="action_font_cursive" type="id" />
+    <item name="action_font_monospace" type="id" />
+    <item name="action_font_fantasy" type="id" />
     <item name="action_insert_table" type="id" />
     <item name="action_insert_column" type="id" />
     <item name="action_insert_row" type="id" />

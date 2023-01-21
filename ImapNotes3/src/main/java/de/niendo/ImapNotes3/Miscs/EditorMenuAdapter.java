@@ -133,6 +133,16 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         spinner.setAdapter(new EditorMenuAdapter(mContext, R.layout.editor_row, new String[7], R.id.action_font_size, mNoteDetailActivity));
                         spinner.setOnItemSelectedListener(mNoteDetailActivity);
                         break;
+                    case 10:
+                        icon.setImageResource(0);
+                        icon.setVisibility(View.INVISIBLE);
+                        icon.setPadding(0, 0, 0, 0);
+                        spinner = row.findViewById(R.id.row_spinner_dummy);
+                        spinner.setId(R.id.action_font_family);
+                        spinner.setVisibility(View.VISIBLE);
+                        spinner.setAdapter(new EditorMenuAdapter(mContext, R.layout.editor_row, new String[5], R.id.action_font_family, mNoteDetailActivity));
+                        spinner.setOnItemSelectedListener(mNoteDetailActivity);
+                        break;
                 }
                 break;
             case R.id.action_heading:
@@ -272,6 +282,30 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                     case 6:
                         row.setId(R.id.action_font_size_7);
                         icon.setImageResource(R.drawable.font_size_7);
+                        break;
+                }
+                break;
+            case R.id.action_font_family:
+                switch (position) {
+                    case 0:
+                        row.setId(R.id.action_font_serif);
+                        icon.setImageResource(R.drawable.font_serif);
+                        break;
+                    case 1:
+                        row.setId(R.id.action_font_sansserif);
+                        icon.setImageResource(R.drawable.font_sansserif);
+                        break;
+                    case 2:
+                        row.setId(R.id.action_font_cursive);
+                        icon.setImageResource(R.drawable.font_cursive);
+                        break;
+                    case 3:
+                        row.setId(R.id.action_font_monospace);
+                        icon.setImageResource(R.drawable.font_monospace);
+                        break;
+                    case 4:
+                        row.setId(R.id.action_font_fantasy);
+                        icon.setImageResource(R.drawable.font_fantasy);
                         break;
                 }
                 break;

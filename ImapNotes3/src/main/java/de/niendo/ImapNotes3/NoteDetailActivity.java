@@ -164,7 +164,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         editText.setPadding(10, 10, 10, 10);
         //    mEditor.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
-
+        editText.LoadFont("Alita Brush","Alita Brush.ttf");
 /*
         mPreview = (TextView) findViewById(R.id.preview);
         mEditor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
@@ -176,7 +176,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 */
 
         NDSpinner formatSpinner = findViewById(R.id.action_format);
-        formatSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[10], R.id.action_format, this));
+        formatSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_format, this));
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
@@ -320,6 +320,21 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_font_size_7:
                 editText.setFontSize(7);
+                break;
+            case R.id.action_font_serif:
+                editText.setFontFamily("serif");
+                break;
+            case R.id.action_font_sansserif:
+                editText.setFontFamily("sans-serif");
+                break;
+            case R.id.action_font_monospace:
+                editText.setFontFamily("monospace");
+                break;
+            case R.id.action_font_cursive:
+                editText.setFontFamily("cursive");
+                break;
+            case R.id.action_font_fantasy:
+                editText.setFontFamily("Alita Brush");
                 break;
             case R.id.action_indent:
                 editText.setIndent();

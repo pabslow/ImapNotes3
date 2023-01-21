@@ -6,3 +6,4 @@
 * add insert links
 * add insert image
 * add insert audio, video and youtube video
+* add support for fontFamily
