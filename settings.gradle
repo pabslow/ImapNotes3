@@ -1,4 +1,7 @@
-includeBuild('../richeditor-android')
+// richeditor must be cloned from github
+include 'richeditor'
+project(':richeditor').projectDir = file('../richeditor-android/richeditor')
+
 include ':ImapNotes3'
 
 dependencyResolutionManagement {
