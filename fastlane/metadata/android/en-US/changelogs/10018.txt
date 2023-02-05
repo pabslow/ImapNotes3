@@ -4,3 +4,4 @@
 * fix STARTTLS (thanks to axmanA)
 * logcat data can be send by user
 * make IMAP operations thread save
+* add new icon (thanks to woheller69)
