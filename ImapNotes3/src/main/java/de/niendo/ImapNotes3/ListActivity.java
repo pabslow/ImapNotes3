@@ -300,7 +300,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
@@ -491,7 +491,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         }
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, @NonNull Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: " + requestCode + " " + resultCode);
         switch (requestCode) {
