@@ -273,19 +273,15 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     public void onStart() {
-        Log.d(TAG, "onStart");
         super.onStart();
-        //int len = accounts.length;
-        int len = accountManager.getAccounts().length;
-        SharedPreferences preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE);
-        accountSpinner.setSelection((int) preferences.getLong(ACCOUNTSPINNER_POS, 0));
-        if (len > 0) updateAccountSpinner();
+        Log.d(TAG, "onStart");
+        setPreferences();
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
+        Log.d(TAG, "onResume");
         registerReceiver(syncFinishedReceiver, new IntentFilter(SyncService.SYNC_FINISHED));
     }
 
@@ -310,18 +306,22 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
         SharedPreferences.Editor preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE).edit();
         preferences.putLong(ACCOUNTSPINNER_POS, accountSpinner.getSelectedItemId());
-
         preferences.putBoolean(SORT_BY_DATE, actionMenu.findItem(R.id.sort_date).isChecked());
         preferences.putBoolean(SORT_BY_TITLE, actionMenu.findItem(R.id.sort_title).isChecked());
         preferences.putBoolean(SORT_BY_COLOR, actionMenu.findItem(R.id.sort_color).isChecked());
-
         preferences.apply();
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.d(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState");
+    }
+
+    private void setPreferences() {
+        Log.d(TAG, "setPreferences:");
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE);
+        accountSpinner.setSelection((int) preferences.getLong(ACCOUNTSPINNER_POS, 0));
     }
 
     private void RefreshList() {
@@ -542,6 +542,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     // Spinner item selected listener
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        Log.d(TAG, "onItemSelected");
         Account account = ListActivity.accounts[pos];
         // Check periodic sync. If set to 86400 (once a day), set it to 900 (15 minutes)
         // this is due to bad upgrade to v4 which handles offline mode and syncing
@@ -567,9 +568,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     private void updateAccountSpinner() {
-
+        Log.d(TAG, "updateAccountSpinner");
         this.spinnerList.notifyDataSetChanged();
-        //this.accountSpinner.setSelection(spinnerList.getPosition(currentAccountname));
+        setPreferences();
         if (this.accountSpinner.getSelectedItemId() == android.widget.AdapterView.INVALID_ROW_ID) {
             this.accountSpinner.setSelection(0);
         }
@@ -577,21 +578,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         if (ListActivity.currentList.size() == 1) {
             Account account = ListActivity.accounts[0];
             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
-/*            ImapNotesAccount.SetUsername(ListActivity.accountManager.getUserData(account, ConfigurationFieldNames.UserName));
-            String pwd = ListActivity.accountManager.getPassword(account);
-            ImapNotesAccount.SetPassword(pwd);
-            ImapNotesAccount.SetServer(ListActivity.accountManager.getUserData(account, ConfigurationFieldNames.Server));
-            ImapNotesAccount.SetPortnum(ListActivity.accountManager.getUserData(account, ConfigurationFieldNames.PortNumber));
-            ImapNotesAccount.SetSecurity(ListActivity.accountManager.getUserData(account, ConfigurationFieldNames.Security));
-            ImapNotesAccount.SetUsesticky("true".equals(accountManager.getUserData(account, ConfigurationFieldNames.UseSticky)));
-            ImapNotesAccount.SetSyncinterval(ListActivity.accountManager.getUserData(account, ConfigurationFieldNames.SyncInterval));
-            //ImapNotesAccount.SetaccountHasChanged();
- */
         }
     }
 
-    // In case of neccessary debug  with user approval
+    // In case of necessary debug  with user approval
     public void SendLogcatMail() {
+        Log.d(TAG, "SendLogcatMail");
         String emailData = "";
         try {
             Process process = Runtime.getRuntime().exec("logcat -d");
@@ -610,7 +602,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
         //send file using email
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        String to[] = {""};
+        String[] to = {""};
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
         // the attachment
         emailIntent.putExtra(Intent.EXTRA_TEXT, emailData);
@@ -675,7 +667,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     if (!(ListActivity.currentList.contains(accountName))) {
                         ListActivity.currentList.add(accountName);
                         SyncUtils.CreateLocalDirectories(new File(ImapNotes3.GetRootDir(), accountName));
-
                         equalLists = false;
                     }
                 }
