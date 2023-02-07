@@ -231,7 +231,7 @@ public class SyncUtils {
                                Long UIDValidity,
                                @NonNull Context ctx) {
         Log.d(TAG, "SetUIDValidity: " + account.name);
-        SharedPreferences preferences = ctx.getSharedPreferences(account.name, Context.MODE_MULTI_PROCESS);
+        SharedPreferences preferences = ctx.getSharedPreferences(ImapNotes3.RemoveReservedChars(account.name), Context.MODE_MULTI_PROCESS);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("Name", "valid_data");
         //Log.d(TAG, "UIDValidity set to in shared_prefs:"+UIDValidity);
@@ -244,7 +244,7 @@ public class SyncUtils {
                                @NonNull Context ctx) {
         Log.d(TAG, "GetUIDValidity: " + account.name);
         UIDValidity = (long) -1;
-        SharedPreferences preferences = ctx.getSharedPreferences(account.name, Context.MODE_MULTI_PROCESS);
+        SharedPreferences preferences = ctx.getSharedPreferences(ImapNotes3.RemoveReservedChars(account.name), Context.MODE_MULTI_PROCESS);
         String name = preferences.getString("Name", "");
         if (!name.equalsIgnoreCase("")) {
             UIDValidity = preferences.getLong("UIDValidity", -1);
@@ -602,7 +602,7 @@ public class SyncUtils {
     static void RemoveAccount(@NonNull Context context, @NonNull Account account) {
         Log.d(TAG, "RemoveAccount: " + account.name);
         // remove Shared Preference file
-        File toDelete = new File(ImapNotes3.GetSharedPrefsDir(), account.name + ".xml");
+        File toDelete = new File(ImapNotes3.GetSharedPrefsDir(), ImapNotes3.RemoveReservedChars(account.name) + ".xml");
         //noinspection ResultOfMethodCallIgnored
         toDelete.delete();
         // Remove all files and sub directories

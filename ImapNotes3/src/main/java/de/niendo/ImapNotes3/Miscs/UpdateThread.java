@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MailDateFormat;
 import javax.mail.internet.MimeBodyPart;
@@ -81,7 +81,6 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         this.storedNotes = NotesDb.getInstance(context);
         currentNote = null;
         indexToDelete = -1;
-        //Notifier.Show(resId, applicationContext, 1);
     }
 
     @Override
@@ -246,16 +245,17 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         String uid = Integer.toString(Math.abs(Integer.parseInt(note.GetUid())));
         File accountDirectory = ImapNotesAccount.GetRootDirAccount();
         File directory = new File(accountDirectory, "new");
-        try {
-            message.setFrom(new InternetAddress(note.GetAccount(), false));
-        } catch (AddressException e) {
-            Log.d(TAG, "setFrom: " + e.toString());
-            //message.setFrom(new InternetAddress(""));
-        }
+        message.setFrom(UserNameToEmail(ImapNotesAccount.username));
         File outfile = new File(directory, uid);
         OutputStream str = new FileOutputStream(outfile);
         message.writeTo(str);
         str.close();
+    }
+
+    public Address UserNameToEmail(String name) {
+        InternetAddress internetAddress = new InternetAddress();
+        internetAddress.setAddress(name);
+        return internetAddress;
     }
 
     public enum Action {

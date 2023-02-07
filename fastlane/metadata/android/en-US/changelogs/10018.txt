@@ -5,3 +5,4 @@
 * logcat data can be send by user
 * make IMAP operations thread save
 * add new icon (thanks to woheller69)
+* account/notepad name does not have to follow a syntax anymore

@@ -655,7 +655,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         iter.remove();
                         // Why try here?
                         try {
-                            FileUtils.deleteDirectory(new File(ImapNotes3.GetRootDir(), s));
+                            FileUtils.deleteDirectory(ImapNotes3.GetAccountDir(s));
                         } catch (IOException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -666,7 +666,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 for (String accountName : newList) {
                     if (!(ListActivity.currentList.contains(accountName))) {
                         ListActivity.currentList.add(accountName);
-                        SyncUtils.CreateLocalDirectories(new File(ImapNotes3.GetRootDir(), accountName));
+                        SyncUtils.CreateLocalDirectories(ImapNotes3.GetAccountDir(accountName));
                         equalLists = false;
                     }
                 }

@@ -45,11 +45,8 @@ import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.Result;
 import de.niendo.ImapNotes3.Miscs.Utilities;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 
 public class AccountConfigurationActivity extends AccountAuthenticatorActivity implements OnItemSelectedListener {
     /**
@@ -189,17 +186,8 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private final OnClickListener clickListenerEdit = v -> {
         // Click on Edit Button
         Log.d(TAG, "clickListenerEdit onClick");
-        // CheckNameAndLogIn(); - for now the name can not changed anyway
-        DoLogin();
-    };
+        CheckNameAndLogIn();
 
-    private final View.OnFocusChangeListener FinishAccountnameEdit = (v, r) -> {
-        if (!v.hasFocus()) {
-            TextView tv = (TextView) v;
-            if (usernameTextView.getText().toString().isEmpty()) {
-                usernameTextView.setText(tv.getText().toString());
-            }
-        }
     };
 
     @SuppressLint("SetTextI18n")
@@ -227,13 +215,11 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private String accountname;
 
     private void CheckNameAndLogIn() {
-        try {
-            String test = String.valueOf(new InternetAddress(accountnameTextView.getText().toString(), true));
-        } catch (AddressException e) {
-            ImapNotes3.ShowMessage(R.string.account_name_not_valid_email, accountnameTextView, 3);
-            return;
-        }
-        DoLogin();
+        String name = accountnameTextView.getText().toString();
+        if (name.contains("'") || name.contains("\""))
+            ImapNotes3.ShowMessage(R.string.quotation_marks_not_allowed, accountnameTextView, 3);
+        else
+            DoLogin();
     }
 
     @Override
@@ -247,14 +233,11 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TextView headingTextView = findTextViewById(R.id.heading);
         accountnameTextView = findTextViewById(R.id.accountnameEdit);
-        accountnameTextView.setOnFocusChangeListener(FinishAccountnameEdit);
         usernameTextView = findTextViewById(R.id.usernameEdit);
         usernameTextView.setOnFocusChangeListener(FinishEmailEdit);
         passwordTextView = findTextViewById(R.id.passwordEdit);
         serverTextView = findTextViewById(R.id.serverEdit);
         portnumTextView = findTextViewById(R.id.portnumEdit);
-        //syncintervalTextView = findTextViewById(R.id.syncintervalEdit);
-        //syncintervalTextView.addTextChangedListener(textWatcher);
         syncIntervalNumberPicker = findViewById(R.id.syncintervalMinutes);
         syncIntervalNumberPicker.setMaxValue(24 * 60);
         syncIntervalNumberPicker.setMinValue(0);

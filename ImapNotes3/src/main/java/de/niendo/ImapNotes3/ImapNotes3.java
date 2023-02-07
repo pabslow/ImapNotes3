@@ -18,6 +18,7 @@ public class ImapNotes3 extends Application {
     private static Context mContext;
     private static View mContent;
     private Imaper thisSessionImapFolder;
+    private static final String ReservedChars = "[\\\\/:*?\"<>|'!]";
 
     public static Context getAppContext() {
         return mContext;
@@ -25,6 +26,14 @@ public class ImapNotes3 extends Application {
 
     public static File GetRootDir() {
         return mContext.getFilesDir();
+    }
+
+    public static File GetAccountDir(String account) {
+        return new File(GetRootDir(), RemoveReservedChars(account));
+    }
+
+    public static String RemoveReservedChars(String data) {
+        return data.replaceAll(ReservedChars, "_");
     }
 
     public static File GetSharedPrefsDir() {

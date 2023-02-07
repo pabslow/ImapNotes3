@@ -14,9 +14,9 @@
     <string name="logging_in">Logging into your account…</string>
     <string name="account_already_exists_or_is_null">Account already exists or is null</string>
     <string name="account_added">Account has been added</string>
-    <string name="add_account">Add Account</string>
-    <string name="account_name">Local account name</string>
-    <string name="account_name_description">in the form of an email address</string>
+    <string name="add_account">Add Account/Notepad</string>
+    <string name="account_name">Name for Local account/notepad</string>
+    <string name="account_name_description">a name for this account and/or notepad</string>
     <string name="username">User name / e-mail</string>
     <string name="your_login_name">Your login name for mail server</string>
     <string name="password">Password</string>
@@ -74,7 +74,6 @@
     <string name="minutes_short">min</string>
     <string name="share">Share</string>
     <string name="shared_note_from">Shared note from </string>
-    <string name="account_name_not_valid_email">Account Name is not an E-Mail address</string>
     <string name="account_modified">Account has been modified</string>
     <string name="intent_save_as_note">Save as note</string>
     <string name="share_file_error">Share file error:</string>

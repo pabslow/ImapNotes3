@@ -14,6 +14,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
+import de.niendo.ImapNotes3.ImapNotes3;
+
 public class ImapNotesAccount {
 
     private static final String TAG = "IN_ImapNotesAccount";
@@ -66,8 +68,8 @@ public class ImapNotesAccount {
     public ImapNotesAccount(@NonNull Account account,
                              @NonNull Context applicationContext) {
         this.accountName = account.name;
-        rootDir = applicationContext.getFilesDir();
-        rootDirAccount = new File(rootDir, accountName);
+        rootDir = ImapNotes3.GetRootDir();
+        rootDirAccount = ImapNotes3.GetAccountDir(accountName);
         dirForNewFiles = new File(rootDirAccount, "new");
         dirForDeletedFiles = new File(rootDirAccount, "deleted");
 

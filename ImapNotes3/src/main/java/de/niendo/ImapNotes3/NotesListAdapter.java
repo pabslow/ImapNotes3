@@ -76,7 +76,6 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     private final int[] mTo;
     private final String[] mFrom;
     private final String mBgColor;
-    // --Commented out by Inspection (12/3/16 11:31 PM):private ViewBinder mViewBinder;
 
     private List<? extends Map<String, ?>> mData;
 
@@ -444,7 +443,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
                     if (h != null) {
 
                         //String str = (String) h.get(OneNote.TITLE) + (String) h.get(OneNote.DATE);
-                        File directory = new File(ImapNotes3.GetRootDir(), (String) h.get(OneNote.ACCOUNT));
+                        File directory = ImapNotes3.GetAccountDir(h.get(OneNote.ACCOUNT).toString());
 
                         String uid = (String) h.get(OneNote.UID);
                         if (uid.startsWith("-")) {
