@@ -101,7 +101,11 @@ dependencies {
 
 tasks.register("prepareKotlinBuildScriptModel"){}
 
-
+allprojects {
+    tasks.named("prepareKotlinBuildScriptModel") {
+        dependsOn "gitCloneRE"
+    }
+}
 // ToDo
 //allprojects {
 //    tasks.withType(JavaCompile) {
@@ -109,8 +113,4 @@ tasks.register("prepareKotlinBuildScriptModel"){}
 //    }
 //}
 
-allprojects {
-    tasks.named("prepareKotlinBuildScriptModel") {
-            dependsOn "gitCloneRE"
-        }
-}
+
