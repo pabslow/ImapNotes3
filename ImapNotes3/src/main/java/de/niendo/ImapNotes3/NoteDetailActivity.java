@@ -2,6 +2,7 @@ package de.niendo.ImapNotes3;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -93,7 +94,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             action = "";
 
         if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare)) {
-            ImapNotes3.showAction(editText, R.string.insert_in_note, R.string.ok,
+            ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 0,
                     () -> {
                         if (!editText.hasFocus()) editText.focusEditor();
                         editText.insertHTML(getSharedText(intent));
@@ -188,7 +189,16 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(String text) {
                 String url = Utilities.getValueFromJSON(text, "href");
-                ImapNotes3.ShowMessage(url, editText, 3);
+                ImapNotes3.ShowAction(editText, R.string.open_link, R.string.ok, 3,
+                        () -> {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            try {
+                                startActivity(browserIntent);
+                            } catch (ActivityNotFoundException e) {
+                                ImapNotes3.ShowMessage(R.string.no_program_found, editText, 3);
+                            }
+
+                        });
             }
         });
 
@@ -424,7 +434,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                             // https://www.youtube.com/embed/3AeYHDZ2riI
                             editText.insertVideo(value, "video", "auto", "");
                         } else
-                            ImapNotes3.ShowMessage(R.string.select_link_video, editText, 1);
+                            ImapNotes3.ShowMessage(R.string.select_link_video, editText, 3);
                     }
                 });
                 editText.getSelectedText();
@@ -444,7 +454,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
                             editText.insertYoutubeVideo(value);
                         } else
-                            ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 1);
+                            ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 3);
                     }
                 });
                 editText.getSelectedText();
@@ -458,11 +468,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         if (!value.isEmpty()) {
                             String[] values = value.split(" ", 2);
                             if (values.length == 2)
-                                editText.insertLink(values[0], values[0], values[1]);
+                                editText.insertLink(Utilities.CheckUrlScheme(values[0]), values[0], values[1]);
                             else
-                                editText.insertLink(value, value, value);
+                                editText.insertLink(Utilities.CheckUrlScheme(value), value, value);
                         } else
-                            ImapNotes3.ShowMessage(R.string.select_link, editText, 1);
+                            ImapNotes3.ShowMessage(R.string.select_link, editText, 3);
                     }
                 });
                 editText.getSelectedText();

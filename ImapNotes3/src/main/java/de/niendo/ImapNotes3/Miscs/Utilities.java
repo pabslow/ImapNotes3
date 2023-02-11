@@ -1,6 +1,7 @@
 package de.niendo.ImapNotes3.Miscs;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
@@ -73,4 +74,9 @@ public final class Utilities {
         }
     }
 
+    public static String CheckUrlScheme(String url) {
+        Uri uri = Uri.parse(url);
+        if (uri.getScheme() == null) return "http://" + url;
+        return url;
+    }
 }

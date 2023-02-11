@@ -264,7 +264,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             intentActionSend.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
             intentActionSend.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAddShare);
 
-            ImapNotes3.showAction(listview, R.string.insert_as_new_note, R.string.ok,
+            ImapNotes3.ShowAction(listview, R.string.insert_as_new_note, R.string.ok, 0,
                     () -> {
                         startActivityForResult(intentActionSend, ListActivity.NEW_BUTTON);
                         intentActionSend = null;

@@ -89,18 +89,24 @@ public class ImapNotes3 extends Application {
                     .build());
     }
 
-    public static Snackbar showAction(
+    public static Snackbar ShowAction(
             View view,
             @StringRes int actionTextId,
             @StringRes int actionButtonId,
+            int durationSeconds,
             Runnable actionCallback) {
 
         if (view == null)
             view = mContent;
 
+        if (durationSeconds == 0)
+            durationSeconds = BaseTransientBottomBar.LENGTH_INDEFINITE;
+        else
+            durationSeconds = durationSeconds * 1000;
         Snackbar snackbar =
-                Snackbar.make(view, actionTextId, BaseTransientBottomBar.LENGTH_INDEFINITE)
+                Snackbar.make(view, actionTextId, durationSeconds)
                         .setAction(actionButtonId, v -> actionCallback.run());
+
         snackbar
                 .getView()
                 .setBackgroundColor(mContext.getColor(R.color.ShareActionBgColor));
