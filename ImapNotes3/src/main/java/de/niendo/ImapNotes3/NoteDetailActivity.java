@@ -160,7 +160,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         // https://github.com/Andrew-Chen-Wang/RichEditorView/blob/master/Sources/RichEditorView/Resources/editor/rich_editor.js
         // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible_symbol
         editText = findViewById(R.id.bodyView);
-        editText.setHTML_asCallBack(true);
         editText.setPadding(10, 10, 10, 10);
         //    mEditor.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
@@ -174,6 +173,13 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         });
 
 */
+
+        editText.setOnClickListener(new RichEditor.onClickListener() {
+            @Override public void onClick(String text) {
+                String url = Utilities.getValueFromJSON(text,"href");
+                Notifier.Show(url,NoteDetailActivity.this,3);
+            }
+        });
 
         NDSpinner formatSpinner = findViewById(R.id.action_format);
         formatSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_format, this));
