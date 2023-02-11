@@ -133,6 +133,16 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         spinner.setAdapter(new EditorMenuAdapter(mContext, R.layout.editor_row, new String[7], R.id.action_font_size, mNoteDetailActivity));
                         spinner.setOnItemSelectedListener(mNoteDetailActivity);
                         break;
+                    case 10:
+                        icon.setImageResource(0);
+                        icon.setVisibility(View.INVISIBLE);
+                        icon.setPadding(0, 0, 0, 0);
+                        spinner = row.findViewById(R.id.row_spinner_dummy);
+                        spinner.setId(R.id.action_font_family);
+                        spinner.setVisibility(View.VISIBLE);
+                        spinner.setAdapter(new EditorMenuAdapter(mContext, R.layout.editor_row, new String[5], R.id.action_font_family, mNoteDetailActivity));
+                        spinner.setOnItemSelectedListener(mNoteDetailActivity);
+                        break;
                 }
                 break;
             case R.id.action_heading:
@@ -275,6 +285,30 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         break;
                 }
                 break;
+            case R.id.action_font_family:
+                switch (position) {
+                    case 0:
+                        row.setId(R.id.action_font_serif);
+                        icon.setImageResource(R.drawable.font_serif);
+                        break;
+                    case 1:
+                        row.setId(R.id.action_font_sansserif);
+                        icon.setImageResource(R.drawable.font_sansserif);
+                        break;
+                    case 2:
+                        row.setId(R.id.action_font_cursive);
+                        icon.setImageResource(R.drawable.font_cursive);
+                        break;
+                    case 3:
+                        row.setId(R.id.action_font_monospace);
+                        icon.setImageResource(R.drawable.font_monospace);
+                        break;
+                    case 4:
+                        row.setId(R.id.action_font_fantasy);
+                        icon.setImageResource(R.drawable.font_fantasy);
+                        break;
+                }
+                break;
             case R.id.action_alignment:
                 switch (position) {
                     case 0:
@@ -305,37 +339,76 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                 break;
             case R.id.action_insert:
                 switch (position) {
- /*                   case 0:
-                        row.setId(R.id.action_insert_image);
-                        icon.setImageResource(R.drawable.insert_image);
-                        break;
-                    case 1:
-                        row.setId(R.id.action_insert_link);
-                        icon.setImageResource(R.drawable.insert_link);
-                        break;
-                    case 2:
+                    case 0:
                         row.setId(R.id.action_insert_checkbox);
                         icon.setImageResource(R.drawable.checkbox);
                         break;
- */
-                    case 0:
+                    case 1:
+                        row.setId(R.id.action_insert_image);
+                        icon.setImageResource(R.drawable.insert_image);
+                        break;
+                    case 2:
+                        row.setId(R.id.action_insert_audio);
+                        icon.setImageResource(R.drawable.insert_audio);
+                        break;
+                    case 3:
+                        row.setId(R.id.action_insert_video);
+                        icon.setImageResource(R.drawable.insert_video);
+                        break;
+                    case 4:
+                        row.setId(R.id.action_insert_youtube);
+                        icon.setImageResource(R.drawable.insert_youtube);
+                        break;
+                    case 5:
+                        row.setId(R.id.action_insert_link);
+                        icon.setImageResource(R.drawable.insert_link);
+                        break;
+                    case 6:
                         row.setId(R.id.action_insert_star);
                         icon.setImageResource(R.drawable.star);
                         break;
-                    case 1:
+                    case 7:
                         row.setId(R.id.action_insert_exclamation);
                         icon.setImageResource(R.drawable.exclamation);
                         break;
-                    case 2:
+                    case 8:
                         row.setId(R.id.action_insert_question);
                         icon.setImageResource(R.drawable.question);
                         break;
-                    case 3:
+                    case 9:
                         row.setId(R.id.action_insert_hline);
                         icon.setImageResource(R.drawable.hline);
                         break;
-
+                    case 10:
+                        row.setId(R.id.action_insert_section);
+                        icon.setImageResource(R.drawable.insert_section);
+                        break;
                 }
+                break;
+            case R.id.action_table:
+                switch (position) {
+                    case 0:
+                        row.setId(R.id.action_insert_table);
+                        icon.setImageResource(R.drawable.insert_table_2x2);
+                        break;
+                    case 1:
+                        row.setId(R.id.action_insert_column);
+                        icon.setImageResource(R.drawable.insert_column);
+                        break;
+                    case 2:
+                        row.setId(R.id.action_insert_row);
+                        icon.setImageResource(R.drawable.insert_row);
+                        break;
+                    case 3:
+                        row.setId(R.id.action_delete_column);
+                        icon.setImageResource(R.drawable.delete_column);
+                        break;
+                    case 4:
+                        row.setId(R.id.action_delete_row);
+                        icon.setImageResource(R.drawable.delete_row);
+                        break;
+                }
+                break;
         }
         return row;
     }

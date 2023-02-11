@@ -21,8 +21,9 @@ still tested, it should work with others.
 
 Main changes in ImapNotes3 are:
 
+- uses https://github.com/niendo1/richeditor-android with a lot of new features
 - runs und android studio 2021
-- HTML Editor
+- HTML Editor with tables, images, sections and much more
 - color support
 - full text search
 - sdk version 33

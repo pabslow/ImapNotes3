@@ -176,7 +176,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         editText.setPadding(10, 10, 10, 10);
         //    mEditor.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
-
+        editText.LoadFont("Alita Brush", "Alita Brush.ttf");
 /*
         mPreview = (TextView) findViewById(R.id.preview);
         mEditor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
@@ -187,12 +187,20 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
 */
 
+        editText.setOnClickListener(new RichEditor.onClickListener() {
+            @Override
+            public void onClick(String text) {
+                String url = Utilities.getValueFromJSON(text, "href");
+                ImapNotes3.ShowMessage(url, editText, 3);
+            }
+        });
+
         NDSpinner formatSpinner = findViewById(R.id.action_format);
-        formatSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[10], R.id.action_format, this));
+        formatSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_format, this));
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[4], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);
@@ -202,6 +210,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         NDSpinner alignmentSpinner = findViewById(R.id.action_alignment);
         alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[6], R.id.action_alignment, this));
         alignmentSpinner.setOnItemSelectedListener(this);
+
+        NDSpinner tableSpinner = findViewById(R.id.action_table);
+        tableSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[5], R.id.action_table, this));
+        tableSpinner.setOnItemSelectedListener(this);
 
         findViewById(R.id.action_undo).setOnClickListener(v -> editText.undo());
         findViewById(R.id.action_redo).setOnClickListener(v -> editText.redo());
@@ -261,52 +273,52 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setHeading(6);
                 break;
             case R.id.action_txt_color_white:
-                editText.setTextColor(Utilities.getColorByName("html_WhiteSmoke", getApplicationContext()));
+                editText.setTextColor("white");
                 break;
             case R.id.action_txt_color_grey:
-                editText.setTextColor(Utilities.getColorByName("html_LightGray", getApplicationContext()));
+                editText.setTextColor("grey");
                 break;
             case R.id.action_txt_color_black:
-                editText.setTextColor(Utilities.getColorByName("html_Black", getApplicationContext()));
+                editText.setTextColor("black");
                 break;
             case R.id.action_txt_color_red:
-                editText.setTextColor(Utilities.getColorByName("html_FireBrick", getApplicationContext()));
+                editText.setTextColor("FireBrick");
                 break;
             case R.id.action_txt_color_green:
-                editText.setTextColor(Utilities.getColorByName("html_Green", getApplicationContext()));
+                editText.setTextColor("green");
                 break;
             case R.id.action_txt_color_yellow:
-                editText.setTextColor(Utilities.getColorByName("html_Yellow", getApplicationContext()));
+                editText.setTextColor("yellow");
                 break;
             case R.id.action_txt_color_brown:
-                editText.setTextColor(Utilities.getColorByName("html_Brown", getApplicationContext()));
+                editText.setTextColor("brown");
                 break;
             case R.id.action_txt_color_blue:
-                editText.setTextColor(Utilities.getColorByName("html_Blue", getApplicationContext()));
+                editText.setTextColor("blue");
                 break;
             case R.id.action_bg_color_white:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_WhiteSmoke", getApplicationContext()));
+                editText.setTextBackgroundColor("white");
                 break;
             case R.id.action_bg_color_grey:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_LightGray", getApplicationContext()));
+                editText.setTextBackgroundColor("lightgrey");
                 break;
             case R.id.action_bg_color_black:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_Black", getApplicationContext()));
+                editText.setTextBackgroundColor("black");
                 break;
             case R.id.action_bg_color_red:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_FireBrick", getApplicationContext()));
+                editText.setTextBackgroundColor("FireBrick");
                 break;
             case R.id.action_bg_color_green:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_Green", getApplicationContext()));
+                editText.setTextBackgroundColor("green");
                 break;
             case R.id.action_bg_color_yellow:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_Yellow", getApplicationContext()));
+                editText.setTextBackgroundColor("yellow");
                 break;
             case R.id.action_bg_color_brown:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_Brown", getApplicationContext()));
+                editText.setTextBackgroundColor("brown");
                 break;
             case R.id.action_bg_color_blue:
-                editText.setTextBackgroundColor(Utilities.getColorByName("html_Blue", getApplicationContext()));
+                editText.setTextBackgroundColor("blue");
                 break;
             case R.id.action_font_size_1:
                 editText.setFontSize(1);
@@ -328,6 +340,21 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_font_size_7:
                 editText.setFontSize(7);
+                break;
+            case R.id.action_font_serif:
+                editText.setFontFamily("serif");
+                break;
+            case R.id.action_font_sansserif:
+                editText.setFontFamily("sans-serif");
+                break;
+            case R.id.action_font_monospace:
+                editText.setFontFamily("monospace");
+                break;
+            case R.id.action_font_cursive:
+                editText.setFontFamily("cursive");
+                break;
+            case R.id.action_font_fantasy:
+                editText.setFontFamily("Alita Brush");
                 break;
             case R.id.action_indent:
                 editText.setIndent();
@@ -354,30 +381,129 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setNumbers();
                 break;
             case R.id.action_insert_image:
-                editText.insertImage("image_url", "dachshund");
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override
+                    public void onDataReceived(String value) {
+                        if (!value.isEmpty()) {
+                            String[] values = value.split(" ", 3);
+                            if (values.length == 3)
+                                editText.insertImage(values[0], values[1], values[2], "");
+                            else if (values.length == 2)
+                                editText.insertImage(values[0], values[1], "auto", "");
+                            else
+                                editText.insertImage(value, "", "auto", "");
+                        } else
+                            ImapNotes3.ShowMessage(R.string.select_link_image, editText, 1);
+                    }
+                });
+                editText.getSelectedText();
+                break;
+            case R.id.action_insert_audio:
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override
+                    public void onDataReceived(String value) {
+                        if (!value.isEmpty()) {
+                            editText.insertAudio(value);
+                        } else
+                            ImapNotes3.ShowMessage(R.string.select_link_audio, editText, 1);
+                    }
+                });
+                editText.getSelectedText();
+                break;
+            case R.id.action_insert_video:
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override
+                    public void onDataReceived(String value) {
+                        if (!value.isEmpty()) {
+                            if (value.startsWith("https://www.youtube.com"))
+                                value = value.replace("watch?v=", "embed/");
+                            // https://www.youtube.com/watch?v=3AeYHDZ2riI
+                            // https://www.youtube.com/embed/3AeYHDZ2riI
+                            editText.insertVideo(value, "video", "auto", "");
+                        } else
+                            ImapNotes3.ShowMessage(R.string.select_link_video, editText, 1);
+                    }
+                });
+                editText.getSelectedText();
+                break;
+            case R.id.action_insert_youtube:
+                // 1. get the selected text via callback
+                // 2. make the Image
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override
+                    public void onDataReceived(String value) {
+                        if (!value.isEmpty()) {
+                            if (value.startsWith("https://www.youtube.com"))
+                                value = value.replace("watch?v=", "embed/");
+
+                            // https://www.youtube.com/watch?v=3AeYHDZ2riI
+                            // https://www.youtube.com/embed/3AeYHDZ2riI
+
+                            editText.insertYoutubeVideo(value);
+                        } else
+                            ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 1);
+                    }
+                });
+                editText.getSelectedText();
                 break;
             case R.id.action_insert_link:
-                editText.insertLink("link_url", "wasabeef");
+                // 1. get the selected text via callback
+                // 2. make the Link
+                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
+                    @Override
+                    public void onDataReceived(String value) {
+                        if (!value.isEmpty()) {
+                            String[] values = value.split(" ", 2);
+                            if (values.length == 2)
+                                editText.insertLink(values[0], values[0], values[1]);
+                            else
+                                editText.insertLink(value, value, value);
+                        } else
+                            ImapNotes3.ShowMessage(R.string.select_link, editText, 1);
+                    }
+                });
+                editText.getSelectedText();
                 break;
             case R.id.action_insert_checkbox:
-                editText.insertTodo();
+                editText.insertCheckbox();
                 break;
             case R.id.action_insert_star:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('&#11088;');");
+                editText.insertHTML("&#11088;");
                 break;
             case R.id.action_insert_question:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('&#10067;');");
+                editText.insertHTML("&#10067;");
                 break;
             case R.id.action_insert_exclamation:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('&#10071;');");
+                editText.insertHTML("&#10071;");
                 break;
             case R.id.action_insert_hline:
-                editText.loadUrl("javascript:RE.prepareInsert();");
-                editText.loadUrl("javascript:RE.insertHTML('<hr>');");
+                editText.insertHR_Line();
                 break;
+            case R.id.action_insert_section:
+                editText.insertCollapsibleSection(getString(R.string.section), getString(R.string.content));
+                break;
+            case R.id.action_insert_table:
+                editText.insertTable(3, 3);
+                break;
+            case R.id.action_insert_column:
+                editText.addColumnToTable();
+                break;
+            case R.id.action_insert_row:
+                editText.addRowToTable();
+                break;
+            case R.id.action_delete_column:
+                editText.deleteColumnFromTable();
+                break;
+            case R.id.action_delete_row:
+                editText.deleteRowFromTable();
+                break;
+
         }
 
         // for color selection, it does not closes by itself
@@ -396,7 +522,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         editText.setEditorBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
         editText.setEditorFontColor(getColor(R.color.EditorTxtColor));
         (findViewById(R.id.scrollView)).setBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
-        //invalidateOptionsMenu();
     }
 
     @SuppressLint("RestrictedApi")
@@ -435,8 +560,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .setNegativeButton(R.string.no, null).show();
                 return true;
             case R.id.save:
-                Save();
-                finish();//finishing activity
+                Save(true);
                 return true;
             case R.id.share:
                 Share();
@@ -495,46 +619,57 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
      * Note that this function does not save the note to permanent storage it just passes it back to
      * the calling activity to be saved in whatever fashion it that activity wishes.
      */
-    private void Save() {
+    private void Save(boolean finish) {
         Log.d(TAG, "Save");
-        Intent intent = new Intent();
-        intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
-        Log.d(TAG, "Save html: " + editText.getHtml());
-        intent.putExtra(ListActivity.EDIT_ITEM_TXT, editText.getHtml());
-        intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
-        setResult(NoteDetailActivity.EDIT_BUTTON, intent);
+        editText.setOnJSDataListener(value -> {
+            Intent intent = new Intent();
+            intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
+            Log.d(TAG, "Save html: " + value);
+            intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
+            intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
+            setResult(NoteDetailActivity.EDIT_BUTTON, intent);
+            if (finish) finish();//finishing activity
+        });
+
+        // data comes via callback
+        editText.getHtml();
     }
 
     private void Share() {
         Log.d(TAG, "Share");
-        Intent sendIntent = new Intent();
-        String text = editText.getHtml();
-        Spanned html = Html.fromHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-        String title = html.toString().split("\n", 2)[0];
+        editText.setOnJSDataListener(value -> {
+            Intent sendIntent = new Intent();
+            Spanned html = Html.fromHtml(value, Html.FROM_HTML_MODE_COMPACT);
+            String[] tok = html.toString().split("\n", 2);
+            String title = getText(R.string.shared_note_from) + BuildConfig.APPLICATION_NAME + ": " + tok[0];
 
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.setType("text/html");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, html);
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.shared_note_from) + Utilities.ApplicationName + ": " + title);
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.setType("text/html");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, html);
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.shared_note_from) + Utilities.ApplicationName + ": " + title);
 
-        String directory = getApplicationContext().getCacheDir().toString();
-        File outfile = new File(directory, title.replaceAll("[#:/]", "") + ".html");
-        Log.d(TAG, "Share Note: " + outfile);
-        try (OutputStream str = new FileOutputStream(outfile)) {
-            str.write(text.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            ImapNotes3.ShowMessage(R.string.share_file_error + e.toString(), editText, 2);
-            e.printStackTrace();
-        }
+            String directory = getApplicationContext().getCacheDir().toString();
+            File outfile = new File(directory, title.replaceAll("[#:/]", "") + ".html");
+            Log.d(TAG, "Share Note: " + outfile);
+            try (OutputStream str = new FileOutputStream(outfile)) {
+                str.write(value.getBytes(StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                ImapNotes3.ShowMessage(R.string.share_file_error + e.toString(), editText, 2);
+                e.printStackTrace();
+            }
 
-        Uri logUri =
-                FileProvider.getUriForFile(
-                        getApplicationContext(),
-                        Utilities.PackageName, outfile);
-        sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
+            Uri logUri =
+                    FileProvider.getUriForFile(
+                            getApplicationContext(),
+                            Utilities.PackageName, outfile);
+            sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
 
-        Intent shareIntent = Intent.createChooser(sendIntent, title);
-        startActivity(shareIntent);
+            Intent shareIntent = Intent.createChooser(sendIntent, title);
+            startActivity(shareIntent);
+        });
+        // data comes via callback
+        editText.getHtml();
+
     }
 
     private String getSharedText(Intent intent) {

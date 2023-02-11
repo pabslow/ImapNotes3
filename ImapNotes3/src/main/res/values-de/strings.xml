@@ -81,4 +81,12 @@
     <string name="insert_as_new_note">Geteilte Daten als neue Notiz einfügen</string>
     <string name="insert_in_note">Geteilte Daten einfügen</string>
     <string name="ok">OK</string>
+    <string name="table">Tabelle</string>
+    <string name="section">Paragraf: Name</string>
+    <string name="content">Inhalt</string>
+    <string name="select_link">Link/URL markieren</string>
+    <string name="select_link_image">Link/URL eines Bildes markieren</string>
+    <string name="select_link_audio">Link/URL eines Audiostreams markieren</string>
+    <string name="select_link_video">Link/URL eines Videos markieren</string>
+    <string name="select_link_youtube">Link/URL eines Youtube-Videos markieren</string>
 </resources>

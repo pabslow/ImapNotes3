@@ -77,20 +77,41 @@ android {
 
 }
 
+task gitCloneRE(type: Exec) {
+    description 'fetch richeditor'
+    try {
+        ignoreExitValue = true
+        commandLine 'git', 'clone', 'https://github.com/niendo1/richeditor-android.git', '../../richeditor-android'
+    } catch (Exception e) {
+
+    }
+}
+
 dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.sun.mail:android-mail:1.6.7'
     implementation 'com.sun.mail:android-activation:1.6.7'
     implementation 'commons-io:commons-io:2.11.0'
-    implementation 'jp.wasabeef:richeditor-android:2.0.0'
+    //implementation 'jp.wasabeef:richeditor-android:2.0.0'
+    // for now we use a local extended clone, as there is no maven lib
+    implementation project(':richeditor')
     implementation 'org.jetbrains:annotations:23.1.0'
     implementation 'org.jsoup:jsoup:1.15.3'
 }
 
+tasks.register("prepareKotlinBuildScriptModel") {}
+
+allprojects {
+    tasks.named("prepareKotlinBuildScriptModel") {
+        dependsOn "gitCloneRE"
+    }
+}
 // ToDo
 //allprojects {
 //    tasks.withType(JavaCompile) {
 //        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 //    }
 //}
+
+

@@ -1,0 +1,9 @@
+* uses https://github.com/niendo1/richeditor-android
+* add checkboxes for ToDo lists
+* add table support
+* add support for Collapsible Section
+* use getHTML() as callback .. high performance win
+* add insert links
+* add insert image
+* add insert audio, video and youtube video
+* add support for fontFamily
