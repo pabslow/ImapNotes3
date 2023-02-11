@@ -95,11 +95,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare)) {
             ImapNotes3.showAction(editText, R.string.insert_in_note, R.string.ok,
                     () -> {
-                        if (!editText.hasFocus())
-                            editText.focusEditor();
-                        //editText.insertHTML(getSharedText(intent));
-                        editText.loadUrl("javascript:RE.prepareInsert();");
-                        editText.loadUrl("javascript:RE.insertHTML('" + getSharedText(intent) + "');");
+                        if (!editText.hasFocus()) editText.focusEditor();
+                        editText.insertHTML(getSharedText(intent));
                     });
         }
         if (ChangeNote.equals(ActivityTypeEdit)) {
