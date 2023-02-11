@@ -22,7 +22,7 @@ public class OneNote extends HashMap<String, String> {
     private static final long serialVersionUID = 1L;
 
 
-    public OneNote(String title, String date, String uid, String account, String bgColor) {
+    public OneNote(@NonNull String title, @NonNull String date, @NonNull String uid, @NonNull String account, @NonNull String bgColor) {
         super();
         put(TITLE, title);
         put(DATE, date);

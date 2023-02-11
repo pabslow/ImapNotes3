@@ -466,25 +466,31 @@ public class SyncUtils {
 
         // Now update or save the metadata about the message
 
-        String title = null;
-        String[] rawvalue = null;
-        // Some servers (such as posteo.de) don't encode non us-ascii characters in subject
-        // This is a workaround to handle them
-        // "lä ö ë" subject should be stored as =?charset?encoding?encoded-text?=
-        // either =?utf-8?B?bMOkIMO2IMOr?=  -> Quoted printable
-        // or =?utf-8?Q?l=C3=A4 =C3=B6 =C3=AB?=  -> Base64
-        try {
-            rawvalue = notesMessage.getHeader("Subject");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String title = "";
         try {
             title = notesMessage.getSubject();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (rawvalue[0].length() >= 2) {
-            if (!(rawvalue[0].substring(0, 2).equals("=?"))) {
+
+        // FIXME just a quick fix..needs more rework
+        /* I have posteo and it seems working
+        String[] rawvalue = null;
+
+        // Some servers (such as posteo.de) don't encode non us-ascii characters in subject
+        // This is a workaround to handle them
+        // "lä ö ë" subject should be stored as =?charset?encoding?encoded-text?=
+        // either =?utf-8?B?bMOkIMO2IMOr?=  -> Quoted printable
+        // or =?utf-8?Q?l=C3=A4 =C3=B6 =C3=AB?=  -> Base64
+
+        try {
+            rawvalue = notesMessage.getHeader("Subject");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (rawvalue[0] != null && rawvalue[0].length() >= 2) {
+            if (!(rawvalue[0].startsWith("=?"))) {
                 try {
                     title = new String(title.getBytes(StandardCharsets.ISO_8859_1));
                 } catch (Exception e) {
@@ -498,19 +504,16 @@ public class SyncUtils {
                 e.printStackTrace();
             }
         }
-
+*/
         // Get INTERNALDATE
-        //String internaldate = null;
+        String internaldate = Utilities.internalDateFormatString;
         Date MessageInternaldate = null;
         try {
             MessageInternaldate = notesMessage.getReceivedDate();
+            internaldate = Utilities.internalDateFormat.format(MessageInternaldate);
         } catch (MessagingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        //String DATE_FORMAT = "yyyy-MM-dd HH:MM:ss";
-        //SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
-        String internaldate = Utilities.internalDateFormat.format(MessageInternaldate);
 
         OneNote aNote = new OneNote(
                 title,
