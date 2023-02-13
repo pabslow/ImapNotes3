@@ -11,7 +11,7 @@
     <string name="remove">删除</string>
     <string name="save">保存</string>
     <string name="check_and_create_account"><![CDATA[检查并创建账户]]></string>
-    <string name="logging_in">正在登陆到你的账户…</string>
+    <string name="logging_in">正在登录到你的账户…</string>
     <string name="account_already_exists_or_is_null">账户已存在或为空</string>
     <string name="account_added">已添加账户</string>
     <string name="add_account">添加账户、笔记本</string>
