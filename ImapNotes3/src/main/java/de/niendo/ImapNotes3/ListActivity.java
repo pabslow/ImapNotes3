@@ -544,7 +544,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         Log.d(TAG, "onItemSelected");
         Account account = ListActivity.accounts[pos];
-        // Check periodic sync. If set to 86400 (once a day), set it to 900 (15 minutes)
+        /* Check periodic sync. If set to 86400 (once a day), set it to 900 (15 minutes)
         // this is due to bad upgrade to v4 which handles offline mode and syncing
         // Remove this code after V4.0 if version no more used
         List<PeriodicSync> currentSyncs = ContentResolver.getPeriodicSyncs(account, AUTHORITY);
@@ -556,6 +556,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 ImapNotes3.ShowMessage("Recreating this account is recommended to manage sync interval. Set to 15 minutes in the meantime", accountSpinner, 2);
             }
         }
+         */
         listToView.ResetFilterData(noteList);
         ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
         RefreshList();

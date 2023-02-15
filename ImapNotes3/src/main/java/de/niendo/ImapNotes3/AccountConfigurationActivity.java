@@ -216,7 +216,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
 
     private void CheckNameAndLogIn() {
         String name = accountnameTextView.getText().toString();
-        if (name.contains("'") || name.contains("\""))
+        if (name.contains("'") || name.contains("\"") || name.isEmpty())
             ImapNotes3.ShowMessage(R.string.quotation_marks_not_allowed, accountnameTextView, 3);
         else
             DoLogin();
@@ -490,13 +490,15 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
                 setAccountAuthenticatorResult(result);
                 setUserData(am, account);
                 // Run the Sync Adapter Periodically
+                ContentResolver.setIsSyncable(account, AUTHORITY, 1);
+                ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
+                // we can enable inexact timers in our periodic sync
+                SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval, ImapNotesAccount.syncInterval)
+                        .setSyncAdapter(account, AUTHORITY).setExtras(new Bundle()).build();
                 if (ImapNotesAccount.syncInterval > 0) {
-                    ContentResolver.setIsSyncable(account, AUTHORITY, 1);
-                    ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
-                        // we can enable inexact timers in our periodic sync
-                        SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval, ImapNotesAccount.syncInterval)
-                                .setSyncAdapter(account, AUTHORITY).setExtras(new Bundle()).build();
-                        ContentResolver.requestSync(request);
+                    ContentResolver.requestSync(request);
+                } else {
+                    ContentResolver.cancelSync(request);
                 }
 
                 Log.d(TAG, "doInBackground success");
