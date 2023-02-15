@@ -382,10 +382,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setBlockquote();
                 break;
             case R.id.action_insert_bullets:
-                editText.setBullets();
+                editText.setUnorderedList();
                 break;
             case R.id.action_insert_numbers:
-                editText.setNumbers();
+                editText.setOrderedList();
                 break;
             case R.id.action_insert_image:
                 // 1. get the selected text via callback

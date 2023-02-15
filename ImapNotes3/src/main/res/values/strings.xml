@@ -82,7 +82,7 @@
     <string name="insert_in_note">Insert shared data</string>
     <string name="ok">OK</string>
     <string name="table">Table</string>
-    <string name="section">section: name</string>
+    <string name="section">Section</string>
     <string name="content">Content</string>
     <string name="select_link">Select a link</string>
     <string name="select_link_image">Select a link to an image</string>
