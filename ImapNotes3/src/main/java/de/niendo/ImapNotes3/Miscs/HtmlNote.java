@@ -1,5 +1,7 @@
 package de.niendo.ImapNotes3.Miscs;
 
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -90,7 +92,7 @@ public class HtmlNote {
 
     @NonNull
     public static HtmlNote GetNoteFromMessage(@NonNull Message message) {
-        ContentType contentType;
+        ContentType contentType = null;
         String stringres = "";
         //InputStream iis = null;
         //String charset;
@@ -102,10 +104,14 @@ public class HtmlNote {
             stringres = IOUtils.toString(iis, charset);
             iis.close();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Log.d(TAG, "Exception GetNoteFromMessage:");
-            Log.d(TAG, e.toString());
+            Log.d(TAG, "Exception GetNoteFromMessage:" + e.toString());
             e.printStackTrace();
+        }
+
+        // import plain text notes
+        if ((contentType != null) && contentType.equals("TEXT/PLAIN")) {
+            Spanned spanres = Html.fromHtml(stringres, Html.FROM_HTML_MODE_LEGACY);
+            stringres = Html.toHtml(spanres, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
         }
 
         return new HtmlNote(
