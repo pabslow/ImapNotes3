@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) ?   -2022 - Axel Strübing
+ * Copyright (C) ?   -2016 - Martin Carpella
+ * Copyright (C) ?   -2015 - nb
+ * and Contributors.
+ *
+ * This file is part of ImapNotes3.
+ *
+ * ImapNotes3 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.niendo.ImapNotes3.Data;
 
 import android.accounts.Account;
@@ -45,14 +68,14 @@ public class ImapNotesAccount {
     private File rootDirAccount;
 
     public ImapNotesAccount(@NonNull String accountName,
-                             @NonNull String username,
-                             @NonNull String password,
-                             @NonNull String server,
-                             @NonNull String portNumber,
-                             @NonNull Security security,
-                             boolean useSticky,
-                             int syncInterval,
-                             @NonNull String folderName) {
+                            @NonNull String username,
+                            @NonNull String password,
+                            @NonNull String server,
+                            @NonNull String portNumber,
+                            @NonNull Security security,
+                            boolean useSticky,
+                            int syncInterval,
+                            @NonNull String folderName) {
         account = null;
         this.accountName = accountName;
         this.username = username;
@@ -66,7 +89,7 @@ public class ImapNotesAccount {
     }
 
     public ImapNotesAccount(@NonNull Account account,
-                             @NonNull Context applicationContext) {
+                            @NonNull Context applicationContext) {
         this.accountName = account.name;
         rootDir = ImapNotes3.GetRootDir();
         rootDirAccount = ImapNotes3.GetAccountDir(accountName);

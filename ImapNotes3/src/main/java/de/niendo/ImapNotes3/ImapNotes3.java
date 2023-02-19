@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C)         ? - kwhitefoot
  * and Contributors.
  *
  * This file is part of ImapNotes3.

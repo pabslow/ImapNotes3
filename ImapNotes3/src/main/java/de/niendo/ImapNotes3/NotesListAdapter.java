@@ -1,6 +1,7 @@
-package de.niendo.ImapNotes3;
-
 /*
+ * Copyright (C) 2023 Peter Korf
+ * Copyright (C) 2016 Martin Carpella
+ * Copyright (C) 2015 nb
  * Copyright (C) 2006 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +16,8 @@ package de.niendo.ImapNotes3;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package de.niendo.ImapNotes3;
 
 import android.content.Context;
 import android.net.Uri;
