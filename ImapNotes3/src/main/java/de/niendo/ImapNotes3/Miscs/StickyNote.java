@@ -1,7 +1,9 @@
 package de.niendo.ImapNotes3.Miscs;
 
 import android.text.Html;
-import android.text.Spanned;
+import android.text.Spannable;
+import android.text.SpannableString;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -136,8 +138,8 @@ public class StickyNote {
     @NonNull
     private static StickyNote ReadHtmlNote(String stringres) {
 //        Log.d(TAG,"From server (html):"+stringres);
-        Spanned spanres = Html.fromHtml(stringres, Html.FROM_HTML_MODE_LEGACY);
-        stringres = Html.toHtml(spanres, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+        Spannable text = new SpannableString(stringres);
+        stringres = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
         stringres = stringres.replaceFirst("<p dir=ltr>", "");
         stringres = stringres.replaceFirst("<p dir=\"ltr\">", "");
         stringres = stringres.replaceAll("<p dir=ltr>", "<br>");

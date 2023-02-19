@@ -13,6 +13,8 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.NavUtils;
 
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.SpannedString;
 import android.util.Log;
@@ -717,8 +719,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     if (type.equals("text/html")) {
                         editText.setHtml(subject + sharedText);
                     } else if (type.startsWith("text/")) {
-                        html = Html.toHtml(new SpannedString(Html.fromHtml(subject + sharedText, Html.FROM_HTML_MODE_LEGACY)), Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
-
+                        Spannable text = new SpannableString(subject + sharedText);
+                        html = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
                     } else if (type.startsWith("image/")) {
                         // toDo
                     }

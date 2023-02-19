@@ -1,6 +1,8 @@
 package de.niendo.ImapNotes3.Miscs;
 
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
 
@@ -109,9 +111,10 @@ public class HtmlNote {
         }
 
         // import plain text notes
-        if ((contentType != null) && contentType.equals("TEXT/PLAIN")) {
-            Spanned spanres = Html.fromHtml(stringres, Html.FROM_HTML_MODE_LEGACY);
-            stringres = Html.toHtml(spanres, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+        if ((contentType != null) && contentType.match("text/plain")) {
+            Spannable text = new SpannableString(stringres);
+            stringres = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+            stringres = stringres.replaceFirst("<p dir=\"ltr\">", "");
         }
 
         return new HtmlNote(
