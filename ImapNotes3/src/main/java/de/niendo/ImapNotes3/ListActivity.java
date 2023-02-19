@@ -11,7 +11,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.PeriodicSync;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -162,6 +161,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static final String TAG = "IN_Listactivity";
     //@Nullable
     private TextView status;
+    private ListView listview;
     private AsyncTask updateThread;
 
     public void onDestroy() {
@@ -221,7 +221,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 new int[]{R.id.noteTitle, R.id.noteLastChange},
                 OneNote.BGCOLOR);
 
-        ListView listview = findViewById(R.id.notesList);
+        listview = findViewById(R.id.notesList);
         listview.setAdapter(this.listToView);
 
         listview.setTextFilterEnabled(true);
@@ -236,6 +236,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             Log.d(TAG, "onItemClick");
             Intent toDetail;
             if (intentActionSend != null)
+                // FIXME StrictMode policy violation: android.os.strictmode.UnsafeIntentLaunchViolation: Launch of unsafe intent: Intent
                 toDetail = intentActionSend;
             else
                 toDetail = new Intent(widget.getContext(), NoteDetailActivity.class);
@@ -243,6 +244,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             toDetail.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
             toDetail.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeEdit);
             startActivityForResult(toDetail, SEE_DETAIL);
+            //intentActionSend=null;
             Log.d(TAG, "onItemClick, back from detail.");
 
             //TriggerSync(status);
@@ -250,7 +252,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
         Button editAccountButton = findViewById(R.id.editAccountButton);
         editAccountButton.setOnClickListener(clickListenerEditAccount);
+    }
 
+    private void Check_Action_Send() {
         Log.d(TAG, "Check_Action_Send");
         // Get intent, action and MIME type
         Intent intent = getIntent();
@@ -297,6 +301,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
             }
         }
+    }
+
+    @Override
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        Log.d(TAG, "onPostCreate");
     }
 
     @Override
@@ -565,20 +575,28 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // TODO Auto-generated method stub
-
     }
 
     private void updateAccountSpinner() {
         Log.d(TAG, "updateAccountSpinner");
         this.spinnerList.notifyDataSetChanged();
         setPreferences();
-        if (this.accountSpinner.getSelectedItemId() == android.widget.AdapterView.INVALID_ROW_ID) {
+        long id = this.accountSpinner.getSelectedItemId();
+        if (id == android.widget.AdapterView.INVALID_ROW_ID) {
             this.accountSpinner.setSelection(0);
+            id = 0;
         }
 
+        // why? is it really necessary?
         if (ListActivity.currentList.size() == 1) {
-            Account account = ListActivity.accounts[0];
+            ImapNotes3.ShowMessage("updateAccountSpinner", listview, 3);
+            Account account = ListActivity.accounts[(int) id];
             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
+        }
+
+        // FIXME his place is not nice..but no other is working
+        if (ListActivity.ImapNotesAccount != null) {
+            Check_Action_Send();
         }
     }
 

@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -96,7 +97,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             action = "";
 
         if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare)) {
-            ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 0,
+            ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 180,
                     () -> {
                         if (!editText.hasFocus()) editText.focusEditor();
                         editText.insertHTML(getSharedText(intent));
@@ -730,4 +731,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         }
         return html;
     }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
 }
