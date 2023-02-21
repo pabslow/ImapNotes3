@@ -6,8 +6,9 @@
 * light and dark mode support
 * color support for notes
 * share your notes
+* notes are saved as standard HTML E-mails
 * security can be plain text, SSL/TLS or STARTTLS
-* multiple IMAP accounts can be managed
+* multiple IMAP accounts and/or notepads can be managed
 * works offline and sync is done in the background
 * only a minimum on user permissions required
 * no tracker or advertising

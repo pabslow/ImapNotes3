@@ -27,7 +27,8 @@ Main changes in ImapNotes3 are:
 - color support
 - full text search
 - sdk version 33
-- shareing / receiving data
+- sharing / receiving data
+- notes are saved as standard HTML E-mails
 - notes from posteo.de and gmail.com are working again
 
 Main changes in ImapNote2 are :
