@@ -28,7 +28,7 @@
     <string name="sync_interval_minutes">Sync Interval in Minutes (0=Off)</string>
     <string name="notes_folder_optional">Notes Folder (optional)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">Manually set notes folder path</string>
-    <string name="use_sticky_notes">Use Sticky Notes</string>
+    <string name="use_sticky_notes">Use Sticky Note Format (not recommended)</string>
     <string name="welcome">Welcome</string>
     <string name="delete">Delete</string>
     <string name="color">Color</string>
