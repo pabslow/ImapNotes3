@@ -91,4 +91,6 @@
     <string name="select_link_youtube">Select a link to a youtube video</string>
     <string name="open_link">Open Link in external Browser</string>
     <string name="no_program_found">No suitable program found</string>
+    <string name="made_changes">You have made some changes.</string>
+    <string name="save_changes">Would you like to save before exiting?</string>
 </resources>

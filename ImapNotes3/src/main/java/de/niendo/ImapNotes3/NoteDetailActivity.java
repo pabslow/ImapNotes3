@@ -27,6 +27,7 @@ package de.niendo.ImapNotes3;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -43,6 +44,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.SpannedString;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -89,6 +91,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     // --Commented out by Inspection (11/26/16 11:52 PM):private final static int ROOT_AND_NEW = 3;
     private static final String TAG = "IN_NoteDetailActivity";
     private boolean usesticky;
+    private boolean textChanged;
     @NonNull
     private String bgColor = "none";
     //private int realColor = R.id.yellow;
@@ -167,50 +170,25 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             SetupRichEditor();
             editText.setHtml(getSharedText(intent));
         }
-
-
-
-/*        // TODO: Watch for changes so that we can auto save.
-        // See http://stackoverflow.com/questions/7117209/how-to-know-key-presses-in-edittext#14251047
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //here is your code
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                // TODO Work in progess
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Work in progess
-            }
-
-        });
-        */
         ResetColors();
     }
 
     private void SetupRichEditor() {
-        // more functions, maybe use this editor...
-        // https://github.com/Andrew-Chen-Wang/RichEditorView/blob/master/Sources/RichEditorView/Resources/editor/rich_editor.js
-        // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_collapsible_symbol
         editText.setPadding(10, 10, 10, 10);
-        //    mEditor.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
+        //    editText.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
         editText.LoadFont("Alita Brush", "Alita Brush.ttf");
-/*
-        mPreview = (TextView) findViewById(R.id.preview);
-        mEditor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
-            @Override public void onTextChange(String text) {
-                mPreview.setText(text);
+        textChanged = false;
+
+        editText.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
+            @Override
+            public void onTextChange(String text) {
+                if (text.contains("loaded"))
+                    textChanged = false;
+                if (text.contains("input"))
+                    textChanged = true;
             }
         });
-
-*/
 
         editText.setOnClickListener(new RichEditor.onClickListener() {
             @Override
@@ -600,7 +578,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 Share();
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                onBackPressed();
+                //NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.none:
                 item.setChecked(true);
@@ -662,9 +641,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
             intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
             setResult(NoteDetailActivity.EDIT_BUTTON, intent);
+            textChanged = false;
             if (finish) finish();//finishing activity
         });
-
         // data comes via callback
         editText.getHtml();
     }
@@ -761,5 +740,24 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         Log.d(TAG, "onPause");
         super.onPause();
     }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        if (textChanged) {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setTitle(R.string.made_changes)
+                    .setMessage(R.string.save_changes)
+                    .setNegativeButton(R.string.no, (arg0, arg1) -> NoteDetailActivity.super.onBackPressed())
+                    .setNeutralButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
+                        Save(true);
+                    }).create().show();
+        } else {
+            NoteDetailActivity.super.onBackPressed();
+        }
+    }
+
 
 }

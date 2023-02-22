@@ -279,6 +279,13 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         editAccountButton.setOnClickListener(clickListenerEditAccount);
     }
 
+    /*@Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Check_Action_Send();
+    }
+    */
+
     private void Check_Action_Send() {
         Log.d(TAG, "Check_Action_Send");
         // Get intent, action and MIME type
@@ -513,7 +520,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         .setTitle(getString(R.string.about) + " " + BuildConfig.APPLICATION_NAME)
                         .setIcon(R.mipmap.ic_launcher)
                         .setMessage(about)
-                        .setPositiveButton("OK", (dialog, which) -> {
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             // Do nothing
                         })
                         .show();
