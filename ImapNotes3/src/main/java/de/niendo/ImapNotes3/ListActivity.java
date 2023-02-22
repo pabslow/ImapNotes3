@@ -279,17 +279,18 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         editAccountButton.setOnClickListener(clickListenerEditAccount);
     }
 
-    /*@Override
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Check_Action_Send();
+        Log.d(TAG, "onNewIntent");
+        Check_Action_Send(intent);
     }
-    */
 
-    private void Check_Action_Send() {
+    private void Check_Action_Send(Intent intent) {
         Log.d(TAG, "Check_Action_Send");
         // Get intent, action and MIME type
-        Intent intent = getIntent();
+        if (intent == null)
+            intent = getIntent();
         String action = intent.getAction();
 
         intentActionSend = null;
@@ -619,16 +620,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             id = 0;
         }
 
-        // why? is it really necessary?
-        if (ListActivity.currentList.size() == 1) {
-            ImapNotes3.ShowMessage("updateAccountSpinner", listview, 3);
+        if (ListActivity.currentList.size() > 0) {
             Account account = ListActivity.accounts[(int) id];
             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
-        }
-
-        // FIXME his place is not nice..but no other is working
-        if (ListActivity.ImapNotesAccount != null) {
-            Check_Action_Send();
+            // FIXME his place is not nice..but no other is working
+            Check_Action_Send(null);
         }
     }
 

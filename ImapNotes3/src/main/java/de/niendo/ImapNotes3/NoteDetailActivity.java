@@ -27,24 +27,19 @@ package de.niendo.ImapNotes3;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.app.NavUtils;
 
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -91,7 +86,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     // --Commented out by Inspection (11/26/16 11:52 PM):private final static int ROOT_AND_NEW = 3;
     private static final String TAG = "IN_NoteDetailActivity";
     private boolean usesticky;
-    private boolean textChanged;
+    private boolean textChanged = false;
+    private boolean textChangedShare = false;
     @NonNull
     private String bgColor = "none";
     //private int realColor = R.id.yellow;
@@ -167,8 +163,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         } else if (ChangeNote.equals(ActivityTypeAdd)) {   // new entry
             SetupRichEditor();
         } else if (ChangeNote.equals(ActivityTypeAddShare)) {   // new Entry from Share
-            SetupRichEditor();
             editText.setHtml(getSharedText(intent));
+            textChangedShare = true;
+            SetupRichEditor();
         }
         ResetColors();
     }
@@ -178,16 +175,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         //    editText.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
         editText.LoadFont("Alita Brush", "Alita Brush.ttf");
-        textChanged = false;
 
-        editText.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
-            @Override
-            public void onTextChange(String text) {
-                if (text.contains("loaded"))
-                    textChanged = false;
-                if (text.contains("input"))
-                    textChanged = true;
-            }
+        editText.setOnTextChangeListener(text -> {
+            if (text.contains("loaded"))
+                textChanged = textChangedShare;
+            if (text.contains("input"))
+                textChanged = true;
         });
 
         editText.setOnClickListener(new RichEditor.onClickListener() {

@@ -30,7 +30,7 @@
             android:name=".ListActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
-            android:launchMode="standard">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
