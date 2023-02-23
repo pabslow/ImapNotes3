@@ -9,3 +9,4 @@
 * add support for fontFamily
 * open links with external programs
 * ask to save changes, when closing the editor
+* bug fixes
