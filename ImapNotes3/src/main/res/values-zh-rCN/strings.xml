@@ -28,7 +28,7 @@
     <string name="sync_interval_minutes">分钟为单位的同步间隔 (0 表示关闭)</string>
     <string name="notes_folder_optional">笔记文件夹 (可选)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">手动设置笔记文件夹路径</string>
-    <string name="use_sticky_notes">使用便利贴</string>
+    <string name="use_sticky_notes">使用便利贴格式（不推荐）</string>
     <string name="welcome">欢迎</string>
     <string name="delete">删除</string>
     <string name="color">颜色</string>
@@ -82,7 +82,7 @@
     <string name="insert_in_note">插入分享的数据</string>
     <string name="ok">好</string>
     <string name="table">表格</string>
-    <string name="section">部分：名称</string>
+    <string name="section">部分</string>
     <string name="content">内容</string>
     <string name="select_link">选择链接</string>
     <string name="select_link_image">选择图片链接</string>
@@ -91,4 +91,6 @@
     <string name="select_link_youtube">选择 youtube 链接</string>
     <string name="open_link">在外部浏览器中打开链接</string>
     <string name="no_program_found">未找到合适的程序</string>
+    <string name="made_changes">你已经做了一些更改。</string>
+    <string name="save_changes">你想在退出前保存吗？</string>
 </resources>
