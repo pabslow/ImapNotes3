@@ -81,11 +81,11 @@ public class ImapNotesAccount {
         this.username = username;
         this.password = password;
         this.server = server;
-        this.security = security;
         this.portnum = portNumber;
+        this.security = security;
         this.usesticky = useSticky;
-        this.imapfolder = folderName;
         this.syncInterval = syncInterval;
+        this.imapfolder = folderName;
     }
 
     public ImapNotesAccount(@NonNull Account account,

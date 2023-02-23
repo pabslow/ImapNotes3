@@ -66,7 +66,6 @@ import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.Result;
 import de.niendo.ImapNotes3.Miscs.Utilities;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class AccountConfigurationActivity extends AccountAuthenticatorActivity implements OnItemSelectedListener {
@@ -426,8 +425,10 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        security = Security.from(position);
-        portnumTextView.setText(security.defaultPort);
+        if (!security.equals(Security.from(position))) {
+            security = Security.from(position);
+            portnumTextView.setText(security.defaultPort);
+        }
     }
 
     @Override
