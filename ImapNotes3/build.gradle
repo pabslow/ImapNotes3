@@ -81,7 +81,8 @@ task gitCloneRE(type: Exec) {
     description 'fetch richeditor'
     try {
         ignoreExitValue = true
-        commandLine 'git', 'clone', 'https://github.com/niendo1/richeditor-android.git', '../../richeditor-android'
+        //commandLine 'git', 'clone', 'https://github.com/niendo1/richeditor-android.git', '../../richeditor-android'
+        commandLine 'git', 'clone', "--branch", "ImapNotes3-v1.1-release", "--single-branch", 'https://github.com/niendo1/richeditor-android.git', '../../richeditor-android'
     } catch (Exception e) {
 
     }
