@@ -101,13 +101,13 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
 }
 
-tasks.register("prepareKotlinBuildScriptModel") {}
+//tasks.register("prepareKotlinBuildScriptModel") {}
 
-allprojects {
-    tasks.named("prepareKotlinBuildScriptModel") {
-        dependsOn "gitCloneRE"
-    }
-}
+//allprojects {
+//    tasks.named("prepareKotlinBuildScriptModel") {
+//        dependsOn "gitCloneRE"
+//    }
+//}
 // ToDo
 //allprojects {
 //    tasks.withType(JavaCompile) {
