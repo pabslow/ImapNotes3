@@ -77,17 +77,6 @@ android {
 
 }
 
-task gitCloneRE(type: Exec) {
-    description 'fetch richeditor'
-    try {
-        ignoreExitValue = true
-        //commandLine 'git', 'clone', 'https://github.com/niendo1/richeditor-android.git', '../../richeditor-android'
-        commandLine 'git', 'clone', "--branch", "ImapNotes3-v1.1-release", "--single-branch", 'https://github.com/niendo1/richeditor-android.git', '../../richeditor-android'
-    } catch (Exception e) {
-
-    }
-}
-
 dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -101,13 +90,6 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
 }
 
-//tasks.register("prepareKotlinBuildScriptModel") {}
-
-//allprojects {
-//    tasks.named("prepareKotlinBuildScriptModel") {
-//        dependsOn "gitCloneRE"
-//    }
-//}
 // ToDo
 //allprojects {
 //    tasks.withType(JavaCompile) {
