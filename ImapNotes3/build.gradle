@@ -77,6 +77,13 @@ android {
 
 }
 
+task submodulesUpdate(type: Exec) {
+    description 'fetch richeditor'
+    description 'Updates (and inits) git submodules'
+    commandLine 'git', 'submodule', 'update', '--init', '--recursive'
+    group 'Build Setup'
+}
+
 dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -88,6 +95,14 @@ dependencies {
     implementation project(':richeditor')
     implementation 'org.jetbrains:annotations:23.1.0'
     implementation 'org.jsoup:jsoup:1.15.3'
+}
+
+tasks.register("prepareKotlinBuildScriptModel") {}
+
+allprojects {
+    tasks.named("prepareKotlinBuildScriptModel") {
+        dependsOn "submodulesUpdate"
+    }
 }
 
 // ToDo
