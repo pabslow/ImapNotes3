@@ -1,1 +1,1 @@
-Anzeigen, Bearbeiten und Synchronisieren von HTML-Notizen und ToDo-Listen mit IMAP-Postfächern
+Notizen und ToDo-Listen erstellen und in IMAP-Postfächern synchronisieren
