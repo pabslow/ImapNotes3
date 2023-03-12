@@ -403,6 +403,10 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         row.setId(R.id.action_insert_section);
                         icon.setImageResource(R.drawable.insert_section);
                         break;
+                    case 11:
+                        row.setId(R.id.action_insert_datetime);
+                        icon.setImageResource(R.drawable.insert_datetime);
+                        break;
                 }
                 break;
             case R.id.action_table:

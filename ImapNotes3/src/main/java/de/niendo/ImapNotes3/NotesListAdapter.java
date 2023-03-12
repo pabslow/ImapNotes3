@@ -26,6 +26,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,7 @@ import java.util.regex.PatternSyntaxException;
  * If no appropriate binding can be found, an {@link IllegalStateException} is thrown.
  */
 public class NotesListAdapter extends BaseAdapter implements Filterable {
+    private static final String TAG = "IN_NotesListAdapter";
     private final Context mContext;
     private final int[] mTo;
     private final String[] mFrom;
@@ -459,6 +461,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
                         List<String> matches = searchHTML(searchfile.toString(), prefixString, false);
 
                         if (!matches.isEmpty()) {
+                            Log.d(TAG, "FilterResults: " + searchfile);
                             newValues.add(h);
                         }
                     }

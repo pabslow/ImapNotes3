@@ -51,6 +51,7 @@
     <item name="action_insert_exclamation" type="id" />
     <item name="action_insert_question" type="id" />
     <item name="action_insert_hline" type="id" />
+    <item name="action_insert_datetime" type="id" />
     <item name="action_font_size_1" type="id" />
     <item name="action_font_size_2" type="id" />
     <item name="action_font_size_3" type="id" />

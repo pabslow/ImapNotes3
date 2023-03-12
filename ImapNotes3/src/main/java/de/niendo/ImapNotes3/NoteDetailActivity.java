@@ -64,6 +64,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.HashMap;
 
 
@@ -205,7 +206,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[12], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);
@@ -483,6 +484,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_question:
                 editText.insertHTML("&#10067;");
+                break;
+            case R.id.action_insert_datetime:
+                //String date = Utilities.internalDateFormat.format(Calendar.getInstance().getTime());
+                String date = Calendar.getInstance().getTime().toLocaleString();
+                editText.insertHTML(date);
                 break;
             case R.id.action_insert_exclamation:
                 editText.insertHTML("&#10071;");

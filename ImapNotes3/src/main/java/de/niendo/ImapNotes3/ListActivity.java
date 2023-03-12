@@ -420,6 +420,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         SearchView.OnQueryTextListener textChangeListener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
+                // FIXME THREAD!
                 // this is your adapter that will be filtered
                 listToView.getFilter().filter(newText);
                 return true;
