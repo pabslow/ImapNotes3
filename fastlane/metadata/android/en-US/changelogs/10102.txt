@@ -1,1 +1,2 @@
 * insert date and time via menu
+* search always in all accounts

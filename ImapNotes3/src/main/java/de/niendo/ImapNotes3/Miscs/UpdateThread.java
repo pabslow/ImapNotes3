@@ -21,6 +21,7 @@
  */
 package de.niendo.ImapNotes3.Miscs;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -68,7 +69,9 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     private final ArrayList<OneNote> notesList;
     private final String noteBody;
     private final String bgColor;
-    private final WeakReference<Context> applicationContextRef;
+
+    private final String accountName;
+    //private final WeakReference<Context> applicationContextRef;
     private final Action action;
     private String suid;
     private boolean bool_to_return;
@@ -80,7 +83,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     Assign all fields in the constructor because we never reuse this object.  This makes the code
     typesafe.  Make them final to prevent accidental reuse.
     */
-    public UpdateThread(ImapNotesAccount ImapNotesAccount,
+    public UpdateThread(String accountName,
                         ArrayList<OneNote> noteList,
                         NotesListAdapter listToView,
                         @StringRes int resId,
@@ -89,15 +92,18 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                         String bgColor,
                         Context context,
                         Action action) {
+        //ImapNotesAccount ImapNotesAccount
         Log.d(TAG, "UpdateThread: " + noteBody);
-        this.ImapNotesAccount = ImapNotesAccount;
+        this.accountName = accountName;
+        Account account = new Account(accountName, Utilities.PackageName);
+        this.ImapNotesAccount = new ImapNotesAccount(account, context);
         this.notesList = noteList;
         this.adapter = listToView;
         this.resId = resId;
         this.suid = suid;
         this.noteBody = noteBody;
         this.bgColor = bgColor;
-        this.applicationContextRef = new WeakReference<>(context);
+        //this.applicationContextRef = new WeakReference<>(context);
         this.action = action;
         this.storedNotes = NotesDb.getInstance(context);
         currentNote = null;
@@ -115,7 +121,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 //Log.d(TAG,"Delete note in Listview");
                 indexToDelete = getIndexByNumber(suid);
                 MoveMailToDeleted(suid);
-                storedNotes.DeleteANote(suid, ImapNotesAccount.accountName);
+                storedNotes.DeleteANote(suid, accountName);
                 bool_to_return = true;
             }
 
@@ -138,7 +144,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 Date date = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
                 String stringDate = sdf.format(date);
-                currentNote = new OneNote(title, stringDate, "", ImapNotesAccount.accountName, bgColor);
+                currentNote = new OneNote(title, stringDate, "", accountName, bgColor);
                 // Add note to database
                 if (!suid.startsWith("-")) {
                     // no temp. suid in use

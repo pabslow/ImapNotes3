@@ -103,6 +103,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     public static final String EDIT_ITEM_NUM_IMAP = "EDIT_ITEM_NUM_IMAP";
     public static final String EDIT_ITEM_TXT = "EDIT_ITEM_TXT";
     public static final String EDIT_ITEM_COLOR = "EDIT_ITEM_COLOR";
+    public static final String EDIT_ITEM_ACCOUNTNAME = "EDIT_ITEM_ACCOUNTNAME";
     public static final String ACCOUNTNAME = "ACCOUNTNAME";
     public static final String SYNCINTERVAL = "SYNCINTERVAL";
     public static final String CHANGED = "CHANGED";
@@ -368,6 +369,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     private void RefreshList() {
+        listToView.setSortOrder(getSortOrder());
         new SyncThread(
                 ImapNotesAccount.accountName,
                 noteList,
@@ -381,12 +383,17 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         status.setText(R.string.welcome);
     }
 
-    private void UpdateList(String suid,
-                            String noteBody,
-                            String bgColor,
-                            UpdateThread.Action action) {
+    private void UpdateList(
+            String suid,
+            String noteBody,
+            String bgColor,
+            String accountName,
+            UpdateThread.Action action) {
         synchronized (this) {
-            updateThread = new UpdateThread(ImapNotesAccount,
+            if (accountName == null) {
+                accountName = ImapNotesAccount.accountName;
+            }
+            updateThread = new UpdateThread(accountName,
                     noteList,
                     listToView,
                     R.string.updating_notes_list,
@@ -435,7 +442,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         };
         // restore List and Filter after closing search
         searchView.setOnCloseListener(() -> {
+            storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
             this.listToView.ResetFilterData(noteList);
+            listToView.notifyDataSetChanged();
             return true;
         });
 
@@ -450,7 +459,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 accountSpinner.setEnabled(true);
-                listToView.getFilter().filter("");
+                //listToView.getFilter().filter("");
+                storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
+                listToView.ResetFilterData(noteList);
+                listToView.notifyDataSetChanged();
                 return true;
             }
         });
@@ -545,15 +557,16 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     // Delete Message asked for
                     // String suid will contain the Message Imap UID to delete
                     String suid = data.getStringExtra(DELETE_ITEM_NUM_IMAP);
-                    this.UpdateList(suid, null, null, UpdateThread.Action.Delete);
+                    this.UpdateList(suid, null, null, null, UpdateThread.Action.Delete);
                 }
                 if (resultCode == ListActivity.EDIT_BUTTON) {
                     String txt = data.getStringExtra(EDIT_ITEM_TXT);
                     String suid = data.getStringExtra(EDIT_ITEM_NUM_IMAP);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
+                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
                     //Log.d(TAG,"Received request to edit message:"+suid);
                     //Log.d(TAG,"Received request to replace message with:"+txt);
-                    this.UpdateList(suid, txt, bgcolor, UpdateThread.Action.Update);
+                    this.UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
                     //TextView status = (TextView) findViewById(R.id.status);
                     TriggerSync(status);
                 }
@@ -565,7 +578,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     String txt = data.getStringExtra(EDIT_ITEM_TXT);
                     //Log.d(TAG,"Received request to save message:"+res);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
-                    this.UpdateList("", txt, bgcolor, UpdateThread.Action.Insert);
+                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
+                    this.UpdateList("", txt, bgcolor, accountName, UpdateThread.Action.Insert);
                     TriggerSync(status);
                 }
                 break;
@@ -601,8 +615,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             }
         }
          */
-        listToView.ResetFilterData(noteList);
         ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
+//        storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
+//        listToView.ResetFilterData(noteList);
+        listToView.notifyDataSetChanged();
         RefreshList();
     }
 

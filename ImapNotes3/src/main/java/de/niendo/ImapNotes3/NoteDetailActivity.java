@@ -91,6 +91,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private boolean textChangedShare = false;
     @NonNull
     private String bgColor = "none";
+    private String accountName = "";
     //private int realColor = R.id.yellow;
     private String suid; // uid as string
     private RichEditor editText;
@@ -133,9 +134,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
             if (hm != null) {
                 suid = hm.get(OneNote.UID).toString();
-                File rootDir = ImapNotes3.GetAccountDir(hm.get(OneNote.ACCOUNT).toString());
+                accountName = hm.get(OneNote.ACCOUNT).toString();
+                File rootDir = ImapNotes3.GetAccountDir(accountName);
                 Message message = SyncUtils.ReadMailFromFileRootAndNew(suid, rootDir);
-                //Log.d(TAG, "rootDir is null: " + (rootDir == null));
                 Log.d(TAG, "rootDir: " + rootDir);
                 if (message != null) {
                     if (usesticky) {
@@ -636,12 +637,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         editText.setOnJSDataListener(value -> {
             Intent intent = new Intent();
             intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
-            Log.d(TAG, "Save html: " + value);
+            intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, accountName);
             intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
             intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
             setResult(NoteDetailActivity.EDIT_BUTTON, intent);
             textChanged = false;
-            if (finish) finish();//finishing activity
+            if (finish) finish(); //finishing activity
         });
         // data comes via callback
         editText.getHtml();

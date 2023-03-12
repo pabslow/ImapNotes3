@@ -179,13 +179,20 @@ public class NotesDb extends SQLiteOpenHelper {
         noteList.clear();
         Date date = null;
         SQLiteDatabase db = this.getWritableDatabase();
+        String selection = "";
+        String[] selectionArgs = new String[]{};
+        if (!(accountName.isEmpty())) {
+            selection = COL_ACCOUNT_NAME + " = ?";
+            selectionArgs = new String[]{accountName};
+        }
 
-        try (Cursor resultPointer = db.query(TABLE_NAME, null, "accountname = ?",
-                new String[]{accountName}, null, null, sortOrder)) {
+        try (Cursor resultPointer = db.query(TABLE_NAME, null, selection,
+                selectionArgs, null, null, sortOrder)) {
 
             if (resultPointer.moveToFirst()) {
                 int titleIndex = resultPointer.getColumnIndex(COL_TITLE);
                 //int bodyIndex = resultPointer.getColumnIndex("body");
+                int AccountNameIndex = resultPointer.getColumnIndex(COL_ACCOUNT_NAME);
                 int dateIndex = resultPointer.getColumnIndex(COL_DATE);
                 int numberIndex = resultPointer.getColumnIndex(COL_NUMBER);
                 int bgColorIndex = resultPointer.getColumnIndex(COL_BGCOLOR);
@@ -202,11 +209,13 @@ public class NotesDb extends SQLiteOpenHelper {
                     //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(this.ctx);
                     //String sdate = dateFormat.format(date);
                     String sdate = DateFormat.getDateTimeInstance().format(date);
-
+                    if (accountName.isEmpty()) {
+                        sdate = sdate + "  (" + resultPointer.getString(AccountNameIndex) + ")";
+                    }
                     noteList.add(new OneNote(resultPointer.getString(titleIndex),
                             sdate,
                             resultPointer.getString(numberIndex),
-                            accountName,
+                            resultPointer.getString(AccountNameIndex),
                             resultPointer.getString(bgColorIndex)));
 
                 } while (resultPointer.moveToNext());

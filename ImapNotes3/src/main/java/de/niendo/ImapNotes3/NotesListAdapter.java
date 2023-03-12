@@ -39,6 +39,7 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.Utilities;
@@ -80,6 +81,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     private final int[] mTo;
     private final String[] mFrom;
     private final String mBgColor;
+    private String mSortOrder;
 
     private List<? extends Map<String, ?>> mData;
 
@@ -89,8 +91,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     private final LayoutInflater mInflater;
 
     private SimpleFilter mFilter;
-    private ArrayList<Map<String, ?>> mUnfilteredData;
-
+    private ArrayList<OneNote> mUnfilteredData;
     /**
      * Constructor
      *
@@ -112,6 +113,10 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
         mTo = to;
         mBgColor = bgColor;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void setSortOrder(String sortOrder) {
+        mSortOrder = sortOrder;
     }
 
     /**
@@ -398,19 +403,21 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
         @Override
         protected FilterResults performFiltering(@Nullable CharSequence prefix) {
             FilterResults results = new FilterResults();
+            NotesDb storedNotes = NotesDb.getInstance(mContext);
 
             if (mUnfilteredData == null) {
-                mUnfilteredData = new ArrayList<>(mData);
+                mUnfilteredData = new ArrayList<>();
+                storedNotes.GetStoredNotes(mUnfilteredData, "", mSortOrder);
             }
 
             if (prefix == null || prefix.length() == 0) {
-                ArrayList<Map<String, ?>> list = mUnfilteredData;
+                ArrayList<OneNote> list = mUnfilteredData;
                 results.values = list;
                 results.count = list.size();
             } else {
                 String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
 
-                ArrayList<Map<String, ?>> unfilteredValues = mUnfilteredData;
+                ArrayList<OneNote> unfilteredValues = mUnfilteredData;
                 int count = unfilteredValues.size();
 
                 ArrayList<Map<String, ?>> newValues = new ArrayList<>(count);
