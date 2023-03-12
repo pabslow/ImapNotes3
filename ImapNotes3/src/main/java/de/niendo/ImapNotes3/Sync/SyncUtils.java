@@ -407,8 +407,8 @@ public class SyncUtils {
      * @return A Java mail message object.
      */
     @Nullable
-    private static Message ReadMailFromFile(@NonNull File nameDir,
-                                            @NonNull String uid) {
+    public static Message ReadMailFromFile(@NonNull File nameDir,
+                                           @NonNull String uid) {
         Log.d(TAG, "ReadMailFromFile: " + nameDir.getPath() + " " + uid);
         File mailFile = new File(nameDir, uid);
 

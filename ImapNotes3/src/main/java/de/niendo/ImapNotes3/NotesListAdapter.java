@@ -40,12 +40,11 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import de.niendo.ImapNotes3.Data.OneNote;
+import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.Utilities;
+import de.niendo.ImapNotes3.Sync.SyncUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -370,49 +369,22 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
         boolean setViewValue(View view, Object data, String textRepresentation);
     }
 
-    public static List<String> searchHTML(String filePath, String searchTerm, boolean useRegex) {
-        List<String> matches = new ArrayList<>();
-
-        // Open the HTML file
-        File htmlFile = new File(filePath);
-        if (!htmlFile.exists()) {
-            // Return an empty list if the file doesn't exist
-            return matches;
-        }
-
-        // Read the contents of the HTML file
-        String html = "";
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(htmlFile));
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                html += line + "\n";
-            }
-            br.close();
-        } catch (IOException e) {
-            // Return an empty list if there is an error reading the file
-            return matches;
-        }
-
+    public static boolean searchHTML(@NonNull File nameDir, @NonNull String uid, String searchTerm, boolean useRegex) {
         // Compile the regular expression pattern if necessary
         Pattern pattern = null;
         if (useRegex) {
             try {
                 pattern = Pattern.compile(searchTerm);
             } catch (PatternSyntaxException e) {
-                // Return an empty list if the regular expression is invalid
-                return matches;
+                return false;
             }
         } else {
             pattern = Pattern.compile(Pattern.quote(searchTerm), Pattern.CASE_INSENSITIVE);
         }
-        // Use a Matcher to search the HTML for the search term
-        Matcher matcher = pattern.matcher(html);
-        while (matcher.find()) {
-            matches.add(matcher.group());
-        }
 
-        return matches;
+        String html = HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromFile(nameDir, uid)).text;
+        Matcher matcher = pattern.matcher(html);
+        return (matcher.find());
     }
 
     /**
@@ -456,12 +428,8 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
                             directory = new File(directory, "new");
                         }
 
-                        File searchfile = new File(directory, uid);
-
-                        List<String> matches = searchHTML(searchfile.toString(), prefixString, false);
-
-                        if (!matches.isEmpty()) {
-                            Log.d(TAG, "FilterResults: " + searchfile);
+                        if (searchHTML(directory, uid, prefixString, false)) {
+                            Log.d(TAG, "FilterResults: " + directory + "/" + uid);
                             newValues.add(h);
                         }
                     }
