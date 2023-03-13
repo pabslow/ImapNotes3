@@ -215,7 +215,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         headingSpinner.setOnItemSelectedListener(this);
 
         NDSpinner alignmentSpinner = findViewById(R.id.action_alignment);
-        alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[6], R.id.action_alignment, this));
+        alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[8], R.id.action_alignment, this));
         alignmentSpinner.setOnItemSelectedListener(this);
 
         NDSpinner tableSpinner = findViewById(R.id.action_table);
@@ -386,6 +386,18 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_numbers:
                 editText.setOrderedList();
+                break;
+            case R.id.action_code_off_html:
+                editText.setOnJSDataListener(value -> {
+                    editText.insertHTML(Html.escapeHtml(value));
+                });
+                editText.getSelectedHtml();
+                break;
+            case R.id.action_code_html:
+                editText.setOnJSDataListener(value -> {
+                    editText.insertHTML(value);
+                });
+                editText.getSelectedText();
                 break;
             case R.id.action_insert_image:
                 // 1. get the selected text via callback

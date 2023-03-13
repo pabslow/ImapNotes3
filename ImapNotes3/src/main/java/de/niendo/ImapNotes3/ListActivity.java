@@ -437,9 +437,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             @Override
             public boolean onQueryTextChange(String newText) {
                 // FIXME THREAD!
+                // search only if user pushes glases or enter .. its faster
                 // this is your adapter that will be filtered
-                mFilterString = newText;
-                listToView.getFilter().filter(newText);
+                // mFilterString = newText;
+                // listToView.getFilter().filter(newText);
                 return true;
             }
 

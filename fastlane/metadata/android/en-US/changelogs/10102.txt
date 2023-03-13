@@ -2,3 +2,5 @@
 * search always in all accounts
 * edit and changes sort order when search is active
 * receive shared images
+* convert selection to HTML
+* convert selection to text
