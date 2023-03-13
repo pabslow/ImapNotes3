@@ -698,7 +698,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             Log.d(TAG, "Share 1");
             if (uri != null) {
-                Log.d(TAG, "Share 2");
                 if (type.startsWith("image/")) {
                     editText.insertHTML(uri.getPath());
                     editText.insertImageAsBase64(uri, "", "auto", "");
@@ -712,7 +711,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
                             sharedData += new String(contents, 0, bytesRead);
                         }
-                        Log.d(TAG, "Share 3" + sharedData);
                         bufferedInputStream.close();
                         editText.insertHTML(sharedData);
                     } catch (FileNotFoundException e) {
@@ -722,7 +720,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     }
                 }
             } else {
-                Log.d(TAG, "Share 4" + sharedText);
                 if (subject != null) {
                     subject = "<b>" + subject + "</b><br>";
                 } else subject = "";
@@ -730,8 +727,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     if (type.equals("text/html")) {
                         editText.insertHTML(subject + sharedText);
                     } else if (type.startsWith("text/")) {
-                        Spannable text = new SpannableString(subject + sharedText);
-                        editText.insertHTML(Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL));
+                        editText.insertHTML(Html.escapeHtml(subject + sharedText));
                     } else if (type.startsWith("image/")) {
                         editText.insertImage(sharedText, "", "auto", "");
                     }
