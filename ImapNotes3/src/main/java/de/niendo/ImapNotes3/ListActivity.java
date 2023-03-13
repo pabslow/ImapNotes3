@@ -514,6 +514,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 toNew.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
                 toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
                 startActivityForResult(toNew, ListActivity.NEW_BUTTON);
+                if (intentActionSend != null)
+                    intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);
                 return true;
             case R.id.sort_date:
             case R.id.sort_title:

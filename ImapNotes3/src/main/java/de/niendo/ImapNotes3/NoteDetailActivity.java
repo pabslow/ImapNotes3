@@ -82,6 +82,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String ActivityTypeEdit = "ActivityTypeEdit";
     public static final String ActivityTypeAdd = "ActivityTypeAdd";
     public static final String ActivityTypeAddShare = "ActivityTypeAddShare";
+    public static final String ActivityTypeProcessed = "ActivityTypeProcessed";
     //private static final int DELETE_BUTTON = 3;
     private static final int EDIT_BUTTON = 6;
     // --Commented out by Inspection (11/26/16 11:52 PM):private final static int ROOT_AND_NEW = 3;
@@ -121,11 +122,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         if (action == null)
             action = "";
 
-        if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare)) {
-            ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 180,
+
+        if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare) && !intent.getBooleanExtra(NoteDetailActivity.ActivityTypeProcessed, false)) {
+            ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 60,
                     () -> {
-                        if (!editText.hasFocus()) editText.focusEditor();
-                        editText.insertHTML(getSharedText(intent));
+                        processShareIntent(intent);
                     });
         }
         if (ChangeNote.equals(ActivityTypeEdit)) {
@@ -165,9 +166,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         } else if (ChangeNote.equals(ActivityTypeAdd)) {   // new entry
             SetupRichEditor();
         } else if (ChangeNote.equals(ActivityTypeAddShare)) {   // new Entry from Share
-            editText.setHtml(getSharedText(intent));
-            textChangedShare = true;
             SetupRichEditor();
+            processShareIntent(intent);
         }
         ResetColors();
     }
@@ -685,10 +685,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
     }
 
-    private String getSharedText(Intent intent) {
-        String html = "";
+    private void processShareIntent(Intent intent) {
+        String sharedData = "";
         // Share: Receive Data as new message
         String strAction = intent.getAction();
+        if (!editText.hasFocus()) editText.focusEditor();
         if ((strAction != null) && strAction.equals(Intent.ACTION_SEND)) {
             String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
             String type = intent.getType();
@@ -698,21 +699,27 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             Log.d(TAG, "Share 1");
             if (uri != null) {
                 Log.d(TAG, "Share 2");
-                BufferedInputStream bufferedInputStream = null;
-                try {
-                    bufferedInputStream =
-                            new BufferedInputStream(getContentResolver().openInputStream(uri));
-                    byte[] contents = new byte[1024];
-                    int bytesRead = 0;
-                    while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
-                        html += new String(contents, 0, bytesRead);
+                if (type.startsWith("image/")) {
+                    editText.insertHTML(uri.getPath());
+                    editText.insertImageAsBase64(uri, "", "auto", "");
+                } else {
+                    BufferedInputStream bufferedInputStream = null;
+                    try {
+                        bufferedInputStream =
+                                new BufferedInputStream(getContentResolver().openInputStream(uri));
+                        byte[] contents = new byte[1024];
+                        int bytesRead = 0;
+                        while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
+                            sharedData += new String(contents, 0, bytesRead);
+                        }
+                        Log.d(TAG, "Share 3" + sharedData);
+                        bufferedInputStream.close();
+                        editText.insertHTML(sharedData);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    Log.d(TAG, "Share 3" + html);
-                    bufferedInputStream.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             } else {
                 Log.d(TAG, "Share 4" + sharedText);
@@ -721,18 +728,17 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 } else subject = "";
                 if (sharedText != null) {
                     if (type.equals("text/html")) {
-                        editText.setHtml(subject + sharedText);
+                        editText.insertHTML(subject + sharedText);
                     } else if (type.startsWith("text/")) {
                         Spannable text = new SpannableString(subject + sharedText);
-                        html = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
+                        editText.insertHTML(Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL));
                     } else if (type.startsWith("image/")) {
-                        // toDo
+                        editText.insertImage(sharedText, "", "auto", "");
                     }
                 }
             }
-
+            textChangedShare = true;
         }
-        return html;
     }
 
     @Override
