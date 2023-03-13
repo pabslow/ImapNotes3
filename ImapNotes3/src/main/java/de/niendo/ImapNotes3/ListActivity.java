@@ -129,6 +129,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static NotesDb storedNotes = null;
     private static List<String> currentList;
     private static Menu actionMenu;
+    private static CharSequence mFilterString = "";
     @NonNull
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, @NonNull Intent intent) {
@@ -270,6 +271,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             toDetail.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
             toDetail.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeEdit);
             startActivityForResult(toDetail, SEE_DETAIL);
+            if (intentActionSend != null)
+                intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);
             //intentActionSend=null;
             Log.d(TAG, "onItemClick, back from detail.");
 
@@ -370,8 +373,14 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
+        String accountName = ImapNotesAccount.accountName;
+        if (!accountSpinner.isEnabled()) { // search is active
+            accountName = "";
+            listToView.getFilter().filter(mFilterString);
+        }
+
         new SyncThread(
-                ImapNotesAccount.accountName,
+                accountName,
                 noteList,
                 listToView,
                 R.string.refreshing_notes_list,
@@ -390,7 +399,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             String accountName,
             UpdateThread.Action action) {
         synchronized (this) {
-            if (accountName == null) {
+            if (accountName == null || accountName.isEmpty()) {
                 accountName = ImapNotesAccount.accountName;
             }
             updateThread = new UpdateThread(accountName,
@@ -429,6 +438,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             public boolean onQueryTextChange(String newText) {
                 // FIXME THREAD!
                 // this is your adapter that will be filtered
+                mFilterString = newText;
                 listToView.getFilter().filter(newText);
                 return true;
             }
@@ -436,6 +446,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // this is your adapter that will be filtered
+                mFilterString = query;
                 listToView.getFilter().filter(query);
                 return true;
             }
@@ -443,6 +454,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         // restore List and Filter after closing search
         searchView.setOnCloseListener(() -> {
             storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
+            mFilterString = "";
             this.listToView.ResetFilterData(noteList);
             listToView.notifyDataSetChanged();
             return true;
@@ -452,6 +464,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 accountSpinner.setEnabled(false);
+                mFilterString = "";
                 listToView.getFilter().filter("");
                 return true;
             }
@@ -461,6 +474,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 accountSpinner.setEnabled(true);
                 //listToView.getFilter().filter("");
                 storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
+                mFilterString = "";
                 listToView.ResetFilterData(noteList);
                 listToView.notifyDataSetChanged();
                 return true;
@@ -620,7 +634,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
 //        storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
 //        listToView.ResetFilterData(noteList);
-        listToView.notifyDataSetChanged();
         RefreshList();
     }
 

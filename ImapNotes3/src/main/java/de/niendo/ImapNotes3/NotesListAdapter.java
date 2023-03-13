@@ -116,6 +116,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     }
 
     public void setSortOrder(String sortOrder) {
+        mUnfilteredData = null;
         mSortOrder = sortOrder;
     }
 
@@ -398,7 +399,6 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
      * is removed from the list.</p>
      */
     private class SimpleFilter extends Filter {
-
         @NonNull
         @Override
         protected FilterResults performFiltering(@Nullable CharSequence prefix) {

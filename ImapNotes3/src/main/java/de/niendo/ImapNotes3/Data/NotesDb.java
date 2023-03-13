@@ -208,7 +208,12 @@ public class NotesDb extends SQLiteOpenHelper {
                     }
                     //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(this.ctx);
                     //String sdate = dateFormat.format(date);
-                    String sdate = DateFormat.getDateTimeInstance().format(date);
+                    String sdate;
+                    try {
+                        sdate = DateFormat.getDateTimeInstance().format(date);
+                    } catch (Exception e) {
+                        sdate = "?";
+                    }
                     if (accountName.isEmpty()) {
                         sdate = sdate + "  (" + resultPointer.getString(AccountNameIndex) + ")";
                     }

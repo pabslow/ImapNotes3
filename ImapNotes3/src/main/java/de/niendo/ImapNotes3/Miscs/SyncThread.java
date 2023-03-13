@@ -46,7 +46,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
     private final NotesListAdapter adapter;
     private final ArrayList<OneNote> notesList;
     private final String sortOrder;
-    private final String imapNotesAccountName;
+    private final String accountName;
     //private final WeakReference<Context> applicationContextRef;
 
     /**
@@ -57,14 +57,14 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
     private final NotesDb storedNotes;
 
     // TODO: remove unused arguments.
-    public SyncThread(String imapNotesAccountName,
+    public SyncThread(String accountName,
                       ArrayList<OneNote> noteList,
                       NotesListAdapter listToView,
                       @StringRes int resId,
                       String sortOrder,
                       Context context) {
         //this.imapFolder = imapFolder;
-        this.imapNotesAccountName = imapNotesAccountName;
+        this.accountName = accountName;
         this.notesList = noteList;
         this.adapter = listToView;
         this.resId = resId;
@@ -98,13 +98,13 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
         //security = ((ImapNotesAccount) stuffs[1]).GetSecurity();
         //usesticky = ((ImapNotesAccount) stuffs[1]).GetUsesticky();
 
-        storedNotes.GetStoredNotes(this.notesList, imapNotesAccountName, sortOrder);
+        storedNotes.GetStoredNotes(this.notesList, accountName, sortOrder);
         return true;
     }
 
     protected void onPostExecute(Boolean result) {
-        if (result) {
+        //if (result) {
             this.adapter.notifyDataSetChanged();
-        }
+        //}
     }
 }
