@@ -57,7 +57,7 @@ public class ImapNotesAccount {
     @NonNull
     public final Security security;
     public final boolean usesticky;
-    public final int syncInterval;
+    public final SyncInterval syncInterval;
     @NonNull
     private final String imapfolder;
     @Nullable
@@ -74,7 +74,7 @@ public class ImapNotesAccount {
                             @NonNull String portNumber,
                             @NonNull Security security,
                             boolean useSticky,
-                            int syncInterval,
+                            @NonNull SyncInterval syncInterval,
                             @NonNull String folderName) {
         account = null;
         this.accountName = accountName;
@@ -98,7 +98,7 @@ public class ImapNotesAccount {
 
         this.account = account;
         AccountManager am = AccountManager.get(applicationContext);
-        syncInterval = Integer.parseInt(am.getUserData(account, ConfigurationFieldNames.SyncInterval));
+        syncInterval = SyncInterval.from(am.getUserData(account, ConfigurationFieldNames.SyncInterval));
         username = am.getUserData(account, ConfigurationFieldNames.UserName);
         password = am.getPassword(account);
         server = am.getUserData(account, ConfigurationFieldNames.Server);

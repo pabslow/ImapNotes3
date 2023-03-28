@@ -25,7 +25,7 @@
     <string name="imap_notes_server">Host name IMAP server</string>
     <string name="server_port_number_to_use">Server port number to use</string>
     <string name="port_number">Port Number</string>
-    <string name="sync_interval_minutes">Sync Interval in Minutes (0=Off)</string>
+    <string name="sync_interval">Sync Interval</string>
     <string name="notes_folder_optional">Notes Folder (optional)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">Manually set notes folder path</string>
     <string name="use_sticky_notes">Use Sticky Note Format (not recommended)</string>
@@ -71,7 +71,6 @@
     <string name="placeholder">Insert text here…</string>
     <string name="AccountList">Account List</string>
     <string name="Last_sync">"Last sync: "</string>
-    <string name="minutes_short">min</string>
     <string name="share">Share</string>
     <string name="shared_note_from">Shared note from </string>
     <string name="account_modified">Account has been modified</string>
@@ -93,4 +92,9 @@
     <string name="no_program_found">No suitable program found</string>
     <string name="made_changes">You have made some changes.</string>
     <string name="save_changes">Would you like to save before exiting?</string>
+    <string name="off">Off</string>
+    <string name="t15min">15 Minutes</string>
+    <string name="t1h">1 Hour</string>
+    <string name="t6h">6 Hours</string>
+    <string name="t1d">1 Day</string>
 </resources>

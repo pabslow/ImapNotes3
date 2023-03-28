@@ -54,13 +54,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.Security;
+import de.niendo.ImapNotes3.Data.SyncInterval;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
 import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.Result;
@@ -102,13 +102,14 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private TextView passwordTextView;
     private TextView serverTextView;
     private TextView portnumTextView;
-    private NumberPicker syncIntervalNumberPicker;
+    private Spinner syncIntervalSpinner;
     private TextView folderTextView;
     private CheckBox stickyCheckBox;
     private Spinner securitySpinner;
     @NonNull
+    private SyncInterval syncInterval = SyncInterval.t1h;
+    @NonNull
     private Security security = Security.None;
-    //private int security_i;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -258,32 +259,25 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         passwordTextView = findTextViewById(R.id.passwordEdit);
         serverTextView = findTextViewById(R.id.serverEdit);
         portnumTextView = findTextViewById(R.id.portnumEdit);
-        syncIntervalNumberPicker = findViewById(R.id.syncintervalMinutes);
-        syncIntervalNumberPicker.setMaxValue(24 * 60);
-        syncIntervalNumberPicker.setMinValue(0);
-        syncIntervalNumberPicker.setValue(15);
+        syncIntervalSpinner = findViewById(R.id.syncintervalSpinner);
+        List<String> listInterval = SyncInterval.Printables(getResources());
+        ArrayAdapter<String> dataAdapterInterval = new ArrayAdapter<>
+                (this, R.layout.ssl_spinner_item, listInterval);
+        syncIntervalSpinner.setAdapter(dataAdapterInterval);
+        syncIntervalSpinner.setSelection(SyncInterval.t1h.ordinal());
+        syncIntervalSpinner.setOnItemSelectedListener(this);
 
         folderTextView = findTextViewById(R.id.folderEdit);
         stickyCheckBox = findViewById(R.id.stickyCheckBox);
 
         securitySpinner = findViewById(R.id.securitySpinner);
-        /*List<String> list = new ArrayList<String>();
-        list.add("None");
-        list.add("SSL/TLS");
-        list.add("SSL/TLS (accept all certificates)");
-        list.add("STARTTLS");
-        list.add("STARTTLS (accept all certificates)");
-        */
         List<String> list = Security.Printables();
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
                 (this, R.layout.ssl_spinner_item, list);
         securitySpinner.setAdapter(dataAdapter);
-        // Spinner item selection Listener
         securitySpinner.setOnItemSelectedListener(this);
         securitySpinner.setSelection(Security.SSL_TLS.ordinal());
-        //ImapNotesAccount = new ImapNotesAccount();
         imapFolder = ((ImapNotes3) getApplicationContext()).GetImaper();
-        //settings = new ConfigurationFile();
 
         Bundle extras = getIntent().getExtras();
         // TODO: find out if extras can be null.
@@ -295,25 +289,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
                 accountname = extras.getString(ACCOUNTNAME);
             }
         }
-
-
-        // Settings can never be null so there is no need to guard it
-        //if (settings != null) {
-/*
-        accountnameTextView.setText(settings.GetAccountname());
-        usernameTextView.setText(settings.GetUsername());
-        passwordTextView.setText(settings.GetPassword());
-        serverTextView.setText(settings.GetServer());
-        portnumTextView.setText(settings.GetPortnum());
-        security = settings.GetSecurity();
-        // Can never be null. if (security == null) security = "0";
-        //int security_i = security.ordinal();
-        securitySpinner.setSelection(security.ordinal());
-        stickyCheckBox.setChecked(settings.GetUsesticky());
-        folderTextView.setText(settings.GetFoldername());
-*/
-        //syncintervalTextView.setText(R.string.default_sync_interval);
-        //}
 
         LinearLayout layout = findViewById(R.id.buttonsLayout);
         accountManager = AccountManager.get(getApplicationContext());
@@ -341,13 +316,11 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
             portnumTextView.setText(GetConfigValue(ConfigurationFieldNames.PortNumber));
             Log.d(TAG, "Security: " + GetConfigValue(ConfigurationFieldNames.Security));
             security = Security.from(GetConfigValue(ConfigurationFieldNames.Security));
-            stickyCheckBox.setChecked(Boolean.parseBoolean(GetConfigValue(ConfigurationFieldNames.UseSticky)));
-            //syncintervalTextView.setText(GetConfigValue(ConfigurationFieldNames.SyncInterval));
-            syncIntervalNumberPicker.setValue(Integer.parseInt(GetConfigValue(ConfigurationFieldNames.SyncInterval)));
-            folderTextView.setText(GetConfigValue(ConfigurationFieldNames.ImapFolder));
-            //if (security == null) security = "0";
-            //security_i = security.ordinal();
             securitySpinner.setSelection(security.ordinal());
+            stickyCheckBox.setChecked(Boolean.parseBoolean(GetConfigValue(ConfigurationFieldNames.UseSticky)));
+            syncInterval = SyncInterval.from(GetConfigValue(ConfigurationFieldNames.SyncInterval));
+            syncIntervalSpinner.setSelection(syncInterval.ordinal());
+            folderTextView.setText(GetConfigValue(ConfigurationFieldNames.ImapFolder));
             Button buttonEdit = new Button(this);
             buttonEdit.setText(R.string.save);
             Log.d(TAG, "Set onclick listener edit");
@@ -395,7 +368,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
                 GetTextViewText(portnumTextView),
                 security,
                 stickyCheckBox.isChecked(),
-                syncIntervalNumberPicker.getValue(),
+                syncInterval,
                 GetTextViewText(folderTextView));
         // No need to check for valid numbers because the field only allows digits.  But it is
         // possible to remove all characters which causes the program to crash.  The easiest fix is
@@ -425,9 +398,13 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (!security.equals(Security.from(position))) {
-            security = Security.from(position);
-            portnumTextView.setText(security.defaultPort);
+        if (parent.getId() == R.id.syncintervalSpinner) {
+            syncInterval = SyncInterval.from(position);
+        } else {
+            if (!security.equals(Security.from(position))) {
+                security = Security.from(position);
+                portnumTextView.setText(security.defaultPort);
+            }
         }
     }
 
@@ -443,7 +420,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         passwordTextView.setText("");
         serverTextView.setText("");
         portnumTextView.setText("");
-        syncIntervalNumberPicker.setValue(15);
+        syncIntervalSpinner.setSelection(0);
         securitySpinner.setSelection(0);
         folderTextView.setText("");
         stickyCheckBox.setChecked(false);
@@ -515,9 +492,9 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
                 ContentResolver.setIsSyncable(account, AUTHORITY, 1);
                 ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
                 // we can enable inexact timers in our periodic sync
-                SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval, ImapNotesAccount.syncInterval)
+                SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval.time, ImapNotesAccount.syncInterval.time)
                         .setSyncAdapter(account, AUTHORITY).setExtras(new Bundle()).build();
-                if (ImapNotesAccount.syncInterval > 0) {
+                if (ImapNotesAccount.syncInterval.time > 0) {
                     ContentResolver.requestSync(request);
                 } else {
                     ContentResolver.cancelSync(request);
@@ -536,7 +513,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
             am.setUserData(account, ConfigurationFieldNames.UserName, ImapNotesAccount.username);
             am.setUserData(account, ConfigurationFieldNames.Server, ImapNotesAccount.server);
             am.setUserData(account, ConfigurationFieldNames.PortNumber, ImapNotesAccount.portnum);
-            am.setUserData(account, ConfigurationFieldNames.SyncInterval, Integer.toString(ImapNotesAccount.syncInterval));
+            am.setUserData(account, ConfigurationFieldNames.SyncInterval, ImapNotesAccount.syncInterval.name());
             am.setUserData(account, ConfigurationFieldNames.Security, ImapNotesAccount.security.name());
             am.setUserData(account, ConfigurationFieldNames.UseSticky, String.valueOf(ImapNotesAccount.usesticky));
             am.setUserData(account, ConfigurationFieldNames.ImapFolder, ImapNotesAccount.GetImapFolder());

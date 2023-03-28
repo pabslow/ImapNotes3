@@ -65,6 +65,7 @@ import android.widget.TextView;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
+import de.niendo.ImapNotes3.Data.SyncInterval;
 import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
@@ -137,9 +138,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             String accountName = intent.getStringExtra(ACCOUNTNAME);
             boolean isChanged = intent.getBooleanExtra(CHANGED, false);
             boolean isSynced = intent.getBooleanExtra(SYNCED, false);
-            String syncInterval = String.valueOf(intent.getIntExtra(SYNCINTERVAL, 14));
             String errorMessage = intent.getStringExtra(SYNCED_ERR_MSG);
             Log.d(TAG, "if " + accountName + " " + ImapNotesAccount.accountName);
+            SyncInterval syncInterval = SyncInterval.from(intent.getStringExtra(SYNCINTERVAL));
             if (accountName.equals(ImapNotesAccount.accountName)) {
                 String statusText = OldStatus;
                 if (isSynced) {
@@ -150,7 +151,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     String sdate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
                     statusText = getText(R.string.Last_sync) + sdate;
                     if (!syncInterval.equals("0"))
-                        statusText += " (" + syncInterval + " " + getText(R.string.minutes_short) + ")";
+                        statusText += " (" + getText(syncInterval.textID) + ")";
                 }
                 status.setBackgroundColor(getColor(R.color.StatusBgColor));
                 if (!errorMessage.isEmpty()) {

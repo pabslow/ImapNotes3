@@ -119,15 +119,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sync_interval_minutes"
+            android:text="@string/sync_interval"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/AccountTxtColor" />
 
-        <NumberPicker
-            android:id="@+id/syncintervalMinutes"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/syncintervalSpinner"
+            android:layout_width="match_parent"
+            android:popupBackground="@color/AccountBgColor"
             android:layout_height="wrap_content" />
-
 
         <TextView
             android:layout_width="wrap_content"

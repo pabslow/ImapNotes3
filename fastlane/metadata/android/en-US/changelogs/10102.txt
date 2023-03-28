@@ -1,6 +1,7 @@
 * insert date and time via menu
 * search always in all accounts
-* edit and changes sort order when search is active
+* edit and sort when search is active
 * receive shared images
-* convert selection to HTML
+* convert selection to HTML-Code
 * convert selection to text
+* simplify sync interval selection

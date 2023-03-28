@@ -25,7 +25,7 @@
     <string name="imap_notes_server">IMAP 服务器主机名</string>
     <string name="server_port_number_to_use">所用的服务器端口</string>
     <string name="port_number">端口号</string>
-    <string name="sync_interval_minutes">分钟为单位的同步间隔 (0 表示关闭)</string>
+    <string name="sync_interval">分钟为单位的同步间隔</string>
     <string name="notes_folder_optional">笔记文件夹 (可选)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">手动设置笔记文件夹路径</string>
     <string name="use_sticky_notes">使用便利贴格式（不推荐）</string>
@@ -71,7 +71,6 @@
     <string name="placeholder">在此插入文本…</string>
     <string name="AccountList">账户列表</string>
     <string name="Last_sync">"最后同步："</string>
-    <string name="minutes_short">分钟</string>
     <string name="share">分享</string>
     <string name="shared_note_from">Shared note from </string>
     <string name="account_modified">账户已被修改</string>

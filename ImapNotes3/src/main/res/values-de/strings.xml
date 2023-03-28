@@ -24,7 +24,7 @@
     <string name="delete">Löschen</string>
     <string name="imap_notes_server">Hostname IMAP-Server</string>
     <string name="server_port_number_to_use">Portnummer des IMAP-Dienstes</string>
-    <string name="sync_interval_minutes">Abgleich-Intervall in Minuten (0=Aus)</string>
+    <string name="sync_interval">Abgleich-Intervall</string>
     <string name="welcome">Willkommen</string>
     <string name="color">Farbe</string>
     <string name="blue">Blau</string>
@@ -70,7 +70,6 @@
     <string name="placeholder">Text hier einfügen…</string>
     <string name="AccountList">Kontoliste</string>
     <string name="Last_sync">"Letzter Abgl.: "</string>
-    <string name="minutes_short">min</string>
     <string name="share">Teilen</string>
     <string name="shared_note_from">"geteilte Notiz von "</string>
     <string name="app_name">ImapNotes3</string>
@@ -93,4 +92,9 @@
     <string name="no_program_found">kein passendes Programm gefunden.</string>
     <string name="made_changes">Ungespeicherte Änderungen</string>
     <string name="save_changes">Möchten Sie die Änderungen vor dem Beenden speichern?</string>
+    <string name="off">Aus</string>
+    <string name="t15min">Viertelstündlich</string>
+    <string name="t1h">Stündlich</string>
+    <string name="t6h">Aller sechs Stunden</string>
+    <string name="t1d">Täglich</string>
 </resources>
