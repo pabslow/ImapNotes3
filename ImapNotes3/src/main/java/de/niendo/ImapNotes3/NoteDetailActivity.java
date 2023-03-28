@@ -244,10 +244,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.removeFormat();
                 break;
             case R.id.action_bold:
-                editText.setBold();
+                editText.toggleBold();
                 break;
             case R.id.action_italic:
-                editText.setItalic();
+                editText.toggleItalic();
                 break;
             case R.id.action_subscript:
                 editText.setSubscript();
@@ -256,10 +256,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setSuperscript();
                 break;
             case R.id.action_strikethrough:
-                editText.setStrikeThrough();
+                editText.toggleStrikeThrough();
                 break;
             case R.id.action_underline:
-                editText.setUnderline();
+                editText.toggleUnderline();
                 break;
             case R.id.action_heading1:
                 editText.setHeading(1);
