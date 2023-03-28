@@ -248,7 +248,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
         //settings = new ConfigurationFile(getApplicationContext());
-        setContentView(R.layout.account_selection);
+        setContentView(R.layout.account_setup);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.ActionBgColor)));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TextView headingTextView = findTextViewById(R.id.heading);
