@@ -26,6 +26,7 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import de.niendo.ImapNotes3.R;
 
 /**
  * Created by kj on 11/1/16.
@@ -44,15 +47,15 @@ import java.util.Objects;
  * from method so the analyser cannot see that they are used
  */
 public enum Security {
-    None("None", "", "imap", false),
+    None(R.string.noneSecurity, "", "imap", false),
     @SuppressWarnings("unused")
-    SSL_TLS("SSL/TLS", "993", "imaps", false),
+    SSL_TLS(R.string.SSL_TLS, "993", "imaps", false),
     @SuppressWarnings("unused")
-    SSL_TLS_accept_all_certificates("SSL/TLS (accept all certificates)", "993", "imaps", true),
+    SSL_TLS_accept_all_certificates(R.string.SSL_TLS_allcerts, "993", "imaps", true),
     @SuppressWarnings("unused")
-    STARTTLS("STARTTLS", "143", "imap", false),
+    STARTTLS(R.string.STARTTLS, "143", "imap", false),
     @SuppressWarnings("unused")
-    STARTTLS_accept_all_certificates("STARTTLS (accept all certificates)", "143", "imap", true);
+    STARTTLS_accept_all_certificates(R.string.STARTTLS_allcerts, "143", "imap", true);
 
     @NonNull
     static final String TAG = "IN_Security";
@@ -68,23 +71,23 @@ public enum Security {
     public final String proto;
     public final boolean acceptcrt;
     public final String defaultPort;
-    private final String printable;
+    public final int textID;
 
-    Security(String printable,
+    Security(int textID,
              String defaultPort,
              String proto,
              boolean acceptcrt) {
-        this.printable = printable;
+        this.textID = textID;
         this.defaultPort = defaultPort;
         this.proto = proto;
         this.acceptcrt = acceptcrt;
     }
 
     @NonNull
-    public static List<String> Printables() {
+    public static List<String> Printables(Resources res) {
         List<String> list = new ArrayList<>();
         for (Security e : Security.values()) {
-            list.add(e.printable);
+            list.add(res.getString(e.textID));
         }
         return list;
     }
@@ -102,9 +105,7 @@ public enum Security {
                 return security;
             }
         }
-        // Wasn't recognized, try using the ordinal instead, backwards compatibility.
-        int i = Integer.parseInt(name);
-        return from(i);
+        return None;
     }
 
 

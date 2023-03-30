@@ -97,4 +97,9 @@
     <string name="t1h">1 Hour</string>
     <string name="t6h">6 Hours</string>
     <string name="t1d">1 Day</string>
+    <string name="noneSecurity">none</string>
+    <string name="SSL_TLS">SSL/TLS</string>
+    <string name="SSL_TLS_allcerts">SSL/TLS (accept all certificates)</string>
+    <string name="STARTTLS">STARTTLS</string>
+    <string name="STARTTLS_allcerts">STARTTLS (accept all certificates)</string>
 </resources>

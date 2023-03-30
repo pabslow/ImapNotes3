@@ -271,7 +271,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         stickyCheckBox = findViewById(R.id.stickyCheckBox);
 
         securitySpinner = findViewById(R.id.securitySpinner);
-        List<String> list = Security.Printables();
+        List<String> list = Security.Printables(getResources());
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
                 (this, R.layout.ssl_spinner_item, list);
         securitySpinner.setAdapter(dataAdapter);

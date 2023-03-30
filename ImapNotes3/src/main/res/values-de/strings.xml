@@ -97,4 +97,9 @@
     <string name="t1h">Stündlich</string>
     <string name="t6h">Aller sechs Stunden</string>
     <string name="t1d">Täglich</string>
+    <string name="noneSecurity">keine</string>
+    <string name="SSL_TLS">SSL/TLS</string>
+    <string name="SSL_TLS_allcerts">SSL/TLS (akzeptiere alle Zertifikate)</string>
+    <string name="STARTTLS">STARTTLS</string>
+    <string name="STARTTLS_allcerts">STARTTLS (akzeptiere alle Zertifikate)</string>
 </resources>
