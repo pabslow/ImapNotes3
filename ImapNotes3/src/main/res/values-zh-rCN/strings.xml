@@ -25,7 +25,7 @@
     <string name="imap_notes_server">IMAP 服务器主机名</string>
     <string name="server_port_number_to_use">所用的服务器端口</string>
     <string name="port_number">端口号</string>
-    <string name="sync_interval">分钟为单位的同步间隔</string>
+    <string name="sync_interval">同步间隔</string>
     <string name="notes_folder_optional">笔记文件夹 (可选)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">手动设置笔记文件夹路径</string>
     <string name="use_sticky_notes">使用便利贴格式（不推荐）</string>
@@ -92,4 +92,14 @@
     <string name="no_program_found">未找到合适的程序</string>
     <string name="made_changes">你已经做了一些更改。</string>
     <string name="save_changes">你想在退出前保存吗？</string>
+    <string name="off">关闭</string>
+    <string name="t15min">15 分钟</string>
+    <string name="t1h">1 小时</string>
+    <string name="t6h">6 小时</string>
+    <string name="t1d">1 天</string>
+    <string name="noneSecurity">无</string>
+    <string name="SSL_TLS">SSL/TLS</string>
+    <string name="SSL_TLS_allcerts">SSL/TLS (接受所有证书)</string>
+    <string name="STARTTLS">STARTTLS</string>
+    <string name="STARTTLS_allcerts">STARTTLS (接受所有证书)</string>
 </resources>
