@@ -28,34 +28,38 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import de.niendo.ImapNotes3.Data.OneNote;
+import de.niendo.ImapNotes3.ImapNotes3;
 
-import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
+import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.ContentType;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 
 public class HtmlNote {
 
     private static final String TAG = "IN_HtmlNote";
-    private static final String ColorBgStr = "background-color:";
     private static final Pattern patternBodyBgColor = Pattern.compile("background-color:(.*?);", Pattern.MULTILINE);
 
     public final String text;
-    // --Commented out by Inspection (11/26/16 11:50 PM):private final String position;
     @NonNull
     public final String color;
 
@@ -117,23 +121,38 @@ public class HtmlNote {
         String stringres = "";
         //InputStream iis = null;
         //String charset;
+
+        MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+        mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
+        mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
+        mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain");
+        mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
+        mc.addMailcap("message/rfc822;; x-java-content-handler=com.sun.mail.handlers.message_rfc822");
+        CommandMap.setDefaultCommandMap(mc);
+
+
         try {
             Log.d(TAG, "message :" + message);
             contentType = new ContentType(message.getContentType());
-            String charset = contentType.getParameter("charset");
-            InputStream iis = (InputStream) message.getContent();
-            stringres = IOUtils.toString(iis, charset);
-            iis.close();
+
+            if (message.isMimeType("multipart/*")) {
+                MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+                stringres = getTextFromMimeMultipart(mimeMultipart);
+            } else {
+                if ((contentType != null) && contentType.match("text/html")) {
+                    stringres = (String) message.getContent();
+                }
+                // import plain text notes
+                if ((contentType != null) && contentType.match("text/plain")) {
+                    Spannable text = new SpannableString(stringres);
+                    stringres = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                    stringres = stringres.replaceFirst("<p dir=\"ltr\">", "");
+                }
+            }
+
         } catch (Exception e) {
             Log.d(TAG, "Exception GetNoteFromMessage:" + e.toString());
             e.printStackTrace();
-        }
-
-        // import plain text notes
-        if ((contentType != null) && contentType.match("text/plain")) {
-            Spannable text = new SpannableString(stringres);
-            stringres = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-            stringres = stringres.replaceFirst("<p dir=\"ltr\">", "");
         }
 
         return new HtmlNote(
@@ -141,50 +160,45 @@ public class HtmlNote {
                 getColor(stringres));
     }
 
-/*
-    @Nullable
-    private String GetHtmlFromMessage(@NonNull Message message) {
-        ContentType contentType = null;
-        String stringres = "";
-        try {
-            Log.d(TAG, "message :" + message);
-            contentType = new ContentType(message.getContentType());
-            String charset = contentType.getParameter("charset");
-            InputStream iis = (InputStream) message.getContent();
-            stringres = IOUtils.toString(iis, charset);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Log.d(TAG, "Exception GetHtmlFromMessage:");
-            Log.d(TAG, e.toString());
-            e.printStackTrace();
+    // https://stackoverflow.com/questions/11240368/how-to-read-text-inside-body-of-mail-using-javax-mail
+    private static String getTextFromMimeMultipart(
+            MimeMultipart mimeMultipart) throws IOException, MessagingException {
+
+        int count = mimeMultipart.getCount();
+        if (count == 0)
+            throw new MessagingException("Multipart with no body parts not supported.");
+        boolean multipartAlt = new ContentType(mimeMultipart.getContentType()).match("multipart/alternative");
+        if (multipartAlt)
+            // alternatives appear in an order of increasing
+            // faithfulness to the original content. Customize as req'd.
+            return getTextFromBodyPart(mimeMultipart.getBodyPart(count - 1));
+        String result = "";
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            result += getTextFromBodyPart(bodyPart);
         }
-        if (contentType.match("text/x-stickynote")) {
-            stringres = StickyNote.ReadStickyNote(stringres).toString();
-//        } else if (contentType.match("TEXT/HTML")) {
-        } else if (contentType.match("TEXT/PLAIN")) {
-            Spanned spanres = Html.fromHtml(stringres, Html.FROM_HTML_MODE_LEGACY);
-            stringres = Html.toHtml(spanres, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-        } else if (contentType.match("multipart/related")) {
-// All next is a workaround
-// All function need to be rewritten to handle correctly multipart and images
-            // if (contentType.getParameter("type").equalsIgnoreCase("TEXT/HTML")) {          } else
-            if (contentType.getParameter("type").equalsIgnoreCase("TEXT/PLAIN")) {
-                Spanned spanres = Html.fromHtml(stringres, Html.FROM_HTML_MODE_LEGACY);
-                stringres = Html.toHtml(spanres, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-            }
-            //} else if (contentType.getParameter("BOUNDARY") != null) {
-        }
-        return stringres;
+        return result;
     }
 
+    private static String getTextFromBodyPart(
+            BodyPart bodyPart) throws IOException, MessagingException {
 
-    private static String getPosition(String stringres) {
-
-        Matcher matcherPosition = patternPosition.matcher(stringres);
-        return matcherPosition.find() ?
-                matcherPosition.group(1) :
-                "";
-    }*/
+        String result = "";
+        if (bodyPart.isMimeType("text/plain")) {
+            Spannable text = new SpannableString((String) bodyPart.getContent());
+            result = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+            result = result.replaceFirst("<p dir=\"ltr\">", "");
+        } else if (bodyPart.isMimeType("text/html")) {
+            result = (String) bodyPart.getContent();
+            //result = org.jsoup.Jsoup.parse(html).text();
+        } else if (bodyPart.isMimeType("image/*")) {
+            MimeBodyPart mp = (MimeBodyPart) bodyPart;
+            //mp.saveFile(ImapNotes3.GetRootDir()+mp.getFileName());
+        } else if (bodyPart.getContent() instanceof MimeMultipart) {
+            result = getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent());
+        }
+        return result;
+    }
 
     private static String getText(@NonNull String stringres) {
         return stringres;
@@ -202,58 +216,5 @@ public class HtmlNote {
             return "none";
         }
     }
-/*
-    public String GetPosition() {
-        return HtmlNote.position;
-    }
-
-    public String GetText() {
-        return HtmlNote.text;
-    }
-
-    public Colors GetColor() {
-        return HtmlNote.color;
-    }
-
-    public void SetText(String text) {
-        HtmlNote.text = text;
-    }
-
-    public void SetPosition(String position) {
-        HtmlNote.position = position;
-    }
-
-    public void SetColor(Colors color) {
-        HtmlNote.color = color;
-    }*/
-
-
-
-    /*  private void GetPart(@NonNull Part message) throws Exception {
-          if (message.isMimeType("text/plain")) {
-              Log.d(TAG, "+++ isMimeType text/plain (contentType):" + message.getContentType());
-          } else if (message.isMimeType("multipart*//*")) {
-            Log.d(TAG, "+++ isMimeType multipart*//* (contentType):" + message.getContentType());
-            Object content = message.getContent();
-            Multipart mp = (Multipart) content;
-            int count = mp.getCount();
-            for (int i = 0; i < count; i++) GetPart(mp.getBodyPart(i));
-        } else if (message.isMimeType("message/rfc822")) {
-            Log.d(TAG, "+++ isMimeType message/rfc822*//* (contentType):" + message.getContentType());
-            GetPart((Part) message.getContent());
-        } else if (message.isMimeType("image/jpeg")) {
-            Log.d(TAG, "+++ isMimeType image/jpeg (contentType):" + message.getContentType());
-        } else if (message.getContentType().contains("image/")) {
-            Log.d(TAG, "+++ isMimeType image/jpeg (contentType):" + message.getContentType());
-        } else {
-            Object o = message.getContent();
-            if (o instanceof String) {
-                Log.d(TAG, "+++ instanceof String");
-            } else if (o instanceof InputStream) {
-                Log.d(TAG, "+++ instanceof InputStream");
-            } else Log.d(TAG, "+++ instanceof ???");
-        }
-    }
-*/
 
 }

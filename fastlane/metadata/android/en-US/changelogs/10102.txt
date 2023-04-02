@@ -5,3 +5,4 @@
 * convert selection to HTML-Code
 * convert selection to text
 * simplify sync interval selection
+* read multipart messages
