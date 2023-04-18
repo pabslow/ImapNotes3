@@ -6,3 +6,5 @@
 * convert selection to text
 * simplify sync interval selection
 * read multipart messages
+* update to appcompat 1.6.1
+* add html formatting pre
