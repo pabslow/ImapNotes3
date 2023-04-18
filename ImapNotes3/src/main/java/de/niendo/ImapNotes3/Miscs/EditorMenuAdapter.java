@@ -356,10 +356,14 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         icon.setImageResource(R.drawable.blockquote);
                         break;
                     case 6:
+                        row.setId(R.id.action_pre);
+                        icon.setImageResource(R.drawable.action_pre);
+                        break;
+                    case 7:
                         row.setId(R.id.action_code_html);
                         icon.setImageResource(R.drawable.code_html);
                         break;
-                    case 7:
+                    case 8:
                         row.setId(R.id.action_code_off_html);
                         icon.setImageResource(R.drawable.code_off_html);
                         break;

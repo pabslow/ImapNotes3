@@ -215,7 +215,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         headingSpinner.setOnItemSelectedListener(this);
 
         NDSpinner alignmentSpinner = findViewById(R.id.action_alignment);
-        alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[8], R.id.action_alignment, this));
+        alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[9], R.id.action_alignment, this));
         alignmentSpinner.setOnItemSelectedListener(this);
 
         NDSpinner tableSpinner = findViewById(R.id.action_table);
@@ -398,6 +398,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     editText.insertHTML(value);
                 });
                 editText.getSelectedText();
+                break;
+            case R.id.action_pre:
+                editText.setPre();
                 break;
             case R.id.action_insert_image:
                 // 1. get the selected text via callback

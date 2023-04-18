@@ -41,6 +41,7 @@
     <item name="action_blockquote" type="id" />
     <item name="action_code_html" type="id" />
     <item name="action_code_off_html" type="id" />
+    <item name="action_pre" type="id" />
     <item name="action_insert_bullets" type="id" />
     <item name="action_insert_numbers" type="id" />
     <item name="action_insert_image" type="id" />
