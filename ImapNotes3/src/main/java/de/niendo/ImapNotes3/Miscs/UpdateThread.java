@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,7 +70,6 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     private final String bgColor;
 
     private final String accountName;
-    //private final WeakReference<Context> applicationContextRef;
     private final Action action;
     private String suid;
     private boolean bool_to_return;
@@ -103,7 +101,6 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         this.suid = suid;
         this.noteBody = noteBody;
         this.bgColor = bgColor;
-        //this.applicationContextRef = new WeakReference<>(context);
         this.action = action;
         this.storedNotes = NotesDb.getInstance(context);
         currentNote = null;
