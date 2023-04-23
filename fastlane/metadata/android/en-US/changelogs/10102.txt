@@ -8,3 +8,4 @@
 * read multipart messages
 * update to appcompat 1.6.1
 * add html formatting pre
+* upgrade to gradle 8.0

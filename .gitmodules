@@ -1,3 +1,4 @@
 [submodule "richeditor-android"]
 	path = richeditor-android
 	url = https://github.com/niendo1/richeditor-android.git
+	branch = master
