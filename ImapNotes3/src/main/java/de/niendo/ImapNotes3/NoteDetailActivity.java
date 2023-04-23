@@ -71,6 +71,7 @@ import java.util.HashMap;
 import javax.mail.Message;
 
 import jp.wasabeef.richeditor.RichEditor;
+import eltos.simpledialogfragment.color.SimpleColorWheelDialog;
 
 
 public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {

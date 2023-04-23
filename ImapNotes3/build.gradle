@@ -95,6 +95,7 @@ dependencies {
     implementation project(':richeditor')
     implementation 'org.jetbrains:annotations:23.1.0'
     implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'io.github.eltos:simpledialogfragments:3.6.4'
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}
