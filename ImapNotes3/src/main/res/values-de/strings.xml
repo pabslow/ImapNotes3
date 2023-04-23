@@ -102,4 +102,6 @@
     <string name="SSL_TLS_allcerts">SSL/TLS (akzeptiere alle Zertifikate)</string>
     <string name="STARTTLS">STARTTLS</string>
     <string name="STARTTLS_allcerts">STARTTLS (akzeptiere alle Zertifikate)</string>
+    <string name="selectTextColor">Textfarbe wählen</string>
+    <string name="selectBgColor">Hintergrundfarbe wählen</string>
 </resources>
