@@ -124,24 +124,12 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         icon.setImageResource(R.drawable.underline);
                         break;
                     case 7:
-                        icon.setImageResource(0);
-                        icon.setVisibility(View.INVISIBLE);
-                        icon.setPadding(0, 0, 0, 0);
-                        spinner = row.findViewById(R.id.row_spinner_dummy);
-                        spinner.setId(R.id.action_txt_color);
-                        spinner.setVisibility(View.VISIBLE);
-                        spinner.setAdapter(new EditorMenuAdapter(mContext, R.layout.editor_row, new String[8], R.id.action_txt_color, mNoteDetailActivity));
-                        spinner.setOnItemSelectedListener(mNoteDetailActivity);
+                        row.setId(R.id.action_txt_color);
+                        icon.setImageResource(R.drawable.txt_color);
                         break;
                     case 8:
-                        icon.setImageResource(0);
-                        icon.setVisibility(View.INVISIBLE);
-                        icon.setPadding(0, 0, 0, 0);
-                        spinner = row.findViewById(R.id.row_spinner_dummy);
-                        spinner.setId(R.id.action_bg_color);
-                        spinner.setVisibility(View.VISIBLE);
-                        spinner.setAdapter(new EditorMenuAdapter(mContext, R.layout.editor_row, new String[8], R.id.action_bg_color, mNoteDetailActivity));
-                        spinner.setOnItemSelectedListener(mNoteDetailActivity);
+                        row.setId(R.id.action_bg_color);
+                        icon.setImageResource(R.drawable.bg_color);
                         break;
                     case 9:
                         icon.setImageResource(0);
@@ -198,78 +186,6 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                     case 7:
                         row.setId(R.id.action_heading6);
                         icon.setImageResource(R.drawable.h6);
-                        break;
-                }
-                break;
-            case R.id.action_txt_color:
-                switch (position) {
-                    case 0:
-                        row.setId(R.id.action_txt_color_white);
-                        icon.setImageResource(R.drawable.txt_color_white);
-                        break;
-                    case 1:
-                        row.setId(R.id.action_txt_color_grey);
-                        icon.setImageResource(R.drawable.txt_color_grey);
-                        break;
-                    case 2:
-                        row.setId(R.id.action_txt_color_black);
-                        icon.setImageResource(R.drawable.txt_color_black);
-                        break;
-                    case 3:
-                        row.setId(R.id.action_txt_color_red);
-                        icon.setImageResource(R.drawable.txt_color_red);
-                        break;
-                    case 4:
-                        row.setId(R.id.action_txt_color_green);
-                        icon.setImageResource(R.drawable.txt_color_green);
-                        break;
-                    case 5:
-                        row.setId(R.id.action_txt_color_yellow);
-                        icon.setImageResource(R.drawable.txt_color_yellow);
-                        break;
-                    case 6:
-                        row.setId(R.id.action_txt_color_blue);
-                        icon.setImageResource(R.drawable.txt_color_blue);
-                        break;
-                    case 7:
-                        row.setId(R.id.action_txt_color_brown);
-                        icon.setImageResource(R.drawable.txt_color_brown);
-                        break;
-                }
-                break;
-            case R.id.action_bg_color:
-                switch (position) {
-                    case 0:
-                        row.setId(R.id.action_bg_color_white);
-                        icon.setImageResource(R.drawable.bg_color_white);
-                        break;
-                    case 1:
-                        row.setId(R.id.action_bg_color_grey);
-                        icon.setImageResource(R.drawable.bg_color_grey);
-                        break;
-                    case 2:
-                        row.setId(R.id.action_bg_color_black);
-                        icon.setImageResource(R.drawable.bg_color_black);
-                        break;
-                    case 3:
-                        row.setId(R.id.action_bg_color_red);
-                        icon.setImageResource(R.drawable.bg_color_red);
-                        break;
-                    case 4:
-                        row.setId(R.id.action_bg_color_green);
-                        icon.setImageResource(R.drawable.bg_color_green);
-                        break;
-                    case 5:
-                        row.setId(R.id.action_bg_color_yellow);
-                        icon.setImageResource(R.drawable.bg_color_yellow);
-                        break;
-                    case 6:
-                        row.setId(R.id.action_bg_color_blue);
-                        icon.setImageResource(R.drawable.bg_color_blue);
-                        break;
-                    case 7:
-                        row.setId(R.id.action_bg_color_brown);
-                        icon.setImageResource(R.drawable.bg_color_brown);
                         break;
                 }
                 break;

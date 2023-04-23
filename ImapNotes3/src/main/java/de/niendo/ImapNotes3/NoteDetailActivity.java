@@ -32,12 +32,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.MenuBuilder;
 
 import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
@@ -74,7 +73,7 @@ import jp.wasabeef.richeditor.RichEditor;
 import eltos.simpledialogfragment.color.SimpleColorWheelDialog;
 
 
-public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleColorWheelDialog.OnDialogResultListener {
 
     //region Intent item names
     public static final String useSticky = "useSticky";
@@ -97,6 +96,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     //private int realColor = R.id.yellow;
     private String suid; // uid as string
     private RichEditor editText;
+    private @ColorInt int lastTxtColor = 0x80e9a11d;
+    private @ColorInt int lastBgColor = 0x80e9a11d;
     //endregion
 
     public void onCreate(Bundle savedInstanceState) {
@@ -171,6 +172,21 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             processShareIntent(intent);
         }
         ResetColors();
+    }
+
+    @Override
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
+        if (which == BUTTON_POSITIVE) {
+            if (dialogTag.equals(getString(R.string.selectTextColor))) {
+                lastTxtColor = extras.getInt(SimpleColorWheelDialog.COLOR);
+                editText.setTextColor(lastTxtColor);
+            }
+            if (dialogTag.equals(getString(R.string.selectBgColor))) {
+                lastBgColor = extras.getInt(SimpleColorWheelDialog.COLOR);
+                editText.setTextBackgroundColor(lastBgColor);
+            }
+        }
+        return false;
     }
 
     private void SetupRichEditor() {
@@ -280,53 +296,19 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             case R.id.action_heading6:
                 editText.setHeading(6);
                 break;
-            case R.id.action_txt_color_white:
-                editText.setTextColor("white");
+            case R.id.action_txt_color:
+                SimpleColorWheelDialog.build()
+                        .title(getString(R.string.selectTextColor))
+                        .color(lastTxtColor)
+                        .alpha(false)
+                        .show(this, getString(R.string.selectTextColor));
                 break;
-            case R.id.action_txt_color_grey:
-                editText.setTextColor("grey");
-                break;
-            case R.id.action_txt_color_black:
-                editText.setTextColor("black");
-                break;
-            case R.id.action_txt_color_red:
-                editText.setTextColor("FireBrick");
-                break;
-            case R.id.action_txt_color_green:
-                editText.setTextColor("green");
-                break;
-            case R.id.action_txt_color_yellow:
-                editText.setTextColor("yellow");
-                break;
-            case R.id.action_txt_color_brown:
-                editText.setTextColor("brown");
-                break;
-            case R.id.action_txt_color_blue:
-                editText.setTextColor("blue");
-                break;
-            case R.id.action_bg_color_white:
-                editText.setTextBackgroundColor("white");
-                break;
-            case R.id.action_bg_color_grey:
-                editText.setTextBackgroundColor("lightgrey");
-                break;
-            case R.id.action_bg_color_black:
-                editText.setTextBackgroundColor("black");
-                break;
-            case R.id.action_bg_color_red:
-                editText.setTextBackgroundColor("FireBrick");
-                break;
-            case R.id.action_bg_color_green:
-                editText.setTextBackgroundColor("green");
-                break;
-            case R.id.action_bg_color_yellow:
-                editText.setTextBackgroundColor("yellow");
-                break;
-            case R.id.action_bg_color_brown:
-                editText.setTextBackgroundColor("brown");
-                break;
-            case R.id.action_bg_color_blue:
-                editText.setTextBackgroundColor("blue");
+            case R.id.action_bg_color:
+                SimpleColorWheelDialog.build()
+                        .title(getString(R.string.selectBgColor))
+                        .color(lastBgColor)
+                        .alpha(false)
+                        .show(this, getString(R.string.selectBgColor));
                 break;
             case R.id.action_font_size_1:
                 editText.setFontSize(1);
@@ -550,6 +532,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         editText.setEditorBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
         editText.setEditorFontColor(getColor(R.color.EditorTxtColor));
         (findViewById(R.id.scrollView)).setBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
+        lastTxtColor = getColor(R.color.EditorTxtColor);
+        lastBgColor = Utilities.getColorByName(bgColor, getApplicationContext());
     }
 
     @SuppressLint("RestrictedApi")
