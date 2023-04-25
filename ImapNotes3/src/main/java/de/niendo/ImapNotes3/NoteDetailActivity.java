@@ -69,11 +69,12 @@ import java.util.HashMap;
 
 import javax.mail.Message;
 
+import eltos.simpledialogfragment.SimpleDialog;
 import jp.wasabeef.richeditor.RichEditor;
-import eltos.simpledialogfragment.color.SimpleColorWheelDialog;
+import eltos.simpledialogfragment.color.SimpleColorDialog;
 
 
-public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleColorWheelDialog.OnDialogResultListener {
+public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleDialog.OnDialogResultListener {
 
     //region Intent item names
     public static final String useSticky = "useSticky";
@@ -178,11 +179,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (which == BUTTON_POSITIVE) {
             if (dialogTag.equals(getString(R.string.selectTextColor))) {
-                lastTxtColor = extras.getInt(SimpleColorWheelDialog.COLOR);
+                lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
                 editText.setTextColor(lastTxtColor);
             }
             if (dialogTag.equals(getString(R.string.selectBgColor))) {
-                lastBgColor = extras.getInt(SimpleColorWheelDialog.COLOR);
+                lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
                 editText.setTextBackgroundColor(lastBgColor);
             }
         }
@@ -297,17 +298,21 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.setHeading(6);
                 break;
             case R.id.action_txt_color:
-                SimpleColorWheelDialog.build()
+                SimpleColorDialog.build()
+                        .colors(this, SimpleColorDialog.MATERIAL_COLOR_PALLET_DARK)
                         .title(getString(R.string.selectTextColor))
-                        .color(lastTxtColor)
-                        .alpha(false)
+                        .colorPreset(lastTxtColor)
+                        .setupColorWheelAlpha(false)
+                        .allowCustom(true)
                         .show(this, getString(R.string.selectTextColor));
                 break;
             case R.id.action_bg_color:
-                SimpleColorWheelDialog.build()
+                SimpleColorDialog.build()
+                        .colors(this, SimpleColorDialog.MATERIAL_COLOR_PALLET_LIGHT)
                         .title(getString(R.string.selectBgColor))
-                        .color(lastBgColor)
-                        .alpha(false)
+                        .colorPreset(lastBgColor)
+                        .setupColorWheelAlpha(false)
+                        .allowCustom(true)
                         .show(this, getString(R.string.selectBgColor));
                 break;
             case R.id.action_font_size_1:

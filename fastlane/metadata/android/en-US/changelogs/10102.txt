@@ -10,4 +10,4 @@
 * add html formatting pre
 * upgrade to gradle 8.0
 * use io.github.eltos:simpledialogfragments
-* use SimpleColorWheelDialog to select text- and background color in editor
+* use SimpleColorDialog to select text- and background color in editor
