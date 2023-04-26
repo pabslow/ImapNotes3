@@ -87,12 +87,14 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String ActivityTypeAdd = "ActivityTypeAdd";
     public static final String ActivityTypeAddShare = "ActivityTypeAddShare";
     public static final String ActivityTypeProcessed = "ActivityTypeProcessed";
+    public static final String DLG_TABLE_DIMENSION = "DLG_TABLE_DIMENSION";
+    public static final String DLG_HTML_TXT_COLOR = "DLG_HTML_TXT_COLOR";
+    public static final String DLG_HTML_BG_COLOR = "DLG_HTML_BG_COLOR";
 
     //private static final int DELETE_BUTTON = 3;
     private static final int EDIT_BUTTON = 6;
     // --Commented out by Inspection (11/26/16 11:52 PM):private final static int ROOT_AND_NEW = 3;
     private static final String TAG = "IN_NoteDetailActivity";
-    private boolean usesticky;
     private boolean textChanged = false;
     private boolean textChangedShare = false;
     @NonNull
@@ -138,7 +140,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         }
         if (ChangeNote.equals(ActivityTypeEdit)) {
             HashMap hm = (HashMap) intent.getSerializableExtra(selectedNote);
-            usesticky = intent.getBooleanExtra(useSticky, false);
+            boolean usesticky = intent.getBooleanExtra(useSticky, false);
 
             if (hm != null) {
                 suid = hm.get(OneNote.UID).toString();
@@ -182,17 +184,17 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (which == BUTTON_POSITIVE) {
-            if (dialogTag.equals(getString(R.string.selectTextColor))) {
+            if (dialogTag.equals(DLG_HTML_TXT_COLOR)) {
                 lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
                 editText.setTextColor(lastTxtColor);
                 return true;
             }
-            if (dialogTag.equals(getString(R.string.selectBgColor))) {
+            if (dialogTag.equals(DLG_HTML_BG_COLOR)) {
                 lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
                 editText.setTextBackgroundColor(lastBgColor);
                 return true;
             }
-            if (dialogTag.equals(getString(R.string.enter_table_dimension))) {
+            if (dialogTag.equals(DLG_TABLE_DIMENSION)) {
                 editText.insertTable(Integer.valueOf(extras.getString(getString(R.string.count_table_col))), Integer.valueOf(extras.getString(getString(R.string.count_table_row))));
                 return true;
             }
@@ -315,7 +317,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .setupColorWheelAlpha(false)
                         .allowCustom(true)
                         .neg(R.string.cancel)
-                        .show(this, getString(R.string.selectTextColor));
+                        .show(this, DLG_HTML_TXT_COLOR);
                 break;
             case R.id.action_bg_color:
                 SimpleColorDialog.build()
@@ -325,7 +327,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .setupColorWheelAlpha(false)
                         .allowCustom(true)
                         .neg(R.string.cancel)
-                        .show(this, getString(R.string.selectBgColor));
+                        .show(this, DLG_HTML_BG_COLOR);
                 break;
             case R.id.action_font_size_1:
                 editText.setFontSize(1);
@@ -528,7 +530,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                         .text("5")
                         )
                         .neg(R.string.cancel)
-                        .show(this, getString(R.string.enter_table_dimension));
+                        .show(this, DLG_TABLE_DIMENSION);
 
                 break;
             case R.id.action_insert_column:
