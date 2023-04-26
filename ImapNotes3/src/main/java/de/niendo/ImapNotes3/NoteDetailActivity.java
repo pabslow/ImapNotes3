@@ -37,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.MenuBuilder;
 
 import android.text.Html;
+import android.text.InputType;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
@@ -70,6 +71,8 @@ import java.util.HashMap;
 import javax.mail.Message;
 
 import eltos.simpledialogfragment.SimpleDialog;
+import eltos.simpledialogfragment.form.Input;
+import eltos.simpledialogfragment.form.SimpleFormDialog;
 import jp.wasabeef.richeditor.RichEditor;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
 
@@ -84,6 +87,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String ActivityTypeAdd = "ActivityTypeAdd";
     public static final String ActivityTypeAddShare = "ActivityTypeAddShare";
     public static final String ActivityTypeProcessed = "ActivityTypeProcessed";
+
     //private static final int DELETE_BUTTON = 3;
     private static final int EDIT_BUTTON = 6;
     // --Commented out by Inspection (11/26/16 11:52 PM):private final static int ROOT_AND_NEW = 3;
@@ -181,10 +185,16 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             if (dialogTag.equals(getString(R.string.selectTextColor))) {
                 lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
                 editText.setTextColor(lastTxtColor);
+                return true;
             }
             if (dialogTag.equals(getString(R.string.selectBgColor))) {
                 lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
                 editText.setTextBackgroundColor(lastBgColor);
+                return true;
+            }
+            if (dialogTag.equals(getString(R.string.enter_table_dimension))) {
+                editText.insertTable(Integer.valueOf(extras.getString(getString(R.string.count_table_col))), Integer.valueOf(extras.getString(getString(R.string.count_table_row))));
+                return true;
             }
         }
         return false;
@@ -304,6 +314,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .colorPreset(lastTxtColor)
                         .setupColorWheelAlpha(false)
                         .allowCustom(true)
+                        .neg(R.string.cancel)
                         .show(this, getString(R.string.selectTextColor));
                 break;
             case R.id.action_bg_color:
@@ -313,6 +324,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .colorPreset(lastBgColor)
                         .setupColorWheelAlpha(false)
                         .allowCustom(true)
+                        .neg(R.string.cancel)
                         .show(this, getString(R.string.selectBgColor));
                 break;
             case R.id.action_font_size_1:
@@ -504,7 +516,20 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 editText.insertCollapsibleSection(getString(R.string.section), getString(R.string.content));
                 break;
             case R.id.action_insert_table:
-                editText.insertTable(3, 3);
+                SimpleFormDialog.build()
+                        .title(R.string.enter_table_dimension)
+                        //.msg(R.string.please_fill_in_form)
+                        .fields(
+                                Input.plain(getString(R.string.count_table_col)).required().hint(R.string.count_table_col)
+                                        .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                        .text("3"),
+                                Input.plain(getString(R.string.count_table_row)).required().hint(R.string.count_table_row)
+                                        .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                        .text("5")
+                        )
+                        .neg(R.string.cancel)
+                        .show(this, getString(R.string.enter_table_dimension));
+
                 break;
             case R.id.action_insert_column:
                 editText.addColumnToTable();

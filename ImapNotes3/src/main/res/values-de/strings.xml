@@ -64,6 +64,7 @@
     <string name="are_you_sure_you_wish_to_delete_the_note">Wollen Sie die Notiz wirklich löschen?</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
+    <string name="cancel">Abbrechen</string>
     <string name="sort_color">Nach Farbe sortieren</string>
     <string name="license">Lizenz: GPL v3.0</string>
     <string name="internet">Internet: github.com/niendo1/ImapNotes3/</string>
@@ -104,4 +105,7 @@
     <string name="STARTTLS_allcerts">STARTTLS (akzeptiere alle Zertifikate)</string>
     <string name="selectTextColor">Textfarbe wählen</string>
     <string name="selectBgColor">Hintergrundfarbe wählen</string>
+    <string name="enter_table_dimension">Tabellengröße eingeben</string>
+    <string name="count_table_row">Anzahl Zeilen</string>
+    <string name="count_table_col">Anzahl Spalten</string>
 </resources>

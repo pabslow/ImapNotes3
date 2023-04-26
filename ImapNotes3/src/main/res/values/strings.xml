@@ -80,6 +80,7 @@
     <string name="insert_as_new_note">Insert shared data as new note</string>
     <string name="insert_in_note">Insert shared data</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="table">Table</string>
     <string name="section">Section</string>
     <string name="content">Content</string>
@@ -104,4 +105,7 @@
     <string name="STARTTLS_allcerts">STARTTLS (accept all certificates)</string>
     <string name="selectTextColor">Select Text Color</string>
     <string name="selectBgColor">Select Background Color</string>
+    <string name="enter_table_dimension">enter table dimension</string>
+    <string name="count_table_row">Count Rows</string>
+    <string name="count_table_col">Count Columns</string>
 </resources>

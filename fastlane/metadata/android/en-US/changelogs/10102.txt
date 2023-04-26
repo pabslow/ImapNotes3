@@ -11,3 +11,4 @@
 * upgrade to gradle 8.0
 * use io.github.eltos:simpledialogfragments
 * use SimpleColorDialog to select text- and background color in editor
+* add dialog for table dimensions
