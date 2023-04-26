@@ -7,17 +7,16 @@ View, edit and synchronize HTML notes and check lists on your IMAP mailboxes
 
 ### Screenshots
 
-|<img width="30%"
-src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png"/>|<img
+<img width="30%"
+src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png"/><img
 width="30%"
-src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png"/>|<img
+src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png"/><img
 width="30%"
-src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png"/>|
-|<img width="30%"
-src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/imagesphoneScreenshots/4.png"/>|<img
+src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png"/>
+<img width="30%"
+src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png"/><img
 width="30%"
-src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/imagesphoneScreenshots/5.png"/>|-|
-|-|-|-|
+src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png"/>
 
 ### Features
 
