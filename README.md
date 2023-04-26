@@ -1,5 +1,42 @@
+<img width="40%" align="right" src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/icon.png"/>
+
 ImapNotes3
 ==========
+
+View, edit and synchronize HTML notes and check lists on your IMAP mailboxes
+
+|<img width="30%"
+src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/phoneScreenShots/1.png"/>|<img
+width="30%"
+src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/phoneScreenShots/2.png"/>|<img
+width="30%"
+src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/phoneScreenShots/3.png"/>|
+|<img width="30%"
+src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/phoneScreenShots/4.png"/>|<img
+width="30%"
+src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/phoneScreenShots/5.png"/>|<img
+width="30%"
+src="https://github.com/niendo/ImapNotes3/fastlane/metadata/android/en-US/images/phoneScreenShots/6.png"/>|
+|-|-|-|
+
+### Features
+
+* synchronize HTML notes between Android devices and IMAP servers.
+* to be used with different IMAP servers (Gmail, Yahoo, AOL, Posteo and your server)
+* HTML editor with lots of features
+* check lists
+* full text search
+* light and dark mode support
+* color support for notes
+* share your notes
+* notes are saved as standard HTML E-mails
+* security can be plain text, SSL/TLS or STARTTLS
+* multiple IMAP accounts and/or notepads can be managed
+* works offline and sync is done in the background
+* only a minimum on user permissions required
+* no tracker or advertising
+
+### History
 
 This project is a clone from https://github.com/nbenm/ImapNote2. It also uses some changes
 from https://github.com/kwhitefoot/ImapNote2 and maybe others
@@ -48,10 +85,10 @@ Main changes in ImapNote2 are :
 - multiple accounts can be used. Android account manager is used
 - works offline and sync is done in the background. Sync interval can be different for each account
 
-## Download
+### Download
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/de.niendo.ImapNotes3/)
+alt="Get it on F-Droid"
+height="80">](https://f-droid.org/packages/de.niendo.ImapNotes3/)
 
 Or get the APK from the [Releases Section](https://github.com/niendo1/ImapNotes3/releases/latest).
