@@ -80,6 +80,7 @@
     <string name="insert_as_new_note">插入分享的数据作为新笔记</string>
     <string name="insert_in_note">插入分享的数据</string>
     <string name="ok">好</string>
+    <string name="cancel">取消</string>
     <string name="table">表格</string>
     <string name="section">部分</string>
     <string name="content">内容</string>
@@ -104,4 +105,7 @@
     <string name="STARTTLS_allcerts">STARTTLS (接受所有证书)</string>
     <string name="selectTextColor">选择文本颜色</string>
     <string name="selectBgColor">选择背景色</string>
+    <string name="enter_table_dimension">输入表格尺寸</string>
+    <string name="count_table_row">计算表格行</string>
+    <string name="count_table_col">计算表格列</string>
 </resources>
