@@ -108,4 +108,8 @@
     <string name="enter_table_dimension">enter table dimension</string>
     <string name="count_table_row">Count Rows</string>
     <string name="count_table_col">Count Columns</string>
+    <string name="insert_link">Insert Link</string>
+    <string name="link_url">Link Url</string>
+    <string name="link_text">Link Text</string>
+    <string name="link_title">Link Title</string>
 </resources>

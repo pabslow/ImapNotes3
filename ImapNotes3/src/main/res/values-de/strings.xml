@@ -108,4 +108,8 @@
     <string name="enter_table_dimension">Tabellengröße eingeben</string>
     <string name="count_table_row">Anzahl Zeilen</string>
     <string name="count_table_col">Anzahl Spalten</string>
+    <string name="insert_link">Link einfügen</string>
+    <string name="link_url">Link-Adresse (Url)</string>
+    <string name="link_text">Link-Text</string>
+    <string name="link_title">Link-Titel</string>
 </resources>

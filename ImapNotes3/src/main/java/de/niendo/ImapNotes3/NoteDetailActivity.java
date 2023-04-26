@@ -88,19 +88,23 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String ActivityTypeAddShare = "ActivityTypeAddShare";
     public static final String ActivityTypeProcessed = "ActivityTypeProcessed";
     public static final String DLG_TABLE_DIMENSION = "DLG_TABLE_DIMENSION";
+    public static final String DLG_TABLE_DIMENSION_ROW = "DLG_TABLE_DIMENSION_ROW";
+    public static final String DLG_TABLE_DIMENSION_COL = "DLG_TABLE_DIMENSION_COL";
     public static final String DLG_HTML_TXT_COLOR = "DLG_HTML_TXT_COLOR";
     public static final String DLG_HTML_BG_COLOR = "DLG_HTML_BG_COLOR";
+    public static final String DLG_INSERT_LINK = "DLG_INSERT_LINK";
 
-    //private static final int DELETE_BUTTON = 3;
+    public static final String DLG_INSERT_LINK_URL = "DLG_INSERT_LINK_URL";
+    public static final String DLG_INSERT_LINK_TEXT = "DLG_INSERT_LINK_TEXT";
+    public static final String DLG_INSERT_LINK_TITLE = "DLG_INSERT_LINK_TITLE";
+
     private static final int EDIT_BUTTON = 6;
-    // --Commented out by Inspection (11/26/16 11:52 PM):private final static int ROOT_AND_NEW = 3;
     private static final String TAG = "IN_NoteDetailActivity";
     private boolean textChanged = false;
     private boolean textChangedShare = false;
     @NonNull
     private String bgColor = "none";
     private String accountName = "";
-    //private int realColor = R.id.yellow;
     private String suid; // uid as string
     private RichEditor editText;
     private @ColorInt int lastTxtColor = 0x80e9a11d;
@@ -195,7 +199,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 return true;
             }
             if (dialogTag.equals(DLG_TABLE_DIMENSION)) {
-                editText.insertTable(Integer.valueOf(extras.getString(getString(R.string.count_table_col))), Integer.valueOf(extras.getString(getString(R.string.count_table_row))));
+                editText.insertTable(Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_COL)), Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_ROW)));
+                return true;
+            }
+            if (dialogTag.equals(DLG_INSERT_LINK)) {
+                editText.insertLink(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_URL)), extras.getString(DLG_INSERT_LINK_TEXT), extras.getString(DLG_INSERT_LINK_TITLE));
                 return true;
             }
         }
@@ -479,18 +487,43 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             case R.id.action_insert_link:
                 // 1. get the selected text via callback
                 // 2. make the Link
-                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
-                    @Override
-                    public void onDataReceived(String value) {
-                        if (!value.isEmpty()) {
-                            String[] values = value.split(" ", 2);
-                            if (values.length == 2)
-                                editText.insertLink(Utilities.CheckUrlScheme(values[0]), values[0], values[1]);
-                            else
-                                editText.insertLink(Utilities.CheckUrlScheme(value), value, value);
-                        } else
-                            ImapNotes3.ShowMessage(R.string.select_link, editText, 3);
+                editText.setOnJSDataListener(value -> {
+                    String url = "";
+                    String text = "";
+                    String title = "";
+                    if (!value.isEmpty()) {
+                        String[] values = value.split(" ", 2);
+                        if (values.length == 2) {
+                            url = Utilities.CheckUrlScheme(values[0]);
+                            title = values[0];
+                            text = values[1];
+                        } else {
+                            url = Utilities.CheckUrlScheme(value);
+                            text = value;
+                            title = value;
+                        }
                     }
+                    SimpleFormDialog.build()
+                            .title(R.string.insert_link)
+                            //.msg(R.string.please_fill_in_form)
+                            .fields(
+                                    Input.plain(DLG_INSERT_LINK_URL)
+                                            .required()
+                                            .hint(R.string.link_url)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text(url),
+                                    Input.plain(DLG_INSERT_LINK_TEXT)
+                                            .hint(R.string.link_text)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text(text),
+                                    Input.plain(DLG_INSERT_LINK_TITLE)
+                                            .required()
+                                            .hint(R.string.link_title)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text(title)
+                            )
+                            .neg(R.string.cancel)
+                            .show(this, DLG_INSERT_LINK);
                 });
                 editText.getSelectedText();
                 break;
@@ -522,10 +555,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .title(R.string.enter_table_dimension)
                         //.msg(R.string.please_fill_in_form)
                         .fields(
-                                Input.plain(getString(R.string.count_table_col)).required().hint(R.string.count_table_col)
+                                Input.plain(DLG_TABLE_DIMENSION_COL).required().hint(R.string.count_table_col)
                                         .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
                                         .text("3"),
-                                Input.plain(getString(R.string.count_table_row)).required().hint(R.string.count_table_row)
+                                Input.plain(DLG_TABLE_DIMENSION_ROW).required().hint(R.string.count_table_row)
                                         .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
                                         .text("5")
                         )
