@@ -84,8 +84,6 @@
     <string name="table">表格</string>
     <string name="section">部分</string>
     <string name="content">内容</string>
-    <string name="select_link">选择链接</string>
-    <string name="select_link_image">选择图片链接</string>
     <string name="select_link_audio">选择音频流链接</string>
     <string name="select_link_video">选择视频链接</string>
     <string name="select_link_youtube">选择 youtube 链接</string>
