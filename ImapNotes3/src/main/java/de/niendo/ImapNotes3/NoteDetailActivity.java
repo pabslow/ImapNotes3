@@ -459,52 +459,43 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             case R.id.action_insert_audio:
                 // 1. get the selected text via callback
                 // 2. make the Image
-                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
-                    @Override
-                    public void onDataReceived(String value) {
-                        if (!value.isEmpty()) {
-                            editText.insertAudio(value);
-                        } else
-                            ImapNotes3.ShowMessage(R.string.select_link_audio, editText, 1);
-                    }
+                editText.setOnJSDataListener(value -> {
+                    if (!value.isEmpty()) {
+                        editText.insertAudio(value);
+                    } else
+                        ImapNotes3.ShowMessage(R.string.select_link_audio, editText, 1);
                 });
                 editText.getSelectedText();
                 break;
             case R.id.action_insert_video:
                 // 1. get the selected text via callback
                 // 2. make the Image
-                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
-                    @Override
-                    public void onDataReceived(String value) {
-                        if (!value.isEmpty()) {
-                            if (value.startsWith("https://www.youtube.com"))
-                                value = value.replace("watch?v=", "embed/");
-                            // https://www.youtube.com/watch?v=3AeYHDZ2riI
-                            // https://www.youtube.com/embed/3AeYHDZ2riI
-                            editText.insertVideo(value, "video", "auto", "");
-                        } else
-                            ImapNotes3.ShowMessage(R.string.select_link_video, editText, 3);
-                    }
+                editText.setOnJSDataListener(value -> {
+                    if (!value.isEmpty()) {
+                        if (value.startsWith("https://www.youtube.com"))
+                            value = value.replace("watch?v=", "embed/");
+                        // https://www.youtube.com/watch?v=3AeYHDZ2riI
+                        // https://www.youtube.com/embed/3AeYHDZ2riI
+                        editText.insertVideo(value, "video", "auto", "");
+                    } else
+                        ImapNotes3.ShowMessage(R.string.select_link_video, editText, 3);
                 });
                 editText.getSelectedText();
                 break;
             case R.id.action_insert_youtube:
                 // 1. get the selected text via callback
                 // 2. make the Image
-                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
-                    @Override
-                    public void onDataReceived(String value) {
-                        if (!value.isEmpty()) {
-                            if (value.startsWith("https://www.youtube.com"))
-                                value = value.replace("watch?v=", "embed/");
+                editText.setOnJSDataListener(value -> {
+                    if (!value.isEmpty()) {
+                        if (value.startsWith("https://www.youtube.com"))
+                            value = value.replace("watch?v=", "embed/");
 
-                            // https://www.youtube.com/watch?v=3AeYHDZ2riI
-                            // https://www.youtube.com/embed/3AeYHDZ2riI
+                        // https://www.youtube.com/watch?v=3AeYHDZ2riI
+                        // https://www.youtube.com/embed/3AeYHDZ2riI
 
-                            editText.insertYoutubeVideo(value);
-                        } else
-                            ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 3);
-                    }
+                        editText.insertYoutubeVideo(value);
+                    } else
+                        ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 3);
                 });
                 editText.getSelectedText();
                 break;
