@@ -4,4 +4,5 @@
     android:layout_height="wrap_content"
     android:colorBackground="@color/AccountBgColor"
     android:padding="5dip"
+    android:textSize="18sp"
     android:textColor="@color/AccountTxtColor" />
