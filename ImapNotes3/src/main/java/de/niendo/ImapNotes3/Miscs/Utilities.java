@@ -22,7 +22,9 @@
 package de.niendo.ImapNotes3.Miscs;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 
@@ -99,4 +101,20 @@ public final class Utilities {
         if (uri.getScheme() == null) return "http://" + url;
         return url;
     }
+
+    private static String getRealSizeFromUri(Context context, Uri uri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Audio.Media.SIZE};
+            cursor = context.getContentResolver().query(uri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
 }

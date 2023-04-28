@@ -116,4 +116,5 @@
     <string name="link_image_width">Width</string>
     <string name="link_image_height">Height</string>
     <string name="image_size_relative">Image size is relative to page width</string>
+    <string name="file_size_1k">Only files smaller than 100KB allowed.</string>
 </resources>
