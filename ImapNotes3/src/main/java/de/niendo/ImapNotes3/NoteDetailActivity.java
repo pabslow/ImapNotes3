@@ -779,10 +779,16 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             Log.d(TAG, "Share 1");
             if (uri != null) {
                 if (type.startsWith("image/")) {
+                    //    File mediaFile = new File(uri.getPath());
+                    //    long fileSizeInKB = mediaFile.length() / 1024;
+                    //    if (fileSizeInKB > 500) {
+                    //        ImapNotes3.ShowMessage(R.string.image_size_to_large, editText,2);
+                    //    } else {
                     editText.insertHTML(uri.getPath());
-                    editText.insertImageAsBase64(uri, "", "auto", "");
+                    editText.insertImageAsBase64(uri, uri.getPath(), "100", "", true);
+                    //    }
                 } else {
-                    BufferedInputStream bufferedInputStream = null;
+                    BufferedInputStream bufferedInputStream;
                     try {
                         bufferedInputStream =
                                 new BufferedInputStream(getContentResolver().openInputStream(uri));
