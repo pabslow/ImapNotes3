@@ -67,10 +67,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
 
-
 import javax.mail.Message;
 
 import eltos.simpledialogfragment.SimpleDialog;
+import eltos.simpledialogfragment.form.Check;
 import eltos.simpledialogfragment.form.Input;
 import eltos.simpledialogfragment.form.SimpleFormDialog;
 import jp.wasabeef.richeditor.RichEditor;
@@ -97,6 +97,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String DLG_INSERT_LINK_URL = "DLG_INSERT_LINK_URL";
     public static final String DLG_INSERT_LINK_TEXT = "DLG_INSERT_LINK_TEXT";
     public static final String DLG_INSERT_LINK_TITLE = "DLG_INSERT_LINK_TITLE";
+    public static final String DLG_INSERT_LINK_IMAGE = "DLG_INSERT_LINK_IMAGE";
+    public static final String DLG_INSERT_LINK_IMAGE_URL = "DLG_INSERT_LINK_IMAGE_URL";
+    public static final String DLG_INSERT_LINK_IMAGE_ALT = "DLG_INSERT_LINK_IMAGE_ALT";
+    public static final String DLG_INSERT_LINK_IMAGE_WIDTH = "DLG_INSERT_LINK_IMAGE_WIDTH";
+    public static final String DLG_INSERT_LINK_IMAGE_HEIGHT = "DLG_INSERT_LINK_IMAGE_HEIGHT";
+    public static final String DLG_INSERT_LINK_IMAGE_RELATIVE = "DLG_INSERT_LINK_IMAGE_RELATIVE";
 
     private static final int EDIT_BUTTON = 6;
     private static final String TAG = "IN_NoteDetailActivity";
@@ -188,23 +194,27 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (which == BUTTON_POSITIVE) {
-            if (dialogTag.equals(DLG_HTML_TXT_COLOR)) {
-                lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
-                editText.setTextColor(lastTxtColor);
-                return true;
-            }
-            if (dialogTag.equals(DLG_HTML_BG_COLOR)) {
-                lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
-                editText.setTextBackgroundColor(lastBgColor);
-                return true;
-            }
-            if (dialogTag.equals(DLG_TABLE_DIMENSION)) {
-                editText.insertTable(Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_COL)), Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_ROW)));
-                return true;
-            }
-            if (dialogTag.equals(DLG_INSERT_LINK)) {
-                editText.insertLink(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_URL)), extras.getString(DLG_INSERT_LINK_TEXT), extras.getString(DLG_INSERT_LINK_TITLE));
-                return true;
+            switch (dialogTag) {
+                case DLG_HTML_TXT_COLOR:
+                    lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
+                    editText.setTextColor(lastTxtColor);
+                    return true;
+                case DLG_HTML_BG_COLOR:
+                    lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
+                    editText.setTextBackgroundColor(lastBgColor);
+                    return true;
+                case DLG_TABLE_DIMENSION:
+                    editText.insertTable(Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_COL)), Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_ROW)));
+                    return true;
+                case DLG_INSERT_LINK:
+                    editText.insertLink(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_URL)), extras.getString(DLG_INSERT_LINK_TEXT), extras.getString(DLG_INSERT_LINK_TITLE));
+                    return true;
+                case DLG_INSERT_LINK_IMAGE:
+                    Boolean relative = extras.getBoolean(DLG_INSERT_LINK_IMAGE_RELATIVE);
+                    editText.insertImage(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_IMAGE_URL)),
+                            extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
+                            extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
+                    return true;
             }
         }
         return false;
@@ -415,20 +425,34 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             case R.id.action_insert_image:
                 // 1. get the selected text via callback
                 // 2. make the Image
-                editText.setOnJSDataListener(new RichEditor.onJSDataListener() {
-                    @Override
-                    public void onDataReceived(String value) {
-                        if (!value.isEmpty()) {
-                            String[] values = value.split(" ", 3);
-                            if (values.length == 3)
-                                editText.insertImage(values[0], values[1], values[2], "");
-                            else if (values.length == 2)
-                                editText.insertImage(values[0], values[1], "auto", "");
-                            else
-                                editText.insertImage(value, "", "auto", "");
-                        } else
-                            ImapNotes3.ShowMessage(R.string.select_link_image, editText, 1);
-                    }
+                editText.setOnJSDataListener(value -> {
+                    SimpleFormDialog.build()
+                            .title(R.string.insert_link_image)
+                            //.msg(R.string.please_fill_in_form)
+                            .fields(
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_URL)
+                                            .required()
+                                            .hint(R.string.link_image_url)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text(value),
+                                    Check.box(DLG_INSERT_LINK_IMAGE_RELATIVE)
+                                            .check(true)
+                                            .label(R.string.image_size_relative),
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_WIDTH)
+                                            .hint(R.string.link_image_width)
+                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                            .text("100"),
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_HEIGHT)
+                                            .hint(R.string.link_image_height)
+                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                            .text(""),
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_ALT)
+                                            .hint(R.string.link_alt_text)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text("")
+                            )
+                            .neg(R.string.cancel)
+                            .show(this, DLG_INSERT_LINK_IMAGE);
                 });
                 editText.getSelectedText();
                 break;
@@ -794,7 +818,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     } else if (type.startsWith("text/")) {
                         editText.insertHTML(Html.escapeHtml(subject + sharedText));
                     } else if (type.startsWith("image/")) {
-                        editText.insertImage(sharedText, "", "auto", "");
+                        editText.insertImage(sharedText, "shared image", "100", "", true);
                     }
                 }
             }
