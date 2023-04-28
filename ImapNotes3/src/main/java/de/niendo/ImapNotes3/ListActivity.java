@@ -578,7 +578,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     this.UpdateList(suid, null, null, null, UpdateThread.Action.Delete);
                 }
                 if (resultCode == ListActivity.EDIT_BUTTON) {
-                    String txt = data.getStringExtra(EDIT_ITEM_TXT);
+                    String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
                     String suid = data.getStringExtra(EDIT_ITEM_NUM_IMAP);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
@@ -593,7 +593,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 // Returning from NewNoteActivity
                 if (resultCode == ListActivity.EDIT_BUTTON) {
                     //String res = data.getStringExtra(SAVE_ITEM);
-                    String txt = data.getStringExtra(EDIT_ITEM_TXT);
+                    String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
                     //Log.d(TAG,"Received request to save message:"+res);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);

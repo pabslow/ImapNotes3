@@ -117,7 +117,7 @@ public class ImapNotes3 extends Application {
         return snackbar;
     }
 
-
+    public static String AvoidLargeBundle;
     public static void ShowMessage(@StringRes int resId, View view, int durationSeconds) {
         ShowMessage(mContext.getResources().getString(resId), view, durationSeconds);
     }

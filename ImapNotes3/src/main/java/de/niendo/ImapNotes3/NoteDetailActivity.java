@@ -718,7 +718,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             Intent intent = new Intent();
             intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
             intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, accountName);
-            intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
+            ImapNotes3.AvoidLargeBundle = value;
+            //intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
             intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
             setResult(NoteDetailActivity.EDIT_BUTTON, intent);
             textChanged = false;
