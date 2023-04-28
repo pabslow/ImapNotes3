@@ -102,7 +102,7 @@ public final class Utilities {
         return url;
     }
 
-    private static String getRealSizeFromUri(Context context, Uri uri) {
+    public static String getRealSizeFromUri(Context context, Uri uri) {
         Cursor cursor = null;
         try {
             String[] proj = {MediaStore.Audio.Media.SIZE};
