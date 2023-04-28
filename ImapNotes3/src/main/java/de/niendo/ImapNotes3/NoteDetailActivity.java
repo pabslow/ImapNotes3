@@ -221,6 +221,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     }
 
     private void SetupRichEditor() {
+        editText.setEditorBackgroundColor(0); // otherwise it will not work in dark mode
         editText.setPadding(10, 10, 10, 10);
         //    editText.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
@@ -609,7 +610,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     // realColor is misnamed.  It is the ID of the radio button widget that chooses the background
     // colour.
     private void ResetColors() {
-        editText.setEditorBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
         editText.setEditorFontColor(getColor(R.color.EditorTxtColor));
         (findViewById(R.id.scrollView)).setBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
         lastTxtColor = getColor(R.color.EditorTxtColor);
