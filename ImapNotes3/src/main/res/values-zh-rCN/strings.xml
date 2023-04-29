@@ -110,4 +110,11 @@
     <string name="link_url">链接的网址</string>
     <string name="link_text">链接的文本</string>
     <string name="link_title">链接的标题</string>
+    <string name="insert_link_image">插入链接的图片</string>
+    <string name="link_image_url">图片 URL</string>
+    <string name="link_alt_text">备选文本</string>
+    <string name="link_image_width">宽度</string>
+    <string name="link_image_height">高度</string>
+    <string name="image_size_relative">图片尺寸是相对于页面宽度而言的</string>
+    <string name="file_size_1k">仅允许小于 100 kb 的文件.</string>
 </resources>
