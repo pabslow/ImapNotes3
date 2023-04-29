@@ -1,851 +1,702 @@
-/*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
- * Copyright (C)         ? - kwhitefoot
- * Copyright (C)      2016 - Martin Carpella
- * Copyright (C)      2014 - c0238
- * Copyright (C) 2014-2015 - nb
- * and Contributors.
- *
- * This file is part of ImapNotes3.
- *
- * ImapNotes3 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-package de.niendo.ImapNotes3;
+package jp.wasabeef.richeditor;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
-
-import android.text.Html;
-import android.text.InputType;
-import android.text.Spanned;
+import android.os.Build;
+import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
+import android.view.Gravity;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import de.niendo.ImapNotes3.Data.OneNote;
-import de.niendo.ImapNotes3.Miscs.EditorMenuAdapter;
-import de.niendo.ImapNotes3.Miscs.HtmlNote;
-import de.niendo.ImapNotes3.Miscs.NDSpinner;
-import de.niendo.ImapNotes3.Miscs.StickyNote;
-import de.niendo.ImapNotes3.Miscs.Utilities;
-import de.niendo.ImapNotes3.Sync.SyncUtils;
-
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.mail.Message;
+/**
+ * Copyright (C) 2022-2023 niendo
+ * Copyright (C) 2017 Kishan Jadav
+ * Copyright (C) 2020 Wasabeef
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import eltos.simpledialogfragment.SimpleDialog;
-import eltos.simpledialogfragment.form.Check;
-import eltos.simpledialogfragment.form.Input;
-import eltos.simpledialogfragment.form.SimpleFormDialog;
-import jp.wasabeef.richeditor.RichEditor;
-import eltos.simpledialogfragment.color.SimpleColorDialog;
+public class RichEditor extends WebView implements ValueCallback<String> {
 
+    private static final String SETUP_HTML = "file:///android_asset/rich_editor.html";
+    private static final String CALLBACK_SCHEME = "re-callback://";
+    private static final String STATE_SCHEME = "re-state://";
+    private static final String CLICK_SCHEME = "re-click://";
+    private final AtomicBoolean mEvaluateFinished = new AtomicBoolean(false);
+    private boolean isReady = false;
+    private OnTextChangeListener mTextChangeListener;
+    private onClickListener mClickListener;
+    private onJSDataListener mJSDataListener;
+    private OnDecorationStateListener mDecorationStateListener;
+    private AfterInitialLoadListener mLoadListener;
 
-public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleDialog.OnDialogResultListener {
+    public RichEditor(Context context) {
+        this(context, null);
+    }
 
-    //region Intent item names
-    public static final String useSticky = "useSticky";
-    public static final String selectedNote = "selectedNote";
-    public static final String ActivityType = "ActivityType";
-    public static final String ActivityTypeEdit = "ActivityTypeEdit";
-    public static final String ActivityTypeAdd = "ActivityTypeAdd";
-    public static final String ActivityTypeAddShare = "ActivityTypeAddShare";
-    public static final String ActivityTypeProcessed = "ActivityTypeProcessed";
-    public static final String DLG_TABLE_DIMENSION = "DLG_TABLE_DIMENSION";
-    public static final String DLG_TABLE_DIMENSION_ROW = "DLG_TABLE_DIMENSION_ROW";
-    public static final String DLG_TABLE_DIMENSION_COL = "DLG_TABLE_DIMENSION_COL";
-    public static final String DLG_HTML_TXT_COLOR = "DLG_HTML_TXT_COLOR";
-    public static final String DLG_HTML_BG_COLOR = "DLG_HTML_BG_COLOR";
-    public static final String DLG_INSERT_LINK = "DLG_INSERT_LINK";
+    public RichEditor(Context context, AttributeSet attrs) {
+        this(context, attrs, android.R.attr.webViewStyle);
+    }
 
-    public static final String DLG_INSERT_LINK_URL = "DLG_INSERT_LINK_URL";
-    public static final String DLG_INSERT_LINK_TEXT = "DLG_INSERT_LINK_TEXT";
-    public static final String DLG_INSERT_LINK_TITLE = "DLG_INSERT_LINK_TITLE";
-    public static final String DLG_INSERT_LINK_IMAGE = "DLG_INSERT_LINK_IMAGE";
-    public static final String DLG_INSERT_LINK_IMAGE_URL = "DLG_INSERT_LINK_IMAGE_URL";
-    public static final String DLG_INSERT_LINK_IMAGE_ALT = "DLG_INSERT_LINK_IMAGE_ALT";
-    public static final String DLG_INSERT_LINK_IMAGE_WIDTH = "DLG_INSERT_LINK_IMAGE_WIDTH";
-    public static final String DLG_INSERT_LINK_IMAGE_HEIGHT = "DLG_INSERT_LINK_IMAGE_HEIGHT";
-    public static final String DLG_INSERT_LINK_IMAGE_RELATIVE = "DLG_INSERT_LINK_IMAGE_RELATIVE";
+    @SuppressLint("SetJavaScriptEnabled")
+    public RichEditor(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
-    private static final int EDIT_BUTTON = 6;
-    private static final String TAG = "IN_NoteDetailActivity";
-    private boolean textChanged = false;
-    private boolean textChangedShare = false;
-    @NonNull
-    private String bgColor = "none";
-    private String accountName = "";
-    private String suid; // uid as string
-    private RichEditor editText;
-    private @ColorInt int lastTxtColor = 0x80e9a11d;
-    private @ColorInt int lastBgColor = 0x80e9a11d;
-    //endregion
+        setVerticalScrollBarEnabled(false);
+        setHorizontalScrollBarEnabled(false);
+        getSettings().setJavaScriptEnabled(true);
+        setWebChromeClient(new WebChromeClient());
+        setWebViewClient(createWebviewClient());
+        loadUrl(SETUP_HTML);
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.note_detail);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setElevation(0); // or other
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.ActionBgColor)));
-        // Don't display keyboard when on note detail, only if user touches the screen
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
-        editText = findViewById(R.id.bodyView);
+        applyAttributes(context, attrs);
+    }
 
-        Intent intent = getIntent();
-        String stringres;
-        Log.d(TAG, "Check_Action_Send");
-        // Get intent, action and MIME type
-        String action = intent.getAction();
-        String ChangeNote = intent.getStringExtra(ActivityType);
-        if (ChangeNote == null)
-            ChangeNote = "";
-        if (action == null)
-            action = "";
+    protected EditorWebViewClient createWebviewClient() {
+        return new EditorWebViewClient();
+    }
 
+    public void setOnTextChangeListener(OnTextChangeListener listener) {
+        mTextChangeListener = listener;
+    }
 
-        if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare) && !intent.getBooleanExtra(NoteDetailActivity.ActivityTypeProcessed, false)) {
-            ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 60,
-                    () -> {
-                        processShareIntent(intent);
-                    });
-        }
-        if (ChangeNote.equals(ActivityTypeEdit)) {
-            HashMap hm = (HashMap) intent.getSerializableExtra(selectedNote);
-            boolean usesticky = intent.getBooleanExtra(useSticky, false);
+    public void setOnClickListener(onClickListener listener) {
+        mClickListener = listener;
+    }
 
-            if (hm != null) {
-                suid = hm.get(OneNote.UID).toString();
-                accountName = hm.get(OneNote.ACCOUNT).toString();
-                File rootDir = ImapNotes3.GetAccountDir(accountName);
-                Message message = SyncUtils.ReadMailFromFileRootAndNew(suid, rootDir);
-                Log.d(TAG, "rootDir: " + rootDir);
-                if (message != null) {
-                    if (usesticky) {
-                        StickyNote stickyNote = StickyNote.GetStickyFromMessage(message);
-                        stringres = stickyNote.text;
-                        //String position = sticky.position;
-                        bgColor = stickyNote.color;
-                    } else {
-                        HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
-                        stringres = htmlNote.text;
-                        bgColor = htmlNote.color;
-                    }
-                    SetupRichEditor();
-                    editText.setHtml(stringres);
-                } else {
-                    // Entry can not opened..
-                    ImapNotes3.ShowMessage(R.string.sync_wait_necessary, null, 3);
-                    finish();
-                    return;
-                }
-            } else { // Entry can not opened..
-                ImapNotes3.ShowMessage(R.string.Invalid_Message, null, 3);
-                finish();
-                return;
-            }
-        } else if (ChangeNote.equals(ActivityTypeAdd)) {   // new entry
-            SetupRichEditor();
-        } else if (ChangeNote.equals(ActivityTypeAddShare)) {   // new Entry from Share
-            SetupRichEditor();
-            processShareIntent(intent);
-        }
-        ResetColors();
+    public void setOnJSDataListener(onJSDataListener listener) {
+        mJSDataListener = listener;
+    }
+
+    public void setOnDecorationChangeListener(OnDecorationStateListener listener) {
+        mDecorationStateListener = listener;
+    }
+
+    public void setOnInitialLoadListener(AfterInitialLoadListener listener) {
+        mLoadListener = listener;
     }
 
     @Override
-    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
-        if (which == BUTTON_POSITIVE) {
-            switch (dialogTag) {
-                case DLG_HTML_TXT_COLOR:
-                    lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
-                    editText.setTextColor(lastTxtColor);
-                    return true;
-                case DLG_HTML_BG_COLOR:
-                    lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
-                    editText.setTextBackgroundColor(lastBgColor);
-                    return true;
-                case DLG_TABLE_DIMENSION:
-                    editText.insertTable(Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_COL)), Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_ROW)));
-                    return true;
-                case DLG_INSERT_LINK:
-                    editText.insertLink(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_URL)), extras.getString(DLG_INSERT_LINK_TEXT), extras.getString(DLG_INSERT_LINK_TITLE));
-                    return true;
-                case DLG_INSERT_LINK_IMAGE:
-                    Boolean relative = extras.getBoolean(DLG_INSERT_LINK_IMAGE_RELATIVE);
-                    editText.insertImage(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_IMAGE_URL)),
-                            extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
-                            extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
-                    return true;
+    public void onReceiveValue(String value) {
+
+        String unescaped = null;
+        try {
+            unescaped = URLDecoder.decode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (!"null".equals(unescaped)) {
+
+            unescaped = unescaped.substring(1, unescaped.length() - 1)  // remove wrapping quotes
+                    .replace("\\\\", "\\")        // unescape \\ -> \
+                    .replace("\\\"", "\"")        // unescape \" -> "
+                    .replace("\\u003C", "<");    // unescape \u003c" -> <
+        }
+
+        if (mJSDataListener != null) {
+            mJSDataListener.onDataReceived(unescaped);
+        }
+    }
+
+    private void callback(String value) {
+
+        if (mTextChangeListener != null) {
+            mTextChangeListener.onTextChange(value.replaceFirst(CALLBACK_SCHEME, ""));
+        }
+    }
+
+    private void callback_click(String value) {
+        if (mClickListener != null) {
+            mClickListener.onClick(value.replaceFirst(CLICK_SCHEME, ""));
+        }
+    }
+
+    private void stateCheck(String text) {
+        String state = text.replaceFirst(STATE_SCHEME, "").toUpperCase(Locale.ENGLISH);
+        List<Type> types = new ArrayList<>();
+        for (Type type : Type.values()) {
+            if (TextUtils.indexOf(state, type.name()) != -1) {
+                types.add(type);
             }
         }
-        return false;
-    }
 
-    private void SetupRichEditor() {
-        editText.setEditorBackgroundColor(0); // otherwise it will not work in dark mode
-        editText.setPadding(10, 10, 10, 10);
-        //    editText.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
-        editText.setPlaceholder(getString(R.string.placeholder));
-        editText.LoadFont("Alita Brush", "Alita Brush.ttf");
-
-        editText.setOnTextChangeListener(text -> {
-            if (text.contains("loaded"))
-                textChanged = textChangedShare;
-            if (text.contains("input"))
-                textChanged = true;
-        });
-
-        editText.setOnClickListener(new RichEditor.onClickListener() {
-            @Override
-            public void onClick(String text) {
-                String url = Utilities.getValueFromJSON(text, "href");
-                ImapNotes3.ShowAction(editText, R.string.open_link, R.string.ok, 3,
-                        () -> {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                            try {
-                                startActivity(browserIntent);
-                            } catch (ActivityNotFoundException e) {
-                                ImapNotes3.ShowMessage(R.string.no_program_found, editText, 3);
-                            }
-
-                        });
-            }
-        });
-
-        NDSpinner formatSpinner = findViewById(R.id.action_format);
-        formatSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[11], R.id.action_format, this));
-        formatSpinner.setOnItemSelectedListener(this);
-
-        NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[12], R.id.action_insert, this));
-        insertSpinner.setOnItemSelectedListener(this);
-
-        NDSpinner headingSpinner = findViewById(R.id.action_heading);
-        headingSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[8], R.id.action_heading, this));
-        headingSpinner.setOnItemSelectedListener(this);
-
-        NDSpinner alignmentSpinner = findViewById(R.id.action_alignment);
-        alignmentSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[9], R.id.action_alignment, this));
-        alignmentSpinner.setOnItemSelectedListener(this);
-
-        NDSpinner tableSpinner = findViewById(R.id.action_table);
-        tableSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[5], R.id.action_table, this));
-        tableSpinner.setOnItemSelectedListener(this);
-
-        findViewById(R.id.action_undo).setOnClickListener(v -> editText.undo());
-        findViewById(R.id.action_redo).setOnClickListener(v -> editText.redo());
-
-    }
-
-/*
-    // TODO: delete this?
-    public void onClick(View view) {
-        Log.d(TAG, "onClick");
-        //Boolean isClicked = true;
-    }
-*/
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        NDSpinner spinner = (NDSpinner) parent;
-        if ((view == null) || (!spinner.initIsDone)) return;
-        switch (view.getId()) {
-            case R.id.action_removeFormat:
-                editText.removeFormat();
-                break;
-            case R.id.action_bold:
-                editText.toggleBold();
-                break;
-            case R.id.action_italic:
-                editText.toggleItalic();
-                break;
-            case R.id.action_subscript:
-                editText.setSubscript();
-                break;
-            case R.id.action_superscript:
-                editText.setSuperscript();
-                break;
-            case R.id.action_strikethrough:
-                editText.toggleStrikeThrough();
-                break;
-            case R.id.action_underline:
-                editText.toggleUnderline();
-                break;
-            case R.id.action_heading1:
-                editText.setHeading(1);
-                break;
-            case R.id.action_heading2:
-                editText.setHeading(2);
-                break;
-            case R.id.action_heading3:
-                editText.setHeading(3);
-                break;
-            case R.id.action_heading4:
-                editText.setHeading(4);
-                break;
-            case R.id.action_heading5:
-                editText.setHeading(5);
-                break;
-            case R.id.action_heading6:
-                editText.setHeading(6);
-                break;
-            case R.id.action_txt_color:
-                SimpleColorDialog.build()
-                        .colors(this, SimpleColorDialog.MATERIAL_COLOR_PALLET_DARK)
-                        .title(getString(R.string.selectTextColor))
-                        .colorPreset(lastTxtColor)
-                        .setupColorWheelAlpha(false)
-                        .allowCustom(true)
-                        .neg(R.string.cancel)
-                        .show(this, DLG_HTML_TXT_COLOR);
-                break;
-            case R.id.action_bg_color:
-                SimpleColorDialog.build()
-                        .colors(this, SimpleColorDialog.MATERIAL_COLOR_PALLET_LIGHT)
-                        .title(getString(R.string.selectBgColor))
-                        .colorPreset(lastBgColor)
-                        .setupColorWheelAlpha(false)
-                        .allowCustom(true)
-                        .neg(R.string.cancel)
-                        .show(this, DLG_HTML_BG_COLOR);
-                break;
-            case R.id.action_font_size_1:
-                editText.setFontSize(1);
-                break;
-            case R.id.action_font_size_2:
-                editText.setFontSize(2);
-                break;
-            case R.id.action_font_size_3:
-                editText.setFontSize(3);
-                break;
-            case R.id.action_font_size_4:
-                editText.setFontSize(4);
-                break;
-            case R.id.action_font_size_5:
-                editText.setFontSize(5);
-                break;
-            case R.id.action_font_size_6:
-                editText.setFontSize(6);
-                break;
-            case R.id.action_font_size_7:
-                editText.setFontSize(7);
-                break;
-            case R.id.action_font_serif:
-                editText.setFontFamily("serif");
-                break;
-            case R.id.action_font_sansserif:
-                editText.setFontFamily("sans-serif");
-                break;
-            case R.id.action_font_monospace:
-                editText.setFontFamily("monospace");
-                break;
-            case R.id.action_font_cursive:
-                editText.setFontFamily("cursive");
-                break;
-            case R.id.action_font_fantasy:
-                editText.setFontFamily("Alita Brush");
-                break;
-            case R.id.action_indent:
-                editText.setIndent();
-                break;
-            case R.id.action_outdent:
-                editText.setOutdent();
-                break;
-            case R.id.action_align_left:
-                editText.setAlignLeft();
-                break;
-            case R.id.action_align_center:
-                editText.setAlignCenter();
-                break;
-            case R.id.action_align_right:
-                editText.setAlignRight();
-                break;
-            case R.id.action_blockquote:
-                editText.setBlockquote();
-                break;
-            case R.id.action_insert_bullets:
-                editText.setUnorderedList();
-                break;
-            case R.id.action_insert_numbers:
-                editText.setOrderedList();
-                break;
-            case R.id.action_code_off_html:
-                editText.setOnJSDataListener(value -> {
-                    editText.insertHTML(Html.escapeHtml(value));
-                });
-                editText.getSelectedHtml();
-                break;
-            case R.id.action_code_html:
-                editText.setOnJSDataListener(value -> {
-                    editText.insertHTML(value);
-                });
-                editText.getSelectedText();
-                break;
-            case R.id.action_pre:
-                editText.setPre();
-                break;
-            case R.id.action_insert_image:
-                // 1. get the selected text via callback
-                // 2. make the Image
-                editText.setOnJSDataListener(value -> {
-                    SimpleFormDialog.build()
-                            .title(R.string.insert_link_image)
-                            //.msg(R.string.please_fill_in_form)
-                            .fields(
-                                    Input.plain(DLG_INSERT_LINK_IMAGE_URL)
-                                            .required()
-                                            .hint(R.string.link_image_url)
-                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
-                                            .text(value),
-                                    Check.box(DLG_INSERT_LINK_IMAGE_RELATIVE)
-                                            .check(true)
-                                            .label(R.string.image_size_relative),
-                                    Input.plain(DLG_INSERT_LINK_IMAGE_WIDTH)
-                                            .hint(R.string.link_image_width)
-                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
-                                            .text("100"),
-                                    Input.plain(DLG_INSERT_LINK_IMAGE_HEIGHT)
-                                            .hint(R.string.link_image_height)
-                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
-                                            .text(""),
-                                    Input.plain(DLG_INSERT_LINK_IMAGE_ALT)
-                                            .hint(R.string.link_alt_text)
-                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
-                                            .text("")
-                            )
-                            .neg(R.string.cancel)
-                            .show(this, DLG_INSERT_LINK_IMAGE);
-                });
-                editText.getSelectedText();
-                break;
-            case R.id.action_insert_audio:
-                // 1. get the selected text via callback
-                // 2. make the Image
-                editText.setOnJSDataListener(value -> {
-                    if (!value.isEmpty()) {
-                        editText.insertAudio(value);
-                    } else
-                        ImapNotes3.ShowMessage(R.string.select_link_audio, editText, 1);
-                });
-                editText.getSelectedText();
-                break;
-            case R.id.action_insert_video:
-                // 1. get the selected text via callback
-                // 2. make the Image
-                editText.setOnJSDataListener(value -> {
-                    if (!value.isEmpty()) {
-                        if (value.startsWith("https://www.youtube.com"))
-                            value = value.replace("watch?v=", "embed/");
-                        // https://www.youtube.com/watch?v=3AeYHDZ2riI
-                        // https://www.youtube.com/embed/3AeYHDZ2riI
-                        editText.insertVideo(value, "video", "auto", "");
-                    } else
-                        ImapNotes3.ShowMessage(R.string.select_link_video, editText, 3);
-                });
-                editText.getSelectedText();
-                break;
-            case R.id.action_insert_youtube:
-                // 1. get the selected text via callback
-                // 2. make the Image
-                editText.setOnJSDataListener(value -> {
-                    if (!value.isEmpty()) {
-                        if (value.startsWith("https://www.youtube.com"))
-                            value = value.replace("watch?v=", "embed/");
-
-                        // https://www.youtube.com/watch?v=3AeYHDZ2riI
-                        // https://www.youtube.com/embed/3AeYHDZ2riI
-
-                        editText.insertYoutubeVideo(value);
-                    } else
-                        ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 3);
-                });
-                editText.getSelectedText();
-                break;
-            case R.id.action_insert_link:
-                // 1. get the selected text via callback
-                // 2. make the Link
-                editText.setOnJSDataListener(value -> {
-                    String url = "";
-                    String text = "";
-                    String title = "";
-                    if (!value.isEmpty()) {
-                        String[] values = value.split(" ", 2);
-                        if (values.length == 2) {
-                            url = Utilities.CheckUrlScheme(values[0]);
-                            title = values[0];
-                            text = values[1];
-                        } else {
-                            url = Utilities.CheckUrlScheme(value);
-                            text = value;
-                            title = value;
-                        }
-                    }
-                    SimpleFormDialog.build()
-                            .title(R.string.insert_link)
-                            //.msg(R.string.please_fill_in_form)
-                            .fields(
-                                    Input.plain(DLG_INSERT_LINK_URL)
-                                            .required()
-                                            .hint(R.string.link_url)
-                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
-                                            .text(url),
-                                    Input.plain(DLG_INSERT_LINK_TEXT)
-                                            .hint(R.string.link_text)
-                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
-                                            .text(text),
-                                    Input.plain(DLG_INSERT_LINK_TITLE)
-                                            .required()
-                                            .hint(R.string.link_title)
-                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
-                                            .text(title)
-                            )
-                            .neg(R.string.cancel)
-                            .show(this, DLG_INSERT_LINK);
-                });
-                editText.getSelectedText();
-                break;
-            case R.id.action_insert_checkbox:
-                editText.insertCheckbox();
-                break;
-            case R.id.action_insert_star:
-                editText.insertHTML("&#11088;");
-                break;
-            case R.id.action_insert_question:
-                editText.insertHTML("&#10067;");
-                break;
-            case R.id.action_insert_datetime:
-                //String date = Utilities.internalDateFormat.format(Calendar.getInstance().getTime());
-                String date = Calendar.getInstance().getTime().toLocaleString();
-                editText.insertHTML(date);
-                break;
-            case R.id.action_insert_exclamation:
-                editText.insertHTML("&#10071;");
-                break;
-            case R.id.action_insert_hline:
-                editText.insertHR_Line();
-                break;
-            case R.id.action_insert_section:
-                editText.insertCollapsibleSection(getString(R.string.section), getString(R.string.content));
-                break;
-            case R.id.action_insert_table:
-                SimpleFormDialog.build()
-                        .title(R.string.enter_table_dimension)
-                        //.msg(R.string.please_fill_in_form)
-                        .fields(
-                                Input.plain(DLG_TABLE_DIMENSION_COL).required().hint(R.string.count_table_col)
-                                        .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
-                                        .text("3"),
-                                Input.plain(DLG_TABLE_DIMENSION_ROW).required().hint(R.string.count_table_row)
-                                        .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
-                                        .text("5")
-                        )
-                        .neg(R.string.cancel)
-                        .show(this, DLG_TABLE_DIMENSION);
-
-                break;
-            case R.id.action_insert_column:
-                editText.addColumnToTable();
-                break;
-            case R.id.action_insert_row:
-                editText.addRowToTable();
-                break;
-            case R.id.action_delete_column:
-                editText.deleteColumnFromTable();
-                break;
-            case R.id.action_delete_row:
-                editText.deleteRowFromTable();
-                break;
-
-        }
-
-        // for color selection, it does not closes by itself
-        NDSpinner formatSpinner = findViewById(R.id.action_format);
-        formatSpinner.onDetachedFromWindow();
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
-
-    // realColor is misnamed.  It is the ID of the radio button widget that chooses the background
-    // colour.
-    private void ResetColors() {
-        editText.setEditorFontColor(getColor(R.color.EditorTxtColor));
-        (findViewById(R.id.scrollView)).setBackgroundColor(Utilities.getColorByName(bgColor, getApplicationContext()));
-        lastTxtColor = getColor(R.color.EditorTxtColor);
-        lastBgColor = Utilities.getColorByName(bgColor, getApplicationContext());
-    }
-
-    @SuppressLint("RestrictedApi")
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail, menu);
-        MenuBuilder m = (MenuBuilder) menu;
-        m.setOptionalIconsVisible(true);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
-        //MenuItem item = menu.findItem(R.id.color);
-        super.onPrepareOptionsMenu(menu);
-        //depending on your conditions, either enable/disable
-        //item.setVisible(usesticky);
-        //menu.findItem(color.id).setChecked(true);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final Intent intent = new Intent();
-        int itemId = item.getItemId();
-        switch (itemId) {
-            case R.id.delete:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.delete_note)
-                        .setMessage(R.string.are_you_sure_you_wish_to_delete_the_note)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(R.string.yes, (dialog, whichButton) -> {
-                            //Log.d(TAG,"We ask to delete Message #"+this.currentNote.get("number"));
-                            intent.putExtra("DELETE_ITEM_NUM_IMAP", suid);
-                            setResult(ListActivity.DELETE_BUTTON, intent);
-                            finish();//finishing activity
-                        })
-                        .setNegativeButton(R.string.no, null).show();
-                return true;
-            case R.id.save:
-                Save(true);
-                return true;
-            case R.id.share:
-                Share();
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                //NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.id.none:
-                item.setChecked(true);
-                bgColor = "none";
-                ResetColors();
-                return true;
-            case R.id.blue:
-                item.setChecked(true);
-                bgColor = "blue";
-                ResetColors();
-                return true;
-            case R.id.white:
-                item.setChecked(true);
-                bgColor = "white";
-                ResetColors();
-                return true;
-            case R.id.black:
-                item.setChecked(true);
-                bgColor = "black";
-                ResetColors();
-                return true;
-            case R.id.yellow:
-                item.setChecked(true);
-                bgColor = "yellow";
-                ResetColors();
-                return true;
-            case R.id.pink:
-                item.setChecked(true);
-                bgColor = "pink";
-                ResetColors();
-                return true;
-            case R.id.green:
-                item.setChecked(true);
-                bgColor = "green";
-                ResetColors();
-                return true;
-            case R.id.brown:
-                item.setChecked(true);
-                bgColor = "brown";
-                ResetColors();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (mDecorationStateListener != null) {
+            mDecorationStateListener.onStateChangeListener(state, types);
         }
     }
 
+    private void applyAttributes(Context context, AttributeSet attrs) {
+        final int[] attrsArray = new int[]{
+                android.R.attr.gravity
+        };
+        TypedArray ta = context.obtainStyledAttributes(attrs, attrsArray);
+
+        int gravity = ta.getInt(0, NO_ID);
+        switch (gravity) {
+            case Gravity.LEFT:
+                exec("javascript:RE.setTextAlign(\"left\")");
+                break;
+            case Gravity.RIGHT:
+                exec("javascript:RE.setTextAlign(\"right\")");
+                break;
+            case Gravity.TOP:
+                exec("javascript:RE.setVerticalAlign(\"top\")");
+                break;
+            case Gravity.BOTTOM:
+                exec("javascript:RE.setVerticalAlign(\"bottom\")");
+                break;
+            case Gravity.CENTER_VERTICAL:
+                exec("javascript:RE.setVerticalAlign(\"middle\")");
+                break;
+            case Gravity.CENTER_HORIZONTAL:
+                exec("javascript:RE.setTextAlign(\"center\")");
+                break;
+            case Gravity.CENTER:
+                exec("javascript:RE.setVerticalAlign(\"middle\")");
+                exec("javascript:RE.setTextAlign(\"center\")");
+                break;
+        }
+
+        ta.recycle();
+    }
+
+    public String getHtml() {
+        requestJSData("RE.getHtml()");
+        return ("data can only received by callback");
+    }
+
+    public void setHtml(String contents) {
+        if (contents == null) {
+            contents = "";
+        }
+        try {
+            exec("javascript:RE.setHtml('" + URLEncoder.encode(contents, "UTF-8") + "');");
+        } catch (UnsupportedEncodingException e) {
+            // No handling
+        }
+    }
+
+    /// Text representation of the data that has been input into the editor view, if it has been loaded.
+    public boolean getText() {
+        return requestJSData("RE.getText()");
+    }
+
+    /// Returns selected text
+    public boolean getSelectedText() {
+        return requestJSData("RE.selectedText()");
+    }
+
+    /// Returns HTML-Code from selected range
+    public boolean getSelectedHtml() {
+        return requestJSData("RE.selectedHtml()");
+    }
+
+    /// The href of the current selection, if the current selection's parent is an anchor tag.
+    /// Will be nil if there is no href, or it is an empty string.
+    public boolean getSelectedHref() {
+        if (!hasRangeSelection()) {
+            return false;
+        } else {
+            return requestJSData("RE.getSelectedHref()");
+        }
+    }
+
+    /// Whether or not the selection has a type specifically of "Range".
+    public boolean hasRangeSelection() {
+        return requestJSData("RE.rangeSelectionExists()");
+    }
+
+    /// Whether or not the selection has a type specifically of "Range" or "Caret".
+    public boolean hasRangeOrCaretSelection() {
+        return requestJSData("RE.rangeOrCaretSelectionExists()");
+    }
+
+    public void setEditorFontColor(int color) {
+        String hex = convertHexColorString(color);
+        exec("javascript:RE.setBaseTextColor('" + hex + "');");
+    }
+
+    public void setEditorFontSize(int px) {
+        exec("javascript:RE.setBaseFontSize('" + px + "px');");
+    }
+
+    @Override
+    public void setPadding(int left, int top, int right, int bottom) {
+        super.setPadding(left, top, right, bottom);
+        exec("javascript:RE.setPadding('" + left + "px', '" + top + "px', '" + right + "px', '" + bottom
+                + "px');");
+    }
+
+    @Override
+    public void setPaddingRelative(int start, int top, int end, int bottom) {
+        // still not support RTL.
+        setPadding(start, top, end, bottom);
+    }
+
+    public void setEditorBackgroundColor(int color) {
+        setBackgroundColor(color);
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+    }
+
+    @Override
+    public void setBackgroundResource(int resid) {
+        Bitmap bitmap = Utils.decodeResource(getContext(), resid);
+        String base64 = Utils.toBase64(bitmap, "png");
+        bitmap.recycle();
+
+        exec("javascript:RE.setBackgroundImage('url(data:image/png;base64," + base64 + ")');");
+    }
+
+    @Override
+    public void setBackground(Drawable background) {
+        Bitmap bitmap = Utils.toBitmap(background);
+        String base64 = Utils.toBase64(bitmap, "png");
+        bitmap.recycle();
+
+        exec("javascript:RE.setBackgroundImage('url(data:image/png;base64," + base64 + ")');");
+    }
+
+    public void setBackground(String url) {
+        exec("javascript:RE.setBackgroundImage('url(" + url + ")');");
+    }
+
+    public void setEditorWidth(int px) {
+        exec("javascript:RE.setWidth('" + px + "px');");
+    }
+
+    public void setEditorHeight(int px) {
+        exec("javascript:RE.setHeight('" + px + "px');");
+    }
+
+    public void setPlaceholder(String placeholder) {
+        exec("javascript:RE.setPlaceholderText('" + placeholder + "');");
+    }
+
+    public void setInputEnabled(Boolean inputEnabled) {
+        exec("javascript:RE.setInputEnabled(" + inputEnabled + ")");
+    }
+
+    public void loadCSS(String cssFile) {
+        String jsCSSImport =
+                "(function() {" + "    var head  = document.getElementsByTagName(\"head\")[0];"
+                        + "    var link  = document.createElement(\"link\");" + "    link.rel  = \"stylesheet\";"
+                        + "    link.type = \"text/css\";" + "    link.href = \"" + cssFile + "\";"
+                        + "    link.media = \"all\";" + "    head.appendChild(link);" + "}) ();";
+        exec("javascript:" + jsCSSImport + "");
+    }
+
+    public void undo() {
+        exec("javascript:RE.undo();");
+    }
+
+    public void redo() {
+        exec("javascript:RE.redo();");
+    }
+
+    public void setPre() {
+        exec("javascript:RE.setPre();");
+    }
+
+    public void toggleBold() {
+        exec("javascript:RE.toggleBold();");
+    }
+
+    public void setBold(boolean enabled) {
+        exec("javascript:RE.setBold(" + enabled + ");");
+    }
+
+    public void toggleItalic() {
+        exec("javascript:RE.toggleItalic();");
+    }
+
+    public void setItalic(boolean enabled) {
+        exec("javascript:RE.setItalic(" + enabled + ");");
+    }
+
+    public void setSubscript() {
+        exec("javascript:RE.setSubscript();");
+    }
+
+    public void setSuperscript() {
+        exec("javascript:RE.setSuperscript();");
+    }
+
+    public void toggleStrikeThrough() {
+        exec("javascript:RE.toggleStrikeThrough();");
+    }
+
+    public void setStrikeThrough(boolean enabled) {
+        exec("javascript:RE.setStrikeThrough(" + enabled + ");");
+    }
+
+    public void toggleUnderline() {
+        exec("javascript:RE.toggleUnderline();");
+    }
+
+    public void setUnderline(boolean enabled) {
+        exec("javascript:RE.setUnderline(" + enabled + ");");
+    }
+
+    public void setTextColor(int color) {
+        setTextColor(convertHexColorString(color));
+    }
+
+    public void setTextColor(String color) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.setTextColor('" + color + "');");
+    }
+
+    public void setTextBackgroundColor(int color) {
+
+        setTextBackgroundColor(convertHexColorString(color));
+    }
+
+    public void setTextBackgroundColor(String color) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.setTextBackgroundColor('" + color + "');");
+    }
+
+    public void setFontFamily(String fontFamily) {
+        exec("javascript:RE.setFontFamily('" + fontFamily + "');");
+    }
+
+    public void LoadFont(String name, String url) {
+        exec("javascript:RE.LoadFont('" + name + "','" + url + "');");
+    }
+
+    public void getFontFamily() {
+        requestJSData("javascript:RE.getFontFamily();");
+    }
+
+    public void setFontSize(int fontSize) {
+        if (fontSize > 7 || fontSize < 1) {
+            Log.e("RichEditor", "Font size should have a value between 1-7");
+        }
+        exec("javascript:RE.setFontSize('" + fontSize + "');");
+    }
+
+    public void removeFormat() {
+        exec("javascript:RE.removeFormat();");
+    }
+
+    public void setHeading(int heading) {
+        exec("javascript:RE.setHeading('" + heading + "');");
+    }
+
+    public void setIndent() {
+        exec("javascript:RE.setIndent();");
+    }
+
+    public void setOutdent() {
+        exec("javascript:RE.setOutdent();");
+    }
+
+    public void setAlignLeft() {
+        exec("javascript:RE.setJustifyLeft();");
+    }
+
+    public void setAlignCenter() {
+        exec("javascript:RE.setJustifyCenter();");
+    }
+
+    public void setAlignRight() {
+        exec("javascript:RE.setJustifyRight();");
+    }
+
+    public void setBlockquote() {
+        exec("javascript:RE.setBlockquote();");
+    }
+
+    public void setBullets() {
+        setUnorderedList();
+    }
+
+    public void setUnorderedList() {
+        exec("javascript:RE.setUnorderedList();");
+    }
+
+    public void setNumbers() {
+        setOrderedList();
+    }
+
+    public void setOrderedList() {
+        exec("javascript:RE.setOrderedList();");
+    }
+
+    public void insertHTML(String text) {
+        exec("javascript:RE.prepareInsert();");
+        text = text.replace("\n", "<br>")
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");        // unescape \\ -> \
+        exec("javascript:RE.insertHTML('" + text + "');");
+    }
+
+    public void insertHR_Line() {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertHTML('<hr>');");
+    }
+
+    public void insertCollapsibleSection(String section, String content) {
+        exec("javascript:RE.insertCollapsibleSection('" + section + "', '" + content + "');");
+    }
 
     /**
-     * Note that this function does not save the note to permanent storage it just passes it back to
-     * the calling activity to be saved in whatever fashion it that activity wishes.
+     * {@link RichEditor#insertImage(String, String, String, String, Boolean)} will show the original size of the image.
+     * So this method can manually process the image by adjusting specific width and height to fit into different mobile screens.
+     *
+     * @param url
+     * @param alt
+     * @param width    Width of the Image; if relative=true then 100 means 100% page width
+     * @param height   Height of the Image
+     * @param relative Image size is relative to page width
      */
-    private void Save(boolean finish) {
-        Log.d(TAG, "Save");
-        editText.setOnJSDataListener(value -> {
-            Intent intent = new Intent();
-            intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
-            intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, accountName);
-            ImapNotes3.AvoidLargeBundle = value;
-            //intent.putExtra(ListActivity.EDIT_ITEM_TXT, value);
-            intent.putExtra(ListActivity.EDIT_ITEM_COLOR, bgColor);
-            setResult(NoteDetailActivity.EDIT_BUTTON, intent);
-            textChanged = false;
-            if (finish) finish(); //finishing activity
-        });
-        // data comes via callback
-        editText.getHtml();
+    public void insertImage(String url, String alt, String width, String height, Boolean relative) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertImage('" + url + "', '" + alt + "','" + width + "', '" + height + "', '" + relative.toString() + "');");
     }
 
-    private void Share() {
-        Log.d(TAG, "Share");
-        editText.setOnJSDataListener(value -> {
-            Intent sendIntent = new Intent();
-            Spanned html = Html.fromHtml(value, Html.FROM_HTML_MODE_COMPACT);
-            String[] tok = html.toString().split("\n", 2);
-            String title = tok[0];
-
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.setType("text/html");
-            sendIntent.putExtra(Intent.EXTRA_TEXT, html);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.shared_note_from) + Utilities.ApplicationName + ": " + title);
-
-            String directory = getApplicationContext().getCacheDir().toString();
-            File outfile = new File(directory, title.replaceAll("[#:/]", "") + ".html");
-            Log.d(TAG, "Share Note: " + outfile);
-            try (OutputStream str = new FileOutputStream(outfile)) {
-                str.write(value.getBytes(StandardCharsets.UTF_8));
-            } catch (Exception e) {
-                ImapNotes3.ShowMessage(R.string.share_file_error + e.toString(), editText, 2);
-                e.printStackTrace();
-            }
-
-            Uri logUri =
-                    FileProvider.getUriForFile(
-                            getApplicationContext(),
-                            Utilities.PackageName, outfile);
-            sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
-
-            Intent shareIntent = Intent.createChooser(sendIntent, title);
-            startActivity(shareIntent);
-        });
-        // data comes via callback
-        editText.getHtml();
-
-    }
-
-    private void processShareIntent(Intent intent) {
-        String sharedData = "";
-        // Share: Receive Data as new message
-        String strAction = intent.getAction();
-        if (!editText.hasFocus()) editText.focusEditor();
-        if ((strAction != null) && strAction.equals(Intent.ACTION_SEND)) {
-            String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-            String type = intent.getType();
-            String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
-
-            Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            Log.d(TAG, "Share 1");
-            if (uri != null) {
-                if (type.startsWith("image/")) {
-                    if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) > 100000) {
-                        ImapNotes3.ShowMessage(R.string.file_size_1k, editText, 2);
-                    } else {
-                        editText.insertHTML(uri.getPath());
-                        editText.insertImageAsBase64(uri, uri.getPath(), "100", "", true);
-                    }
-                    //    }
-                } else {
-                    BufferedInputStream bufferedInputStream;
-                    try {
-                        bufferedInputStream =
-                                new BufferedInputStream(getContentResolver().openInputStream(uri));
-                        byte[] contents = new byte[1024];
-                        int bytesRead = 0;
-                        while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
-                            sharedData += new String(contents, 0, bytesRead);
-                        }
-                        bufferedInputStream.close();
-                        editText.insertHTML(sharedData);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                if (subject != null) {
-                    subject = "<b>" + subject + "</b><br>";
-                } else subject = "";
-                if (sharedText != null) {
-                    if (type.equals("text/html")) {
-                        editText.insertHTML(subject + sharedText);
-                    } else if (type.startsWith("text/")) {
-                        editText.insertHTML(Html.escapeHtml(subject + sharedText));
-                    } else if (type.startsWith("image/")) {
-                        editText.insertImage(sharedText, "shared image", "100", "", true);
-                    }
-                }
-            }
-            textChangedShare = true;
+    public void insertImageAsBase64(Uri imageURI, String alt, String width, String height, Boolean relative) {
+        InputStream inputStream = null;
+        try {
+            inputStream = getContext().getContentResolver().openInputStream(imageURI);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String type = getContext().getContentResolver().getType(imageURI).toLowerCase();
+        String tag = "data:" + type + ";charset=utf-8;base64,";
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertImage('" + tag + Utils.toBase64(bitmap, type) + "','" + alt + "','" + width + "', '" + height + "', '" + relative.toString() + "');");
+        //exec("javascript:RE.insertImage('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==','alt');");
     }
 
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause");
-        super.onPause();
+    /**
+     * {@link RichEditor#insertVideo(String, String, String, String)} will show the original size of the video.
+     * So this method can manually process the image by adjusting specific width and height to fit into different mobile screens.
+     *
+     * @param url
+     * @param alt
+     * @param width  Width of the video; auto=100% page width
+     * @param height
+     */
+    public void insertVideo(String url, String alt, String width, String height) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertVideo('" + url + "', '" + alt + "', '" + width + "' '" + height + "');");
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
-        if (textChanged) {
-            new AlertDialog.Builder(this)
-                    .setIcon(R.mipmap.ic_launcher)
-                    .setTitle(R.string.made_changes)
-                    .setMessage(R.string.save_changes)
-                    .setNegativeButton(R.string.no, (arg0, arg1) -> NoteDetailActivity.super.onBackPressed())
-                    .setNeutralButton(android.R.string.cancel, null)
-                    .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
-                        Save(true);
-                    }).create().show();
+    public void insertAudio(String url) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertAudio('" + url + "');");
+    }
+
+    public void insertYoutubeVideo(String url) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertYoutubeVideo('" + url + "');");
+    }
+
+    public void insertYoutubeVideo(String url, int width) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertYoutubeVideo('" + url + "', '" + width + "');");
+    }
+
+    public void insertYoutubeVideo(String url, int width, int height) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertYoutubeVideo('" + url + "', '" + width + "', '" + height + "');");
+    }
+
+    public void insertLink(String href, String text, String title) {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.insertLink('" + href + "', '" + text + "', '" + title + "');");
+    }
+
+    public void insertCheckbox() {
+        exec("javascript:RE.prepareInsert();");
+        exec("javascript:RE.setCheckbox();");
+    }
+
+    public void focusEditor() {
+        requestFocus();
+        exec("javascript:RE.focus();");
+    }
+
+    public void focus(Integer x, Integer y) {
+        requestFocus();
+        exec("javascript:RE.focusAtPoint(" + x.toString() + ", " + y.toString() + ")");
+    }
+
+    public void clearFocusEditor() {
+        exec("javascript:RE.blurFocus();");
+    }
+
+    private String convertHexColorString(int color) {
+        return String.format("#%06X", (0xFFFFFF & color));
+    }
+
+    protected void exec(final String trigger) {
+        if (isReady) {
+            load(trigger);
         } else {
-            NoteDetailActivity.super.onBackPressed();
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exec(trigger);
+                }
+            }, 100);
         }
     }
 
+    // MARK: Table functionalities
+    public void insertTable(Integer col, Integer row) {
+        exec("javascript:RE.prepareInsert()");
+        exec("javascript:RE.insertTable(" + col.toString() + "," + row.toString() + ")");
+    }
 
+    /// Checks if cursor is in a table element. If so, return true so that you can add menu items accordingly.
+    public void isCursorInTable() {
+        requestJSData("javascript:RE.isCursorInTable");
+    }
+
+    public void addRowToTable() {
+        exec("javascript:RE.addRowToTable()");
+    }
+
+    public void deleteRowFromTable() {
+        exec("javascript:RE.deleteRowFromTable()");
+    }
+
+    public void addColumnToTable() {
+        exec("javascript:RE.addColumnToTable()");
+    }
+
+    public void deleteColumnFromTable() {
+        exec("javascript:RE.deleteColumnFromTable()");
+    }
+
+    private void load(String trigger) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            evaluateJavascript(trigger, null);
+        } else {
+            loadUrl(trigger);
+        }
+    }
+
+    public boolean requestJSData(String cmdJS) {
+        // https://stackoverflow.com/questions/38380246/espresso-how-to-call-evaluatejavascript-on-a-webview
+        mEvaluateFinished.set(false);
+
+        evaluateJavascript(cmdJS, this);
+        return true;
+    }
+
+    public enum Type {
+        BOLD, ITALIC, SUBSCRIPT, SUPERSCRIPT, STRIKETHROUGH, UNDERLINE, H1, H2, H3, H4, H5, H6, HTML, HR, ORDEREDLIST, UNORDEREDLIST, JUSTIFYCENTER, JUSTIFYFULL, JUSTIFYLEFT, JUSTIFYRIGHT
+    }
+
+    public interface onJSDataListener {
+        public void onDataReceived(String value);
+        //public void onActionFailure(Throwable throwableError);
+    }
+
+    public interface onClickListener {
+        public void onClick(String value);
+        //public void onActionFailure(Throwable throwableError);
+    }
+
+    public interface OnTextChangeListener {
+        void onTextChange(String text);
+    }
+
+    public interface OnDecorationStateListener {
+        void onStateChangeListener(String text, List<Type> types);
+    }
+
+    public interface AfterInitialLoadListener {
+        void onAfterInitialLoad(boolean isReady);
+    }
+
+    protected class EditorWebViewClient extends WebViewClient {
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            isReady = url.equalsIgnoreCase(SETUP_HTML);
+            if (mLoadListener != null) {
+                mLoadListener.onAfterInitialLoad(isReady);
+            }
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            String decode = Uri.decode(url);
+
+            if (TextUtils.indexOf(url, CALLBACK_SCHEME) == 0) {
+                callback(decode);
+                return true;
+            } else if (TextUtils.indexOf(url, STATE_SCHEME) == 0) {
+                stateCheck(decode);
+                return true;
+            }
+
+            return super.shouldOverrideUrlLoading(view, url);
+        }
+
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            final String url = request.getUrl().toString();
+            String decode = Uri.decode(url);
+
+            if (TextUtils.indexOf(url, CALLBACK_SCHEME) == 0) {
+                callback(decode);
+                return true;
+            } else if (TextUtils.indexOf(url, STATE_SCHEME) == 0) {
+                stateCheck(decode);
+                return true;
+            } else if (TextUtils.indexOf(url, CLICK_SCHEME) == 0) {
+                callback_click(decode);
+                return true;
+            }
+            return super.shouldOverrideUrlLoading(view, request);
+        }
+    }
 }

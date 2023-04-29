@@ -14,3 +14,4 @@
 * add dialog for table dimensions
 * add dialog for insert link
 * add dialog for insert image
+* lots of bug fixes
