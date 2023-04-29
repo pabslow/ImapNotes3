@@ -124,10 +124,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setElevation(0); // or other
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.ActionBgColor)));
-        // Don't display keyboard when on note detail, only if user touches the screen
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
         editText = findViewById(R.id.bodyView);
 
         Intent intent = getIntent();
@@ -223,6 +219,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private void SetupRichEditor() {
         editText.setEditorBackgroundColor(0); // otherwise it will not work in dark mode
         editText.setPadding(10, 10, 10, 10);
+        editText.setEditorFontSize(18);
         //    editText.setBackground("https://raw.githubusercontent.com/wasabeef/art/master/chip.jpg");
         editText.setPlaceholder(getString(R.string.placeholder));
         editText.LoadFont("Alita Brush", "Alita Brush.ttf");
@@ -234,21 +231,22 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 textChanged = true;
         });
 
-        editText.setOnClickListener(new RichEditor.onClickListener() {
-            @Override
-            public void onClick(String text) {
-                String url = Utilities.getValueFromJSON(text, "href");
-                ImapNotes3.ShowAction(editText, R.string.open_link, R.string.ok, 3,
-                        () -> {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                            try {
-                                startActivity(browserIntent);
-                            } catch (ActivityNotFoundException e) {
-                                ImapNotes3.ShowMessage(R.string.no_program_found, editText, 3);
-                            }
+        editText.setOnInitialLoadListener((RichEditor.AfterInitialLoadListener) ready -> {
+            editText.setEditorHeight(editText.getHeight());
+            });
 
-                        });
-            }
+        editText.setOnClickListener((RichEditor.onClickListener) text -> {
+            String url = Utilities.getValueFromJSON(text, "href");
+            ImapNotes3.ShowAction(editText, R.string.open_link, R.string.ok, 3,
+                    () -> {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        try {
+                            startActivity(browserIntent);
+                        } catch (ActivityNotFoundException e) {
+                            ImapNotes3.ShowMessage(R.string.no_program_found, editText, 3);
+                        }
+
+                    });
         });
 
         NDSpinner formatSpinner = findViewById(R.id.action_format);
@@ -275,14 +273,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         findViewById(R.id.action_redo).setOnClickListener(v -> editText.redo());
 
     }
-
-/*
-    // TODO: delete this?
-    public void onClick(View view) {
-        Log.d(TAG, "onClick");
-        //Boolean isClicked = true;
-    }
-*/
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
