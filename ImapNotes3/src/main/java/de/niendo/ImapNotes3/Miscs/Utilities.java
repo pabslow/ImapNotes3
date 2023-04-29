@@ -102,7 +102,10 @@ public final class Utilities {
         return url;
     }
 
+
     public static String getRealSizeFromUri(Context context, Uri uri) {
+        // https://stackoverflow.com/questions/45589736/uri-file-size-is-always-0
+
         Cursor cursor = null;
         try {
             String[] proj = {MediaStore.Audio.Media.SIZE};
