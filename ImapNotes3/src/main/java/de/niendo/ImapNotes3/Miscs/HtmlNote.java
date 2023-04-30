@@ -144,6 +144,7 @@ public class HtmlNote {
                 }
                 // import plain text notes
                 if ((contentType != null) && contentType.match("text/plain")) {
+                    stringres = (String) message.getContent();
                     Spannable text = new SpannableString(stringres);
                     stringres = Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
                     stringres = stringres.replaceFirst("<p dir=\"ltr\">", "");
