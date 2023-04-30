@@ -81,6 +81,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
@@ -419,6 +420,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     @SuppressLint("RestrictedApi")
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        super.onCreateOptionsMenu( menu );
         actionMenu = menu;
         getMenuInflater().inflate(R.menu.list, menu);
 
@@ -430,8 +432,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         //SearchManager searchManager =
         //        (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuItem = menu.findItem(R.id.search);
-        SearchView searchView =
-                (SearchView) menuItem.getActionView();
+        SearchView searchView = (SearchView) menuItem.getActionView();
+
         // searchView.setSearchableInfo(
         //         searchManager.getSearchableInfo(getComponentName()));
         SearchView.OnQueryTextListener textChangeListener = new SearchView.OnQueryTextListener() {
@@ -465,6 +467,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                //searchView.requestFocus(); - doesn't work properly
+                searchView.setIconifiedByDefault(false);
+                searchView.setIconified(false);
                 accountSpinner.setEnabled(false);
                 mFilterString = "";
                 listToView.getFilter().filter("");
@@ -479,12 +484,16 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 mFilterString = "";
                 listToView.ResetFilterData(noteList);
                 listToView.notifyDataSetChanged();
+                searchView.clearFocus();
                 return true;
             }
         });
 
-        searchView.setOnQueryTextListener(textChangeListener);
+        // searchView.requestFocus(); - doesn't work properly
+        searchView.setIconifiedByDefault(false);
+        searchView.setIconified(false);
 
+        searchView.setOnQueryTextListener(textChangeListener);
         // load values from disk
         SharedPreferences preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE);
 
