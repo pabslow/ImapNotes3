@@ -46,6 +46,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,6 +67,7 @@ import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.SyncInterval;
+import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
@@ -74,6 +76,7 @@ import de.niendo.ImapNotes3.Sync.SyncService;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 
 import org.apache.commons.io.FileUtils;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -85,6 +88,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
@@ -515,6 +521,29 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         return OneNote.DATE + " DESC";
     }
 
+    public static List<String> searchHTMLTags(@NonNull File nameDir, @NonNull String uid, String searchTerm, boolean useRegex) {
+        // Compile the regular expression pattern if necessary
+        Pattern pattern = null;
+        List<String> retVal = new ArrayList<String>();
+        if (useRegex) {
+            try {
+                pattern = Pattern.compile(searchTerm);
+            } catch (PatternSyntaxException e) {
+                return retVal;
+            }
+        } else {
+            pattern = Pattern.compile(Pattern.quote(searchTerm), Pattern.CASE_INSENSITIVE);
+        }
+
+        String html = Jsoup.parse(HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromFile(nameDir, uid)).text).text();
+
+        Matcher matcher = pattern.matcher(html);
+        while (matcher.find()) {
+            retVal.add(matcher.group());
+        }
+        return retVal;
+    }
+
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.newaccount:
@@ -547,6 +576,22 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case R.id.sort_color: {
                 item.setChecked(true);
                 RefreshList();
+                return true;
+            }
+            case R.id.refresh_tags: {
+                for (OneNote note : noteList) {
+                    String accountName = note.get(OneNote.ACCOUNT);
+                    File directory = ImapNotes3.GetAccountDir(accountName);
+
+                    String uid = (String) note.get(OneNote.UID);
+                    if (uid.startsWith("-")) {
+                        uid = uid.substring(1);
+                        directory = new File(directory, "new");
+                    }
+                    List<String> tags = searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
+                    Log.d(TAG, "FilterResults: " + directory + "/" + uid);
+                    storedNotes.UpdateTags(tags, uid, accountName);
+                }
                 return true;
             }
 

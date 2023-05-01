@@ -335,6 +335,10 @@ public class EditorMenuAdapter extends ArrayAdapter<String> {
                         row.setId(R.id.action_insert_datetime);
                         icon.setImageResource(R.drawable.insert_datetime);
                         break;
+                    case 12:
+                        row.setId(R.id.action_insert_hashtag);
+                        icon.setImageResource(R.drawable.insert_hashtag);
+                        break;
                 }
                 break;
             case R.id.action_table:

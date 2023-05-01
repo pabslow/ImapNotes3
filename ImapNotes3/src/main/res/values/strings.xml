@@ -117,4 +117,8 @@
     <string name="link_image_height">Height</string>
     <string name="image_size_relative">Image size is relative to page width</string>
     <string name="file_size_1k">Only files smaller than 100KB allowed.</string>
+    <string name="insert_hashtag">Insert #HashTag</string>
+    <string name="insert_hashtag_name">Tag Name</string>
+    <string name="insert_hashtag_syntax">Not a valid hastag</string>
+    <string name="refresh_tags">Recreate HashTag list</string>
 </resources>

@@ -49,6 +49,7 @@ import android.widget.AdapterView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Miscs.EditorMenuAdapter;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
@@ -66,6 +67,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.mail.Message;
 
@@ -104,6 +106,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String DLG_INSERT_LINK_IMAGE_HEIGHT = "DLG_INSERT_LINK_IMAGE_HEIGHT";
     public static final String DLG_INSERT_LINK_IMAGE_RELATIVE = "DLG_INSERT_LINK_IMAGE_RELATIVE";
 
+    public static final String DLG_INSERT_HASHTAG_NAME = "DLG_INSERT_HASHTAG_NAME";
+    public static final String DLG_INSERT_HASHTAG = "DLG_INSERT_HASHTAG";
+
     private static final int EDIT_BUTTON = 6;
     private static final String TAG = "IN_NoteDetailActivity";
     private boolean textChanged = false;
@@ -115,6 +120,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private RichEditor editText;
     private @ColorInt int lastTxtColor = 0x80e9a11d;
     private @ColorInt int lastBgColor = 0x80e9a11d;
+    private String lastTag = "#tag";
     //endregion
 
     public void onCreate(Bundle savedInstanceState) {
@@ -211,6 +217,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                             extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
                             extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
                     return true;
+                case DLG_INSERT_HASHTAG:
+                    lastTag = extras.getString(DLG_INSERT_HASHTAG_NAME);
+                    editText.insertHTML(lastTag + " ");
+                    return true;
             }
         }
         return false;
@@ -254,7 +264,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         formatSpinner.setOnItemSelectedListener(this);
 
         NDSpinner insertSpinner = findViewById(R.id.action_insert);
-        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[12], R.id.action_insert, this));
+        insertSpinner.setAdapter(new EditorMenuAdapter(NoteDetailActivity.this, R.layout.editor_row, new String[13], R.id.action_insert, this));
         insertSpinner.setOnItemSelectedListener(this);
 
         NDSpinner headingSpinner = findViewById(R.id.action_heading);
@@ -546,6 +556,24 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 //String date = Utilities.internalDateFormat.format(Calendar.getInstance().getTime());
                 String date = Calendar.getInstance().getTime().toLocaleString();
                 editText.insertHTML(date);
+                break;
+            case R.id.action_insert_hashtag:
+                NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
+                List<String> tags = storedNotes.GetTags("", "");
+                String[] tagArray = new String[tags.size()];
+                tags.toArray(tagArray);
+                SimpleFormDialog.build()
+                        .title(R.string.insert_hashtag)
+                        //.msg(R.string.please_fill_in_form)
+                        .fields(
+                                Input.plain(DLG_INSERT_HASHTAG_NAME).required().hint(R.string.insert_hashtag_name)
+                                        .inputType(InputType.TYPE_TEXT_VARIATION_NORMAL | InputType.TYPE_CLASS_TEXT)
+                                        .suggest(tagArray)
+                                        .validatePattern(Utilities.HASHTAG_PATTERN, getString(R.string.insert_hashtag_syntax))
+                                        .text(lastTag)
+                        )
+                        .neg(R.string.cancel)
+                        .show(this, DLG_INSERT_HASHTAG);
                 break;
             case R.id.action_insert_exclamation:
                 editText.insertHTML("&#10071;");

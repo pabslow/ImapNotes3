@@ -52,7 +52,7 @@ public final class Utilities {
     public static String internalDateFormatString = "yyyy-MM-dd HH:mm:ss";
     @NonNull
     public static SimpleDateFormat internalDateFormat = new SimpleDateFormat(internalDateFormatString, Locale.ROOT);
-
+    public static String HASHTAG_PATTERN = "(?<=(\\s|^))#[^\\s\\!\\@\\#\\$\\%\\^\\<\\>\\&\\*\\(\\)]+(?=(\\s|$))";
     /**
      * The notes have a time stamp associated with time and this is stored as a string on the
      * server so we must define a fixed format for it.

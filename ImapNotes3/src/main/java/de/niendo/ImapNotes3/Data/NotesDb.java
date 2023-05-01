@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.niendo.ImapNotes3.Miscs.Utilities;
 
@@ -49,19 +50,26 @@ public class NotesDb extends SQLiteOpenHelper {
     private static final String COL_NUMBER = "number";
     private static final String COL_ACCOUNT_NAME = "accountname";
     private static final String COL_BGCOLOR = "bgcolor";
-    private static final String TABLE_NAME = "notesTable";
-
+    private static final String TABLE_NAME_NOTES = "notesTable";
     public static final String CREATE_NOTES_DB = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_NAME
+            + TABLE_NAME_NOTES
             + " (pk integer primary key autoincrement, "
             + COL_TITLE + " text not null, "
             + COL_DATE + " text not null, "
             + COL_NUMBER + " text not null, "
             + COL_BGCOLOR + " text not null, "
             + COL_ACCOUNT_NAME + " text not null);";
+    private static final String TABLE_NAME_TAGS = "tagsTable";
+    public static final String CREATE_TAGS_DB = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_NAME_TAGS
+            + " (pk integer primary key autoincrement, "
+            + COL_NUMBER + " text not null, "
+            + COL_TITLE + " text not null, "
+            + COL_BGCOLOR + " text not null, "
+            + COL_ACCOUNT_NAME + " text not null);";
 
 
-    private static final int NOTES_VERSION = 3;
+    private static final int NOTES_VERSION = 4;
     private static final String DATABASE_NAME = "NotesDb";
 
     private static NotesDb instance = null;
@@ -80,14 +88,21 @@ public class NotesDb extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_NOTES_DB);
+        db.execSQL(CREATE_TAGS_DB);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
             //SQLiteDatabase db = this.getWritableDatabase();
-            db.execSQL("Drop table notesTable;");
+            db.execSQL("Drop table " + TABLE_NAME_NOTES + ";");
             db.execSQL(CREATE_NOTES_DB);
+            try {
+                db.execSQL("Drop table " + TABLE_NAME_TAGS + ";");
+                db.execSQL(CREATE_TAGS_DB);
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -104,8 +119,7 @@ public class NotesDb extends SQLiteOpenHelper {
         tableRow.put(COL_NUMBER, noteElement.GetUid());
         tableRow.put(COL_BGCOLOR, noteElement.GetBgColor());
         tableRow.put(COL_ACCOUNT_NAME, noteElement.GetAccount());
-        db.insert(TABLE_NAME, null, tableRow);
-
+        db.insert(TABLE_NAME_NOTES, null, tableRow);
 
         //Log.d(TAG, "note inserted");
         db.close();
@@ -168,7 +182,7 @@ public class NotesDb extends SQLiteOpenHelper {
         tableRow.put(COL_NUMBER, RetValue);
         tableRow.put(COL_ACCOUNT_NAME, accountname);
         tableRow.put(COL_BGCOLOR, "");
-        db.insert(TABLE_NAME, null, tableRow);
+        db.insert(TABLE_NAME_NOTES, null, tableRow);
         db.close();
         return (RetValue);
     }
@@ -186,7 +200,7 @@ public class NotesDb extends SQLiteOpenHelper {
             selectionArgs = new String[]{accountName};
         }
 
-        try (Cursor resultPointer = db.query(TABLE_NAME, null, selection,
+        try (Cursor resultPointer = db.query(TABLE_NAME_NOTES, null, selection,
                 selectionArgs, null, null, sortOrder)) {
 
             if (resultPointer.moveToFirst()) {
@@ -230,9 +244,61 @@ public class NotesDb extends SQLiteOpenHelper {
         db.close();
     }
 
+    public synchronized void UpdateTags(@NonNull List<String> tags, @NonNull String uid, @NonNull String accountname) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TABLE_NAME_TAGS + " where accountname = '" + accountname + "' and " + COL_NUMBER + "= '" + uid + "'");
+        ContentValues tableRow = new ContentValues();
+        tableRow.put(COL_NUMBER, uid);
+        tableRow.put(COL_BGCOLOR, "");
+        tableRow.put(COL_ACCOUNT_NAME, accountname);
+        for (String tag : tags) {
+            tableRow.put(COL_TITLE, tag);
+            db.insert(TABLE_NAME_TAGS, null, tableRow);
+        }
+        db.close();
+    }
+
+    public synchronized List<String> GetTags(@NonNull String uid, @NonNull String accountName) {
+        List<String> retVal = new ArrayList<String>();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selection = "";
+        String[] selectionArgs = new String[]{};
+        if (!(accountName.isEmpty())) {
+            selection = COL_ACCOUNT_NAME + " = ?";
+            selectionArgs = new String[]{accountName};
+            if (!(uid.isEmpty())) {
+                selection = COL_ACCOUNT_NAME + " = ? AND " + COL_NUMBER + " = ?";
+                selectionArgs = new String[]{accountName, uid};
+            }
+        } else if (!(uid.isEmpty())) {
+            selection = COL_NUMBER + " = ?";
+            selectionArgs = new String[]{uid};
+        }
+
+        try (Cursor resultPointer = db.query(TABLE_NAME_TAGS, null, selection,
+                selectionArgs, COL_TITLE, null, COL_TITLE + " ASC")) {
+
+            if (resultPointer.moveToFirst()) {
+                int titleIndex = resultPointer.getColumnIndex(COL_TITLE);
+                //int AccountNameIndex = resultPointer.getColumnIndex(COL_ACCOUNT_NAME);
+                //int numberIndex = resultPointer.getColumnIndex(COL_NUMBER);
+                //int bgColorIndex = resultPointer.getColumnIndex(COL_BGCOLOR);
+                do {
+                    retVal.add(resultPointer.getString(titleIndex));
+                } while (resultPointer.moveToNext());
+                resultPointer.close();
+            }
+            db.close();
+            return retVal;
+        }
+    }
+
+
     public synchronized void ClearDb(@NonNull String accountname) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from notesTable where accountname = '" + accountname + "'");
+        db.execSQL("delete from " + TABLE_NAME_NOTES + " where accountname = '" + accountname + "'");
+        db.execSQL("delete from " + TABLE_NAME_TAGS + " where accountname = '" + accountname + "'");
         db.close();
     }
 }

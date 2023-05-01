@@ -60,6 +60,14 @@
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
+        android:id="@+id/refresh_tags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/is_action_refresh_tags"
+        android:title="@string/refresh_tags"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/send_debug_report"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
