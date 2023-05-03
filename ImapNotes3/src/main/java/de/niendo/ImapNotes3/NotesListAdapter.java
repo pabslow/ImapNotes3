@@ -407,7 +407,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
 
             if (mUnfilteredData == null) {
                 mUnfilteredData = new ArrayList<>();
-                storedNotes.GetStoredNotes(mUnfilteredData, "", mSortOrder);
+                storedNotes.GetStoredNotes(mUnfilteredData, "", mSortOrder, null);
             }
 
             if (prefix == null || prefix.length() == 0) {

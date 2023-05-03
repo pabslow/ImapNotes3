@@ -45,29 +45,43 @@ public class NotesDb extends SQLiteOpenHelper {
     private static final String TAG = "IN_NotesDb";
 
 
-    private static final String COL_TITLE = "title";
+    private static final String COL_TITLE_NOTE = "title";
+    public static final String CREATE_NOTES_DB = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_NAME_NOTES
+            + " (pk integer primary key autoincrement, "
+            + COL_TITLE_NOTE + " text not null, "
+            + COL_DATE + " text not null, "
+            + COL_NUMBER + " text not null, "
+            + COL_BGCOLOR + " text not null, "
+            + COL_ACCOUNT_NAME + " text not null);";
     private static final String COL_DATE = "date";
     private static final String COL_NUMBER = "number";
     private static final String COL_ACCOUNT_NAME = "accountname";
     private static final String COL_BGCOLOR = "bgcolor";
     private static final String TABLE_NAME_NOTES = "notesTable";
-    public static final String CREATE_NOTES_DB = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_NAME_NOTES
-            + " (pk integer primary key autoincrement, "
-            + COL_TITLE + " text not null, "
-            + COL_DATE + " text not null, "
-            + COL_NUMBER + " text not null, "
-            + COL_BGCOLOR + " text not null, "
-            + COL_ACCOUNT_NAME + " text not null);";
+    private static final String COL_TITLE_TAG = "tag";
     private static final String TABLE_NAME_TAGS = "tagsTable";
     public static final String CREATE_TAGS_DB = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME_TAGS
             + " (pk integer primary key autoincrement, "
             + COL_NUMBER + " text not null, "
-            + COL_TITLE + " text not null, "
+            + COL_TITLE_TAG + " text not null, "
             + COL_BGCOLOR + " text not null, "
             + COL_ACCOUNT_NAME + " text not null);";
-
+    private static final String VIEW_NAME_TAGS = "tagsView";
+    public static final String CREATE_TAGS_VIEW = "CREATE VIEW IF NOT EXISTS "
+            + VIEW_NAME_TAGS
+            + "\n AS SELECT "
+            + TABLE_NAME_NOTES + "." + COL_NUMBER + " AS " + COL_NUMBER + ","
+            + COL_TITLE_NOTE + ","
+            + COL_DATE + ","
+            + TABLE_NAME_NOTES + "." + COL_BGCOLOR + " AS " + COL_BGCOLOR + ","
+            + TABLE_NAME_NOTES + "." + COL_ACCOUNT_NAME + " AS " + COL_ACCOUNT_NAME + ","
+            + TABLE_NAME_TAGS + "." + COL_TITLE_TAG + " AS " + COL_TITLE_TAG
+            + "\n FROM "
+            + TABLE_NAME_NOTES
+            + "\n INNER JOIN " + TABLE_NAME_TAGS + " ON " + TABLE_NAME_NOTES + "." + COL_NUMBER + " = " + TABLE_NAME_TAGS + "." + COL_NUMBER
+            + "\n AND " + TABLE_NAME_NOTES + "." + COL_ACCOUNT_NAME + " = " + TABLE_NAME_TAGS + "." + COL_ACCOUNT_NAME + ";";
 
     private static final int NOTES_VERSION = 4;
     private static final String DATABASE_NAME = "NotesDb";
@@ -89,20 +103,30 @@ public class NotesDb extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_NOTES_DB);
         db.execSQL(CREATE_TAGS_DB);
+        // Log.d(TAG, CREATE_TAGS_VIEW);
+        db.execSQL(CREATE_TAGS_VIEW);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
             //SQLiteDatabase db = this.getWritableDatabase();
-            db.execSQL("Drop table " + TABLE_NAME_NOTES + ";");
-            db.execSQL(CREATE_NOTES_DB);
+            try {
+                db.execSQL("Drop table " + TABLE_NAME_NOTES + ";");
+            } catch (Exception e) {
+            }
             try {
                 db.execSQL("Drop table " + TABLE_NAME_TAGS + ";");
-                db.execSQL(CREATE_TAGS_DB);
             } catch (Exception e) {
-
             }
+            try {
+                db.execSQL("Drop view " + VIEW_NAME_TAGS + ";");
+            } catch (Exception e) {
+            }
+
+            db.execSQL(CREATE_NOTES_DB);
+            db.execSQL(CREATE_TAGS_DB);
+            db.execSQL(CREATE_TAGS_VIEW);
         }
     }
 
@@ -114,7 +138,7 @@ public class NotesDb extends SQLiteOpenHelper {
                 "' and accountname = '" + noteElement.GetAccount() + "' and title = 'tmp'");
 
         ContentValues tableRow = new ContentValues();
-        tableRow.put(COL_TITLE, noteElement.GetTitle());
+        tableRow.put(COL_TITLE_NOTE, noteElement.GetTitle());
         tableRow.put(COL_DATE, noteElement.GetDate());
         tableRow.put(COL_NUMBER, noteElement.GetUid());
         tableRow.put(COL_BGCOLOR, noteElement.GetBgColor());
@@ -177,7 +201,7 @@ public class NotesDb extends SQLiteOpenHelper {
         }
         // Create DS with TempNumber, so it can not be given two times
         ContentValues tableRow = new ContentValues();
-        tableRow.put(COL_TITLE, "tmp");
+        tableRow.put(COL_TITLE_NOTE, "tmp");
         tableRow.put(COL_DATE, "");
         tableRow.put(COL_NUMBER, RetValue);
         tableRow.put(COL_ACCOUNT_NAME, accountname);
@@ -189,29 +213,44 @@ public class NotesDb extends SQLiteOpenHelper {
 
     public synchronized void GetStoredNotes(@NonNull ArrayList<OneNote> noteList,
                                             @NonNull String accountName,
-                                            @NonNull String sortOrder) {
+                                            @NonNull String sortOrder,
+                                            String[] hashFilter) {
+        String table = TABLE_NAME_NOTES;
         noteList.clear();
         Date date = null;
         SQLiteDatabase db = this.getWritableDatabase();
-        String selection = "";
-        String[] selectionArgs = new String[]{};
+        String selection = "1=1";
+        String GroupBy = "";
+        List<String> selectionArgsList = new ArrayList<String>();
+
         if (!(accountName.isEmpty())) {
-            selection = COL_ACCOUNT_NAME + " = ?";
-            selectionArgs = new String[]{accountName};
+            selection += " AND " + COL_ACCOUNT_NAME + " = ?";
+            selectionArgsList.add(accountName);
         }
 
-        try (Cursor resultPointer = db.query(TABLE_NAME_NOTES, null, selection,
-                selectionArgs, null, null, sortOrder)) {
+        if (!(hashFilter == null)) {
+            table = VIEW_NAME_TAGS;
+            selection += " AND (1=2";
+            for (String filter : hashFilter) {
+                selection += " OR " + COL_TITLE_TAG + " = ?";
+                selectionArgsList.add(filter);
+            }
+            selection += ")";
+            GroupBy = COL_ACCOUNT_NAME + "," + COL_NUMBER;
+        }
 
+        String[] selectionArgs = new String[selectionArgsList.size()];
+        ;
+        selectionArgsList.toArray(selectionArgs);
+
+        try (Cursor resultPointer = db.query(table, null, selection,
+                selectionArgs, GroupBy, null, sortOrder)) {
             if (resultPointer.moveToFirst()) {
-                int titleIndex = resultPointer.getColumnIndex(COL_TITLE);
-                //int bodyIndex = resultPointer.getColumnIndex("body");
+                int titleIndex = resultPointer.getColumnIndex(COL_TITLE_NOTE);
                 int AccountNameIndex = resultPointer.getColumnIndex(COL_ACCOUNT_NAME);
                 int dateIndex = resultPointer.getColumnIndex(COL_DATE);
                 int numberIndex = resultPointer.getColumnIndex(COL_NUMBER);
                 int bgColorIndex = resultPointer.getColumnIndex(COL_BGCOLOR);
-                //int positionIndex = resultPointer.getColumnIndex("position");
-                //int colorIndex = resultPointer.getColumnIndex("color");
                 do {
                     //String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
                     //SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
@@ -252,7 +291,7 @@ public class NotesDb extends SQLiteOpenHelper {
         tableRow.put(COL_BGCOLOR, "");
         tableRow.put(COL_ACCOUNT_NAME, accountname);
         for (String tag : tags) {
-            tableRow.put(COL_TITLE, tag);
+            tableRow.put(COL_TITLE_TAG, tag);
             db.insert(TABLE_NAME_TAGS, null, tableRow);
         }
         db.close();
@@ -277,13 +316,10 @@ public class NotesDb extends SQLiteOpenHelper {
         }
 
         try (Cursor resultPointer = db.query(TABLE_NAME_TAGS, null, selection,
-                selectionArgs, COL_TITLE, null, COL_TITLE + " ASC")) {
+                selectionArgs, COL_TITLE_TAG, null, COL_TITLE_TAG + " ASC")) {
 
             if (resultPointer.moveToFirst()) {
-                int titleIndex = resultPointer.getColumnIndex(COL_TITLE);
-                //int AccountNameIndex = resultPointer.getColumnIndex(COL_ACCOUNT_NAME);
-                //int numberIndex = resultPointer.getColumnIndex(COL_NUMBER);
-                //int bgColorIndex = resultPointer.getColumnIndex(COL_BGCOLOR);
+                int titleIndex = resultPointer.getColumnIndex(COL_TITLE_TAG);
                 do {
                     retVal.add(resultPointer.getString(titleIndex));
                 } while (resultPointer.moveToNext());

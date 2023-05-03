@@ -54,6 +54,14 @@
     </group>
 
     <item
+        android:id="@+id/sort_hash"
+        android:checked="false"
+        android:icon="@drawable/ic_action_filter_hash"
+        android:title="@string/filter_by_hash"
+        android:visible="true"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
         android:id="@+id/newaccount"
         android:icon="@drawable/ic_action_add_user"
         android:title="@string/new_account"

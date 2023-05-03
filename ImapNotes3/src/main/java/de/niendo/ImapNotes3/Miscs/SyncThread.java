@@ -46,6 +46,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
     private final NotesListAdapter adapter;
     private final ArrayList<OneNote> notesList;
     private final String sortOrder;
+    private final String[] hashFilter;
     private final String accountName;
     //private final WeakReference<Context> applicationContextRef;
 
@@ -62,6 +63,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
                       NotesListAdapter listToView,
                       @StringRes int resId,
                       String sortOrder,
+                      String[] hashFilter,
                       Context context) {
         //this.imapFolder = imapFolder;
         this.accountName = accountName;
@@ -69,6 +71,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
         this.adapter = listToView;
         this.resId = resId;
         this.sortOrder = sortOrder;
+        this.hashFilter = hashFilter;
         //Notifier.Show(resId, applicationContext, 1);
         this.storedNotes = NotesDb.getInstance(context);
         //this applicationContextRef= new WeakReference<>(context);;
@@ -98,7 +101,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
         //security = ((ImapNotesAccount) stuffs[1]).GetSecurity();
         //usesticky = ((ImapNotesAccount) stuffs[1]).GetUsesticky();
 
-        storedNotes.GetStoredNotes(this.notesList, accountName, sortOrder);
+        storedNotes.GetStoredNotes(this.notesList, accountName, sortOrder, hashFilter);
         return true;
     }
 

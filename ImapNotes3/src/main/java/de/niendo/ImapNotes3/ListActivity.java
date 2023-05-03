@@ -46,7 +46,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -74,6 +73,8 @@ import de.niendo.ImapNotes3.Miscs.UpdateThread;
 import de.niendo.ImapNotes3.Miscs.Utilities;
 import de.niendo.ImapNotes3.Sync.SyncService;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
+import eltos.simpledialogfragment.SimpleDialog;
+import eltos.simpledialogfragment.list.SimpleListDialog;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -95,7 +96,7 @@ import java.util.regex.PatternSyntaxException;
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
 
-public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable {
+public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener {
     private static final int SEE_DETAIL = 2;
     public static final int DELETE_BUTTON = 3;
     private static final int NEW_BUTTON = 4;
@@ -124,6 +125,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static final String SORT_BY_DATE = "SORT_BY_DATE";
     private static final String SORT_BY_TITLE = "SORT_BY_TITLE";
     private static final String SORT_BY_COLOR = "SORT_BY_COLOR";
+    private static final String DLG_FILTER_HASHTAG = "DLG_FILTER_HASHTAG";
     //endregion
     private Intent intentActionSend;
     private ArrayList<OneNote> noteList;
@@ -138,6 +140,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static List<String> currentList;
     private static Menu actionMenu;
     private static CharSequence mFilterString = "";
+    private static String[] hashFilter;
     @NonNull
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, @NonNull Intent intent) {
@@ -169,7 +172,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 status.setText(statusText);
 
                 //if (isChanged) {
-                storedNotes.GetStoredNotes(noteList, accountName, getSortOrder());
+                storedNotes.GetStoredNotes(noteList, accountName, getSortOrder(), hashFilter);
                 listToView.notifyDataSetChanged();
                 //}
             }
@@ -291,6 +294,30 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         editAccountButton.setOnClickListener(clickListenerEditAccount);
     }
 
+
+    @Override
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
+        if (which == BUTTON_POSITIVE) {
+            switch (dialogTag) {
+                case DLG_FILTER_HASHTAG:
+                    ArrayList<String> labels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
+                    //long[] ids = extras.getLongArray(SimpleListDialog.SELECTED_IDS); // derived from CustomListDialog
+
+                    if (labels.size() == 0)
+                        hashFilter = null;
+                    else {
+                        hashFilter = new String[labels.size()];
+                        labels.toArray(hashFilter);
+                    }
+                    ;
+                    RefreshList();
+                    return true;
+            }
+        }
+        return false;
+    }
+
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -393,6 +420,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 listToView,
                 R.string.refreshing_notes_list,
                 getSortOrder(),
+                hashFilter,
                 // FIXME: this. ?
                 getApplicationContext()).execute();
 
@@ -463,7 +491,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         };
         // restore List and Filter after closing search
         searchView.setOnCloseListener(() -> {
-            storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
+            storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder(), hashFilter);
             mFilterString = "";
             this.listToView.ResetFilterData(noteList);
             listToView.notifyDataSetChanged();
@@ -486,7 +514,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 accountSpinner.setEnabled(true);
                 //listToView.getFilter().filter("");
-                storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
+                storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder(), hashFilter);
                 mFilterString = "";
                 listToView.ResetFilterData(noteList);
                 listToView.notifyDataSetChanged();
@@ -576,6 +604,19 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case R.id.sort_color: {
                 item.setChecked(true);
                 RefreshList();
+                return true;
+            }
+            case R.id.sort_hash: {
+                NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
+                List<String> tags = storedNotes.GetTags("", ImapNotesAccount.accountName);
+                String[] tagArray = new String[tags.size()];
+                tags.toArray(tagArray);
+                SimpleListDialog.build()
+                        .title(R.string.filter_by_hash)
+                        .choiceMode(SimpleListDialog.MULTI_CHOICE)
+                        .items(tagArray)
+                        .filterable(true)
+                        .show(this, DLG_FILTER_HASHTAG);
                 return true;
             }
             case R.id.refresh_tags: {
