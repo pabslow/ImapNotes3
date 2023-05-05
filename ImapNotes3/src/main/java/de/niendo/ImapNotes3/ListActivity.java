@@ -620,18 +620,15 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 return true;
             }
             case R.id.refresh_tags: {
-                for (OneNote note : noteList) {
-                    String accountName = note.get(OneNote.ACCOUNT);
-                    File directory = ImapNotes3.GetAccountDir(accountName);
-
-                    String uid = (String) note.get(OneNote.UID);
-                    if (uid.startsWith("-")) {
-                        uid = uid.substring(1);
-                        directory = new File(directory, "new");
+                File directory = ImapNotes3.GetAccountDir(ImapNotesAccount.accountName);
+                File[] listOfFiles = directory.listFiles();
+                for (File file : listOfFiles) {
+                    if (file.isFile()) {
+                        String uid = file.getName();
+                        List<String> tags = searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
+                        Log.d(TAG, "FilterResults: " + file.getName());
+                        storedNotes.UpdateTags(tags, uid, ImapNotesAccount.accountName);
                     }
-                    List<String> tags = searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
-                    Log.d(TAG, "FilterResults: " + directory + "/" + uid);
-                    storedNotes.UpdateTags(tags, uid, accountName);
                 }
                 return true;
             }

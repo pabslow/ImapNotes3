@@ -46,14 +46,7 @@ public class NotesDb extends SQLiteOpenHelper {
 
 
     private static final String COL_TITLE_NOTE = "title";
-    public static final String CREATE_NOTES_DB = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_NAME_NOTES
-            + " (pk integer primary key autoincrement, "
-            + COL_TITLE_NOTE + " text not null, "
-            + COL_DATE + " text not null, "
-            + COL_NUMBER + " text not null, "
-            + COL_BGCOLOR + " text not null, "
-            + COL_ACCOUNT_NAME + " text not null);";
+
     private static final String COL_DATE = "date";
     private static final String COL_NUMBER = "number";
     private static final String COL_ACCOUNT_NAME = "accountname";
@@ -66,6 +59,15 @@ public class NotesDb extends SQLiteOpenHelper {
             + " (pk integer primary key autoincrement, "
             + COL_NUMBER + " text not null, "
             + COL_TITLE_TAG + " text not null, "
+            + COL_BGCOLOR + " text not null, "
+            + COL_ACCOUNT_NAME + " text not null);";
+
+    public static final String CREATE_NOTES_DB = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_NAME_NOTES
+            + " (pk integer primary key autoincrement, "
+            + COL_TITLE_NOTE + " text not null, "
+            + COL_DATE + " text not null, "
+            + COL_NUMBER + " text not null, "
             + COL_BGCOLOR + " text not null, "
             + COL_ACCOUNT_NAME + " text not null);";
     private static final String VIEW_NAME_TAGS = "tagsView";
