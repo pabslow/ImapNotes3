@@ -111,21 +111,24 @@ public class NotesDb extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         if (oldVersion != newVersion) {
             //SQLiteDatabase db = this.getWritableDatabase();
-            try {
-                db.execSQL("Drop table " + TABLE_NAME_NOTES + ";");
-            } catch (Exception e) {
+            // Version 4: new TABLE_NAME_TAGS and VIEW_NAME_TAGS
+            if (!(oldVersion == 3 && newVersion == 4)) {
+                try {
+                    db.execSQL("Drop table " + TABLE_NAME_NOTES + ";");
+                } catch (Exception e) {
+                }
+                try {
+                    db.execSQL("Drop table " + TABLE_NAME_TAGS + ";");
+                } catch (Exception e) {
+                }
+                try {
+                    db.execSQL("Drop view " + VIEW_NAME_TAGS + ";");
+                } catch (Exception e) {
+                }
             }
-            try {
-                db.execSQL("Drop table " + TABLE_NAME_TAGS + ";");
-            } catch (Exception e) {
-            }
-            try {
-                db.execSQL("Drop view " + VIEW_NAME_TAGS + ";");
-            } catch (Exception e) {
-            }
-
             db.execSQL(CREATE_NOTES_DB);
             db.execSQL(CREATE_TAGS_DB);
             db.execSQL(CREATE_TAGS_VIEW);
