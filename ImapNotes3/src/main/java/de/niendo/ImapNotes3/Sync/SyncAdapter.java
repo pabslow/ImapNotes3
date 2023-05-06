@@ -42,11 +42,13 @@ import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.Security;
 import de.niendo.ImapNotes3.ListActivity;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
+import de.niendo.ImapNotes3.Miscs.Utilities;
 
 import com.sun.mail.imap.AppendUID;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.mail.Flags;
 import javax.mail.Message;
@@ -278,6 +280,8 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 File to = new File(accountDir, newuid);
                 //noinspection ResultOfMethodCallIgnored
                 fileInNew.renameTo(to);
+                List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
+                storedNotes.UpdateTags(tags, newuid, account.accountName);
             } catch (Exception e) {
                 // TODO: Handle message properly.
                 Log.d(TAG, e.getMessage());

@@ -119,7 +119,7 @@
     <string name="file_size_1k">Only files smaller than 100KB allowed.</string>
     <string name="insert_hashtag">Insert #HashTag</string>
     <string name="insert_hashtag_name">Tag Name</string>
-    <string name="insert_hashtag_syntax">Not a valid hastag</string>
-    <string name="refresh_tags">Recreate HashTag list</string>
-    <string name="filter_by_hash">Filter By hash</string>
+    <string name="insert_hashtag_syntax">Not a valid hashtag</string>
+    <string name="refresh_tags">Recreate #tag list</string>
+    <string name="filter_by_hash">Filter by #tag</string>
 </resources>

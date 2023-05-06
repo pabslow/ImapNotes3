@@ -155,7 +155,9 @@ public class NotesDb extends SQLiteOpenHelper {
                                          @NonNull String accountname) {
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from notesTable where number = '" + number +
+        db.execSQL("delete from " + TABLE_NAME_NOTES + " where number = '" + number +
+                "' and accountname = '" + accountname + "'");
+        db.execSQL("delete from " + TABLE_NAME_TAGS + " where number = '" + number +
                 "' and accountname = '" + accountname + "'");
         db.close();
     }
@@ -318,7 +320,7 @@ public class NotesDb extends SQLiteOpenHelper {
         }
 
         try (Cursor resultPointer = db.query(TABLE_NAME_TAGS, null, selection,
-                selectionArgs, COL_TITLE_TAG, null, COL_TITLE_TAG + " ASC")) {
+                selectionArgs, COL_TITLE_TAG, null, "UPPER(" + COL_TITLE_TAG + ") ASC")) {
 
             if (resultPointer.moveToFirst()) {
                 int titleIndex = resultPointer.getColumnIndex(COL_TITLE_TAG);

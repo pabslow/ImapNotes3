@@ -37,6 +37,7 @@ import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.Security;
 import de.niendo.ImapNotes3.ImapNotes3;
+import de.niendo.ImapNotes3.ListActivity;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
 import de.niendo.ImapNotes3.Miscs.Imaper;
@@ -58,6 +59,7 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Flags;
@@ -228,9 +230,7 @@ public class SyncUtils {
             } else {
                 bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
             }
-
-            File outfile = new File(RootDirAccount, suid);
-            SaveNoteAndUpdateDatabase(outfile, notesMessage, storedNotes, account.name, suid, bgColor);
+            SaveNoteAndUpdateDatabase(RootDirAccount, notesMessage, storedNotes, account.name, suid, bgColor);
         }
     }
 
@@ -477,14 +477,14 @@ public class SyncUtils {
 
     }
 
-    private static void SaveNoteAndUpdateDatabase(@NonNull File outfile,
+    private static void SaveNoteAndUpdateDatabase(@NonNull File directory,
                                                   @NonNull Message notesMessage,
                                                   @NonNull NotesDb storedNotes,
                                                   @NonNull String accountName,
                                                   @NonNull String suid,
                                                   @NonNull String bgColor) throws IOException, MessagingException {
+        File outfile = new File(directory, suid);
         Log.d(TAG, "SaveNoteAndUpdateDatabase: " + outfile.getCanonicalPath() + " " + accountName);
-
         SaveNote(outfile, notesMessage);
 
         // Now update or save the metadata about the message
@@ -527,6 +527,8 @@ public class SyncUtils {
                 accountName,
                 bgColor);
         storedNotes.InsertANoteInDb(aNote);
+        List<String> tags = ListActivity.searchHTMLTags(directory, suid, Utilities.HASHTAG_PATTERN, true);
+        storedNotes.UpdateTags(tags, suid, accountName);
     }
 
     static synchronized boolean handleRemoteNotes(@NonNull Context context,
@@ -569,14 +571,13 @@ public class SyncUtils {
             }
             String suid = uid.toString();
             if (!(localListOfNotes.contains(suid))) {
-                File outfile = new File(rootFolderAccount, suid);
                 String bgColor;
                 if (useSticky) {
                     bgColor = StickyNote.GetStickyFromMessage(notesMessage).color;
                 } else {
                     bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
                 }
-                SaveNoteAndUpdateDatabase(outfile, notesMessage, storedNotes, accountName, suid, bgColor);
+                SaveNoteAndUpdateDatabase(rootFolderAccount, notesMessage, storedNotes, accountName, suid, bgColor);
                 result = true;
             } else if (useSticky) {
                 //Log.d (TAG,"MANAGE STICKY");
