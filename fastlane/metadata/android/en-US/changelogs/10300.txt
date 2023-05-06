@@ -1,0 +1,2 @@
+* add #HashTags to your notes
+* filter notes by #HashTags

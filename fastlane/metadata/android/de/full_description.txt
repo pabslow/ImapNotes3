@@ -3,6 +3,7 @@
 * umfangreicher HTML-Editor
 * auch für ToDo-Listen geeignet
 * Volltextsuche
+* Filtern und Organisieren der Notizen mit Hilfe von #HashTags
 * Hell- und Dunkelmodus
 * Jeder Notiz können Farben zugeordnet werden
 * Notizen auf dem Handy teilen
@@ -11,4 +12,4 @@
 * mehrere IMAP-Konten bzw. Notizbücher können angelegt und verwaltet werden
 * Offline arbeiten möglich - die Synchronisation mit dem Server erfolgt im Hintergrund
 * Die App benötigt minimale Benutzerrechte
-* keine Werbung oder Tracker
+* Quelloffene Software - keine Werbung oder Tracker
