@@ -54,7 +54,7 @@
     </group>
 
     <item
-        android:id="@+id/sort_hash"
+        android:id="@+id/filter_by_hash"
         android:checked="false"
         android:icon="@drawable/ic_action_filter_hash"
         android:title="@string/filter_by_hash"

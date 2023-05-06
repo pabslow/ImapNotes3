@@ -85,7 +85,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
@@ -141,6 +140,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static Menu actionMenu;
     private static CharSequence mFilterString = "";
     private static String[] hashFilter;
+    private static ArrayList<String> hashFilterSelected;
     @NonNull
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, @NonNull Intent intent) {
@@ -300,14 +300,14 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         if (which == BUTTON_POSITIVE) {
             switch (dialogTag) {
                 case DLG_FILTER_HASHTAG:
-                    ArrayList<String> labels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
+                    hashFilterSelected = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
                     //long[] ids = extras.getLongArray(SimpleListDialog.SELECTED_IDS); // derived from CustomListDialog
 
-                    if (labels.size() == 0)
+                    if (hashFilterSelected.size() == 0)
                         hashFilter = null;
                     else {
-                        hashFilter = new String[labels.size()];
-                        labels.toArray(hashFilter);
+                        hashFilter = new String[hashFilterSelected.size()];
+                        hashFilterSelected.toArray(hashFilter);
                     }
                     ;
                     RefreshList();
@@ -606,14 +606,23 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 RefreshList();
                 return true;
             }
-            case R.id.sort_hash: {
+            case R.id.filter_by_hash: {
                 NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
                 List<String> tags = storedNotes.GetTags("", ImapNotesAccount.accountName);
+                List<Integer> positions = new ArrayList<>();
+                if (hashFilterSelected != null) {
+                    for (String tag : tags) {
+                        if (hashFilterSelected.contains(tag))
+                            positions.add(tags.indexOf(tag));
+                    }
+                }
                 String[] tagArray = new String[tags.size()];
                 tags.toArray(tagArray);
                 SimpleListDialog.build()
                         .title(R.string.filter_by_hash)
                         .choiceMode(SimpleListDialog.MULTI_CHOICE)
+                        .filterable(true)
+                        .choicePreset(positions)
                         .items(tagArray)
                         .filterable(true)
                         .show(this, DLG_FILTER_HASHTAG);
