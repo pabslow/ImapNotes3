@@ -141,7 +141,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static Menu actionMenu;
     private static CharSequence mFilterString = "";
     private static String[] hashFilter;
-    private static ArrayList<String> hashFilterSelected;
+    private static ArrayList<String> hashFilterSelected = new ArrayList<>();
     @NonNull
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, @NonNull Intent intent) {
@@ -299,12 +299,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
-        if (which == BUTTON_POSITIVE) {
-            switch (dialogTag) {
-                case DLG_FILTER_HASHTAG:
+        if (which == BUTTON_NEGATIVE) return false;
+        switch (dialogTag) {
+            case DLG_FILTER_HASHTAG:
+                if (which == BUTTON_POSITIVE) {
                     hashFilterSelected = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
-                    //long[] ids = extras.getLongArray(SimpleListDialog.SELECTED_IDS); // derived from CustomListDialog
-
                     if (hashFilterSelected.size() == 0)
                         hashFilter = null;
                     else {
@@ -312,9 +311,13 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         hashFilterSelected.toArray(hashFilter);
                     }
                     ;
-                    RefreshList();
-                    return true;
-            }
+                }
+                if (which == BUTTON_NEUTRAL) {
+                    hashFilter = null;
+                    hashFilterSelected.clear();
+                }
+                RefreshList();
+                return true;
         }
         return false;
     }
@@ -612,11 +615,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
                 List<String> tags = storedNotes.GetTags("", ImapNotesAccount.accountName);
                 List<Integer> positions = new ArrayList<>();
-                if (hashFilterSelected != null) {
-                    for (String tag : tags) {
-                        if (hashFilterSelected.contains(tag))
-                            positions.add(tags.indexOf(tag));
-                    }
+                for (String tag : tags) {
+                    if (hashFilterSelected.contains(tag))
+                        positions.add(tags.indexOf(tag));
                 }
                 String[] tagArray = new String[tags.size()];
                 tags.toArray(tagArray);
@@ -627,6 +628,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         .choicePreset(positions)
                         .items(tagArray)
                         .filterable(true)
+                        .neg(R.string.cancel)
+                        .neut(R.string.reset_filter)
                         .show(this, DLG_FILTER_HASHTAG);
                 return true;
             }
