@@ -121,6 +121,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private @ColorInt int lastTxtColor = 0x80e9a11d;
     private @ColorInt int lastBgColor = 0x80e9a11d;
     private String lastTag = "#tag";
+    private List<String> tagList;
     //endregion
 
     public void onCreate(Bundle savedInstanceState) {
@@ -220,6 +221,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 case DLG_INSERT_HASHTAG:
                     lastTag = extras.getString(DLG_INSERT_HASHTAG_NAME);
                     editText.insertHTML(lastTag + " ");
+                    if (!tagList.contains(lastTag))
+                        tagList.add(0, lastTag);
                     return true;
             }
         }
@@ -241,9 +244,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 textChanged = true;
         });
 
-        editText.setOnInitialLoadListener((RichEditor.AfterInitialLoadListener) ready -> {
+        editText.setOnInitialLoadListener(ready -> {
             editText.setEditorHeight(editText.getHeight());
-            });
+        });
 
         editText.setOnClickListener((RichEditor.onClickListener) text -> {
             String url = Utilities.getValueFromJSON(text, "href");
@@ -559,9 +562,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_hashtag:
                 NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
-                List<String> tags = storedNotes.GetTags("", "");
-                String[] tagArray = new String[tags.size()];
-                tags.toArray(tagArray);
+                if (tagList == null)
+                    tagList = storedNotes.GetTags("", "");
+                String[] tagArray = new String[tagList.size()];
+                tagList.toArray(tagArray);
                 SimpleFormDialog.build()
                         .title(R.string.insert_hashtag)
                         //.msg(R.string.please_fill_in_form)
@@ -817,8 +821,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         }
                         bufferedInputStream.close();
                         editText.insertHTML(sharedData);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

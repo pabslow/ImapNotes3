@@ -54,7 +54,7 @@ public class OneNote extends HashMap<String, String> {
 
     @NonNull
     public String GetTitle() {
-        return this.get(TITLE);
+        return this.get(TITLE).replace("#", "");
     }
 
     @NonNull
