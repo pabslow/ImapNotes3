@@ -116,6 +116,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     public static final String SYNCINTERVAL = "SYNCINTERVAL";
     public static final String CHANGED = "CHANGED";
     public static final String SYNCED = "SYNCED";
+    public static final String REFRESH_TAGS = "REFRESH_TAGS";
     public static final String SYNCED_ERR_MSG = "SYNCED_ERR_MSG";
     private static final String SAVE_ITEM_COLOR = "SAVE_ITEM_COLOR";
     private static final String SAVE_ITEM = "SAVE_ITEM";
@@ -206,7 +207,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         super.onDestroy();
     }
 
-    private static void TriggerSync(@NonNull TextView statusField) {
+    private static void TriggerSync(@NonNull TextView statusField, boolean refreshTags) {
         OldStatus = statusField.getText().toString();
         statusField.setText(R.string.syncing);
         Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
@@ -215,6 +216,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settingsBundle.putBoolean(
                 ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        settingsBundle.putBoolean(REFRESH_TAGS, refreshTags);
         //Log.d(TAG,"Request a sync for:"+mAccount);
         ContentResolver.cancelSync(mAccount, AUTHORITY);
         ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
@@ -585,7 +587,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 return true;
             case R.id.refresh:
                 //TextView status = (TextView) findViewById(R.id.status);
-                TriggerSync(status);
+                TriggerSync(status, true);
                 return true;
             case R.id.newnote:
                 Intent toNew;
@@ -628,20 +630,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         .show(this, DLG_FILTER_HASHTAG);
                 return true;
             }
-            case R.id.refresh_tags: {
-                File directory = ImapNotes3.GetAccountDir(ImapNotesAccount.accountName);
-                File[] listOfFiles = directory.listFiles();
-                for (File file : listOfFiles) {
-                    if (file.isFile()) {
-                        String uid = file.getName();
-                        List<String> tags = searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
-                        Log.d(TAG, "FilterResults: " + file.getName());
-                        storedNotes.UpdateTags(tags, uid, ImapNotesAccount.accountName);
-                    }
-                }
-                return true;
-            }
-
             case R.id.about:
                 String about = getString(R.string.license) + "\n";
                 about += "Name: " + BuildConfig.APPLICATION_ID + "\n";
@@ -687,7 +675,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     //Log.d(TAG,"Received request to replace message with:"+txt);
                     this.UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
                     //TextView status = (TextView) findViewById(R.id.status);
-                    TriggerSync(status);
+                    TriggerSync(status, false);
                 }
                 break;
             case ListActivity.NEW_BUTTON:
@@ -699,7 +687,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
                     this.UpdateList("", txt, bgcolor, accountName, UpdateThread.Action.Insert);
-                    TriggerSync(status);
+                    TriggerSync(status, false);
                 }
                 break;
             case ListActivity.ADD_ACCOUNT:

@@ -40,6 +40,7 @@ import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.Security;
+import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.ListActivity;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
 import de.niendo.ImapNotes3.Miscs.Utilities;
@@ -203,6 +204,20 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         SyncUtils.DisconnectFromRemote();
         //Log.d(TAG, "Network synchronization complete of account: "+account.name);
         // Notify ListActivity that it's finished, and that it can refresh display
+        boolean refreshTags = extras.getBoolean(ListActivity.REFRESH_TAGS);
+        if (refreshTags) {
+            //Log.d(TAG, "refreshTags");
+            File directory = ImapNotes3.GetAccountDir(account.accountName);
+            File[] listOfFiles = directory.listFiles();
+            for (File file : listOfFiles) {
+                if (file.isFile()) {
+                    String uid = file.getName();
+                    List<String> tags = ListActivity.searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
+                    Log.d(TAG, "FilterResults: " + file.getName());
+                    storedNotes.UpdateTags(tags, uid, account.accountName);
+                }
+            }
+        }
         Log.d(TAG, "Finish network synchronization of account: " + accountArg.name + " Msg: " + errorMessage);
         NotifySyncFinished(isChanged, true, errorMessage);
     }

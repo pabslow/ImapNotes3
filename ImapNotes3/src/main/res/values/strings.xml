@@ -118,8 +118,7 @@
     <string name="image_size_relative">Image size is relative to page width</string>
     <string name="file_size_1k">Only files smaller than 100KB allowed.</string>
     <string name="insert_hashtag">Insert #HashTag</string>
-    <string name="insert_hashtag_name">Tag Name</string>
-    <string name="insert_hashtag_syntax">Not a valid hashtag</string>
-    <string name="refresh_tags">Recreate #tag list</string>
-    <string name="filter_by_hash">Filter by #tag</string>
+    <string name="insert_hashtag_name">#HashTag Name</string>
+    <string name="insert_hashtag_syntax">Not a valid #HashTag</string>
+    <string name="filter_by_hash">Filter by #HashTag</string>
 </resources>
