@@ -176,12 +176,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Send new local messages to remote, move them to local folder
         // and update uids in database
-        boolean newNotesManaged = handleNewNotes();
-        if (newNotesManaged) isChanged = true;
+        if (handleNewNotes()) isChanged = true;
 
         // Delete on remote messages that are deleted locally (if necessary)
-        boolean deletedNotesManaged = handleDeletedNotes();
-        if (deletedNotesManaged) isChanged = true;
+        if (handleDeletedNotes()) isChanged = true;
 
         // handle notes created or removed on remote
         boolean remoteNotesManaged = false;

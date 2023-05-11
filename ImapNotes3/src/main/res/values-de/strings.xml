@@ -116,10 +116,13 @@
     <string name="link_image_width">Breite</string>
     <string name="link_image_height">Höhe</string>
     <string name="image_size_relative">Bildgröße relativ zur Seitenbreite</string>
-    <string name="file_size_1k">Nur Dateien kleiner 100kB erlaubt.</string>
+    <string name="file_size_1k">Nur Dateien kleiner 100kB erlaubt. (Verkleinerung erhöhen)</string>
     <string name="insert_hashtag">HashTag einfügen</string>
     <string name="insert_hashtag_name">Name des HashTag</string>
     <string name="insert_hashtag_syntax">kein gültiger HashTag</string>
     <string name="filter_by_hash">Nach HashTag filtern</string>
     <string name="reset_filter">Reset</string>
+    <string name="insert_image_as_link">Bild als Verknüpfung einfügen</string>
+    <string name="insert_image_shrink">Verkleinerung</string>
+    <string name="insert_shared_image">Geteiltes Bild einfügen</string>
 </resources>

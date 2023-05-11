@@ -1,2 +1,3 @@
 * add #HashTags to your notes
 * filter notes by #HashTags
+* add dialog for insert shared images

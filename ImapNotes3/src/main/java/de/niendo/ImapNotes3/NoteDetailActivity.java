@@ -73,6 +73,7 @@ import javax.mail.Message;
 
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.form.Check;
+import eltos.simpledialogfragment.form.Hint;
 import eltos.simpledialogfragment.form.Input;
 import eltos.simpledialogfragment.form.SimpleFormDialog;
 import jp.wasabeef.richeditor.RichEditor;
@@ -100,11 +101,15 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String DLG_INSERT_LINK_TEXT = "DLG_INSERT_LINK_TEXT";
     public static final String DLG_INSERT_LINK_TITLE = "DLG_INSERT_LINK_TITLE";
     public static final String DLG_INSERT_LINK_IMAGE = "DLG_INSERT_LINK_IMAGE";
+    public static final String DLG_INSERT_IMAGE = "DLG_INSERT_IMAGE";
+    public static final String DLG_INSERT_IMAGE_LINK = "DLG_INSERT_IMAGE_LINK";
+    public static final String DLG_INSERT_IMAGE_SHRINK_FACTOR = "DLG_INSERT_IMAGE_SHRINK_FACTOR";
     public static final String DLG_INSERT_LINK_IMAGE_URL = "DLG_INSERT_LINK_IMAGE_URL";
     public static final String DLG_INSERT_LINK_IMAGE_ALT = "DLG_INSERT_LINK_IMAGE_ALT";
     public static final String DLG_INSERT_LINK_IMAGE_WIDTH = "DLG_INSERT_LINK_IMAGE_WIDTH";
     public static final String DLG_INSERT_LINK_IMAGE_HEIGHT = "DLG_INSERT_LINK_IMAGE_HEIGHT";
     public static final String DLG_INSERT_LINK_IMAGE_RELATIVE = "DLG_INSERT_LINK_IMAGE_RELATIVE";
+    public static final String DLG_INSERT_IMAGE_FILE_SIZE = "DLG_INSERT_IMAGE_FILE_SIZE";
 
     public static final String DLG_INSERT_HASHTAG_NAME = "DLG_INSERT_HASHTAG_NAME";
     public static final String DLG_INSERT_HASHTAG = "DLG_INSERT_HASHTAG";
@@ -212,18 +217,43 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 case DLG_INSERT_LINK:
                     editText.insertLink(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_URL)), extras.getString(DLG_INSERT_LINK_TEXT), extras.getString(DLG_INSERT_LINK_TITLE));
                     return true;
-                case DLG_INSERT_LINK_IMAGE:
+                case DLG_INSERT_LINK_IMAGE: {
                     Boolean relative = extras.getBoolean(DLG_INSERT_LINK_IMAGE_RELATIVE);
                     editText.insertImage(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_IMAGE_URL)),
                             extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
                             extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
                     return true;
+                }
                 case DLG_INSERT_HASHTAG:
                     lastTag = extras.getString(DLG_INSERT_HASHTAG_NAME);
                     editText.insertHTML(lastTag + " ");
                     if (!tagList.contains(lastTag))
                         tagList.add(0, lastTag);
                     return true;
+                case DLG_INSERT_IMAGE: {
+                    Boolean relative = extras.getBoolean(DLG_INSERT_LINK_IMAGE_RELATIVE);
+                    Boolean asLink = extras.getBoolean(DLG_INSERT_IMAGE_LINK);
+                    Integer scale = Integer.valueOf(extras.getString(DLG_INSERT_IMAGE_SHRINK_FACTOR));
+                    Uri uri = extras.getParcelable(Intent.EXTRA_STREAM);
+                    Integer fileSize = extras.getInt(DLG_INSERT_IMAGE_FILE_SIZE);
+                    editText.insertHTML("Shared Image<br><br>");
+                    if (asLink) {
+                        editText.insertImage(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_IMAGE_URL)),
+                                extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
+                                extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
+                    } else {
+                        if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) / (scale * scale) > 100000) {
+                            Log.d(TAG, "FileSize:" + fileSize / (scale * scale));
+                            ImapNotes3.ShowMessage(R.string.file_size_1k, editText, 2);
+                        } else {
+                            editText.insertImageAsBase64(uri, extras.getString(DLG_INSERT_LINK_IMAGE_ALT),
+                                    extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
+                                    extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative, scale);
+                        }
+                    }
+                    editText.insertHTML("\n");
+
+                }
             }
         }
         return false;
@@ -797,18 +827,53 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
             String type = intent.getType();
             String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
-
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            Log.d(TAG, "Share 1");
             if (uri != null) {
                 if (type.startsWith("image/")) {
-                    if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) > 100000) {
-                        ImapNotes3.ShowMessage(R.string.file_size_1k, editText, 2);
-                    } else {
-                        editText.insertHTML(uri.getPath() + "<br>");
-                        editText.insertImageAsBase64(uri, uri.getPath(), "100", "", true);
-                    }
-                    //    }
+                    String finalSubject = subject;
+                    Bundle extra = new Bundle();
+                    extra.putParcelable(Intent.EXTRA_STREAM, uri);
+                    Integer fileSize = Integer.valueOf(Utilities.getRealSizeFromUri(this, uri));
+                    extra.putInt(DLG_INSERT_IMAGE_FILE_SIZE, fileSize);
+                    SimpleFormDialog.build()
+                            .title(R.string.insert_shared_image)
+                            //.msg(R.string.please_fill_in_form)
+                            .extra(extra)
+                            .fields(
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_URL)
+                                            .required()
+                                            .hint(R.string.link_image_url)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text(uri.toString()),
+                                    Check.box(DLG_INSERT_IMAGE_LINK)
+                                            .check(true)
+                                            .label(R.string.insert_image_as_link),
+                                    Input.plain(DLG_INSERT_IMAGE_SHRINK_FACTOR).
+                                            required().
+                                            hint(R.string.insert_image_shrink)
+                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                            .text("1"),
+                                    Hint.plain("FileSize is " + fileSize),
+                                    Check.box(DLG_INSERT_LINK_IMAGE_RELATIVE)
+                                            .check(true)
+                                            .label(R.string.image_size_relative),
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_WIDTH)
+                                            .hint(R.string.link_image_width)
+                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                            .text("100"),
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_HEIGHT)
+                                            .hint(R.string.link_image_height)
+                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                            .text(""),
+                                    Input.plain(DLG_INSERT_LINK_IMAGE_ALT)
+                                            .hint(R.string.link_alt_text)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text(uri.getPath())
+                            )
+                            .neg(R.string.cancel)
+                            .show(this, DLG_INSERT_IMAGE);
+                    //https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
+
                 } else {
                     BufferedInputStream bufferedInputStream;
                     try {
