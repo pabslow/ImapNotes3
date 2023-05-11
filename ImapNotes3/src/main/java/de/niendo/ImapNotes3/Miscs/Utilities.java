@@ -66,7 +66,7 @@ public final class Utilities {
         }
 
         try {
-            Class res = R.color.class;
+            Class<R.color> res = R.color.class;
             Field field = res.getField(name);
             color = field.getInt(null);
 
