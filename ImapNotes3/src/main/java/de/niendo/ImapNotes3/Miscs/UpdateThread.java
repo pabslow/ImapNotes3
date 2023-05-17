@@ -133,7 +133,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 String oldSuid = suid;
                 //Log.d(TAG, "Received request to add new message: " + noteBody + "===");
                 // Use the first line as the tile
-                String[] tok = Html.fromHtml(noteBody, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
+                String[] tok = Html.fromHtml(noteBody, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\\n", 2);
                 String title = tok[0];
                 //String position = "0 0 0 0";
                 String body = (ImapNotesAccount.usesticky) ?
@@ -278,7 +278,12 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         File directory = new File(accountDirectory, "new");
         message.setFrom(UserNameToEmail(ImapNotesAccount.username));
         File outfile = new File(directory, uid);
-        OutputStream str = new FileOutputStream(outfile);
+        try {
+            outfile.delete();
+        } catch (Exception e) {
+
+        }
+        OutputStream str = new FileOutputStream(outfile, false);
         message.writeTo(str);
         str.close();
     }

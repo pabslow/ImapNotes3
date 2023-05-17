@@ -43,7 +43,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,7 +59,6 @@ import de.niendo.ImapNotes3.Sync.SyncUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;

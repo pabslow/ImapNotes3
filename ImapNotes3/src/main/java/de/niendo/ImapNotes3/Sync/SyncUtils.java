@@ -79,10 +79,7 @@ public class SyncUtils {
     private static final String TAG = "IN_SyncUtils";
     private static Store store;
     // TODO: Why do we have two folder fields and why are they both nullable?
-    @NonNull
-    //private final static int NEW = 1;
-    //private final static int DELETED = 2;
-    //private final static int ROOT_AND_NEW = 3;
+
     @Nullable
     private static IMAPFolder remoteIMAPNotesFolder = null;
     private static Long UIDValidity;
@@ -143,9 +140,10 @@ public class SyncUtils {
         if (proto.equals("imaps")) {
             props.put("mail.imaps.socketFactory", sf);
         }
-
         props.setProperty("mail.imap.connectiontimeout", "1000");
-        // TODO: use user defined proxy.
+
+        /*
+        TODO: use user defined proxy.
         Boolean useProxy = false;
         if (useProxy) {
             props.put("mail.imap.socks.host", "10.0.2.2");
@@ -274,9 +272,8 @@ public class SyncUtils {
         try (InputStream mailFileInputStream = new FileInputStream(mailFile)) {
             try {
                 Properties props = new Properties();
-                Session session = Session.getDefaultInstance(props, null);
+                Session session = Session.getDefaultInstance(props);
                 Message message = new MimeMessage(session, mailFileInputStream);
-                mailFileInputStream.close();
                 Log.d(TAG, "ReadMailFromFile return new MimeMessage.");
                 return message;
             } catch (MessagingException e) {
@@ -314,7 +311,6 @@ public class SyncUtils {
         (new File(rootDirAccount, "new")).mkdirs();
         (new File(rootDirAccount, "deleted")).mkdirs();
     }
-
 
     /**
      * @param outfile      Name of local file in which to store the note.
