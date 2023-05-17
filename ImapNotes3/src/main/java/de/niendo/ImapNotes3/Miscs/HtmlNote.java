@@ -132,7 +132,7 @@ public class HtmlNote {
 
 
         try {
-            Log.d(TAG, "message :" + message);
+            Log.d(TAG, "GetNoteFromMessage :" + message);
             contentType = new ContentType(message.getContentType());
 
             if (message.isMimeType("multipart/*")) {

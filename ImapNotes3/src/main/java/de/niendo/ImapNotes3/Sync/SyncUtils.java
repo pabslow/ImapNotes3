@@ -107,10 +107,9 @@ public class SyncUtils {
             } catch (MessagingException e) {
                 // Log the error but do not propagate the exception because the connection is now
                 // closed even if an exception was thrown.
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, "ConnectToRemote Store.Close(): " + e.getMessage());
             }
         }
-
         //boolean acceptcrt = security.acceptcrt;
 
         MailSSLSocketFactory sf;
@@ -121,14 +120,12 @@ public class SyncUtils {
             return new ImapNotesResult(Imaper.ResultCodeCantConnect,
                     "Can't connect to server: " + e.getMessage(), -1);
         }
-
         Properties props = new Properties();
 
         String proto = security.proto;
         props.setProperty(String.format("mail.%s.host", proto), server);
         props.setProperty(String.format("mail.%s.port", proto), portnum);
         props.setProperty("mail.store.protocol", proto);
-
         if (security.acceptcrt) {
             sf.setTrustedHosts(new String[]{server});
             if (proto.equals("imap")) {
@@ -142,6 +139,7 @@ public class SyncUtils {
             }
         }
 
+        // FIXME: spelling error?
         if (proto.equals("imaps")) {
             props.put("mail.imaps.socketFactory", sf);
         }
@@ -149,8 +147,6 @@ public class SyncUtils {
         props.setProperty("mail.imap.connectiontimeout", "1000");
         // TODO: use user defined proxy.
         Boolean useProxy = false;
-        //noinspection ConstantConditions
-        /*
         if (useProxy) {
             props.put("mail.imap.socks.host", "10.0.2.2");
             props.put("mail.imap.socks.port", "1080");
@@ -162,7 +158,7 @@ public class SyncUtils {
             store = session.getStore(proto);
             store.connect(server, username, password);
             //res.hasUIDPLUS = ((IMAPStore) store).hasCapability("UIDPLUS");
-//Log.d(TAG, "has UIDPLUS="+res.hasUIDPLUS);
+            //Log.d(TAG, "has UIDPLUS="+res.hasUIDPLUS);
 
             Folder[] folders = store.getPersonalNamespaces();
             Folder rootFolder = folders[0];
@@ -183,7 +179,6 @@ public class SyncUtils {
                     Log.d(TAG, "Folder was created successfully");
                 }
             }
-//          store.close();
             return new ImapNotesResult(Imaper.ResultCodeSuccess,
                     "",
                     ((IMAPFolder) remoteIMAPNotesFolder).getUIDValidity());
@@ -282,82 +277,12 @@ public class SyncUtils {
             store.close();
         } catch (MessagingException e) {
             // TODO Auto-generated catch block
+            Log.d(TAG, "DisconnectFromRemote Error:" + e.getMessage());
             e.printStackTrace();
         }
     }
     /*
 
-     */
-/**
- * @param uid ID of the message as created by the IMAP server
- * @param where TODO: what is this?
- * @param removeMinus TODO: Why?
- * @param nameDir Name of the account with which this message is associated, used to create the
- *                directory in which to store it.
- * @return A Java mail message object.
- *//*
-
-    @Nullable
-    public static Message ReadMailFromFile(@NonNull String uid,
-                                           Where where,
-                                           boolean removeMinus,
-                                           @NonNull String nameDir) {
-        File mailFile;
-        Message message = null;
-        mailFile = new File(nameDir, uid);
-
-        switch (where) {
-            case NEW:
-                nameDir = nameDir + "/new";
-                if (removeMinus) uid = uid.substring(1);
-                break;
-            case DELETED:
-                nameDir = nameDir + "/deleted";
-                break;
-            case ROOT_AND_NEW:
-                if (!mailFile.exists()) {
-                    nameDir = nameDir + "/new";
-                    if (removeMinus) uid = uid.substring(1);
-                }
-                break;
-            default:
-                throw new UnsupportedOperationException("Unrecognized value for where argument: " + where);
-        }
-
-        mailFile = new File(nameDir, uid);
-        InputStream mailFileInputStream = null;
-        try {
-            mailFileInputStream = new FileInputStream(mailFile);
-        } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        try {
-            Properties props = new Properties();
-            Session session = Session.getDefaultInstance(props, null);
-            message = new MimeMessage(session, mailFileInputStream);
-        } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return message;
-    }
-*/
-
-    /**
-     * @param uid         ID of the message as created by the IMAP server
-     * @param newFilesDir Directory in which it is stored.
-     * @return A Java mail message object.
-     */
-    @Nullable
-    static Message ReadMailFromFileNew(@NonNull String uid,
-                                       @NonNull File newFilesDir) {
-        Log.d(TAG, "ReadMailFromFileNew");
-        //File mailFile;
-        //Message message = null;
-        //mailFile = new File(nameDir, uid);
-        return ReadMailFromFile(newFilesDir, uid);
-    }
 
     /**
      * @param uid     ID of the message as created by the IMAP server
@@ -378,27 +303,12 @@ public class SyncUtils {
         File mailFile = new File(fileDir, uid);
 
         if (!mailFile.exists()) {
-            Log.d(TAG, "ReadMailFromFileRootAndNew: file not found..");
+            Log.d(TAG, "ReadMailFromFileRootAndNew: file not found.." + mailFile);
             return null;
         }
 
         return ReadMailFromFile(fileDir, uid);
     }
-
-// --Commented out by Inspection START (11/26/16 11:46 PM):
-//    /**
-//     * @param uid         ID of the message as created by the IMAP server
-//     * @param nameDir     Name of the account with which this message is associated, used to find the
-//     *                    directory in which it is stored.
-//     * @return A Java mail message object.
-//     */
-//    @Nullable
-//    public static Message ReadMailFromFileDeleted(@NonNull String uid,
-//                                                  @NonNull String nameDir) {
-//        return ReadMailFromFile(new File(nameDir, "deleted"), uid);
-//    }
-// --Commented out by Inspection STOP (11/26/16 11:46 PM)
-
 
     /**
      * @param uid     ID of the message as created by the IMAP server

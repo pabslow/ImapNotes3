@@ -129,10 +129,9 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
 
             // Do we have a note to add?
             if ((action == Action.Insert) || (action == Action.Update)) {
-//Log.d(TAG,"StickyNote ? "+((ImapNotesAccount)stuffs[1]).GetUsesticky());
                 Log.d(TAG, "Action Insert/Update:" + suid);
                 String oldSuid = suid;
-                Log.d(TAG, "Received request to add new message: " + noteBody + "===");
+                //Log.d(TAG, "Received request to add new message: " + noteBody + "===");
                 // Use the first line as the tile
                 String[] tok = Html.fromHtml(noteBody, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
                 String title = tok[0];
@@ -155,7 +154,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 currentNote.SetUid(suid);
                 // Here we ask to add the new note to the new note folder
                 // Must be done AFTER uid has been set in currentNote
-                Log.d(TAG, "doInBackground body: " + body);
+                Log.d(TAG, "doInBackground body: ");
                 WriteMailToNew(currentNote, ImapNotesAccount.usesticky, body);
                 if ((action == Action.Update) && (!oldSuid.startsWith("-"))) {
                     MoveMailToDeleted(oldSuid);
@@ -257,7 +256,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     private void WriteMailToNew(@NonNull OneNote note,
                                 boolean useSticky,
                                 String noteBody) throws MessagingException, IOException {
-        Log.d(TAG, "WriteMailToNew: " + noteBody);
+        Log.d(TAG, "WriteMailToNew: " + noteBody.length() + "Bytes");
         //String body = null;
 
         // Here we add the new note to the new note folder

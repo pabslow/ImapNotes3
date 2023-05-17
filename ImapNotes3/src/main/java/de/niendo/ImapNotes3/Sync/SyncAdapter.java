@@ -266,7 +266,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         File accountDir = account.GetRootDirAccount();
         File dirNew = new File(accountDir, "new");
         Log.d(TAG, "dn path: " + dirNew.getAbsolutePath());
-        Log.d(TAG, "dn exists: " + Boolean.toString(dirNew.exists()));
+        Log.d(TAG, "dn exists: " + dirNew.exists());
         String[] listOfNew = dirNew.list();
         for (String fileNew : listOfNew) {
             Log.d(TAG, "New Note to process:" + fileNew);
@@ -284,21 +284,24 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             final MimeMessage[] msg = {(MimeMessage) message};
 
             try {
-                AppendUID[] uids = SyncUtils.sendMessageToRemote(msg);
-                // Update uid in database entry
-                String newuid = Long.toString(uids[0].uid);
-                storedNotes.UpdateANote(fileNew, newuid, account.accountName);
-                // move new note from new dir, one level up
-                File fileInNew = new File(dirNew, fileNew);
-                File to = new File(accountDir, newuid);
-                //noinspection ResultOfMethodCallIgnored
-                fileInNew.renameTo(to);
-                List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
-                storedNotes.UpdateTags(tags, newuid, account.accountName);
+                uids = syncUtils.sendMessageToRemote(new MimeMessage[]{(MimeMessage) message});
             } catch (Exception e) {
                 // TODO: Handle message properly.
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, "handleNewNotes sendMessageToRemote Error: " + e.getMessage());
+                e.printStackTrace();
+                continue;
             }
+            // Update uid in database entry
+            String newuid = Long.toString(uids[0].uid);
+            Log.d(TAG, "handleNewNotes uid: " + newuid);
+
+            File to = new File(accountDir, newuid);
+            fileInNew.renameTo(to);
+            storedNotes.UpdateANote(fileNew, newuid, account.accountName);
+            // move new note from new dir, one level up
+
+            List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
+            storedNotes.UpdateTags(tags, newuid, account.accountName);
         }
         return newNotesManaged;
     }

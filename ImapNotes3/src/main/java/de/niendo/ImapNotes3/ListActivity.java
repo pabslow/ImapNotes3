@@ -463,7 +463,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     @SuppressLint("RestrictedApi")
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-        super.onCreateOptionsMenu( menu );
+        super.onCreateOptionsMenu(menu);
         actionMenu = menu;
         getMenuInflater().inflate(R.menu.list, menu);
 
