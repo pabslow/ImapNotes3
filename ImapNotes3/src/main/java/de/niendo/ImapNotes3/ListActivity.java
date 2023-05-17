@@ -682,7 +682,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     //Log.d(TAG,"Received request to edit message:"+suid);
                     //Log.d(TAG,"Received request to replace message with:"+txt);
                     UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
-                    //TextView status = (TextView) findViewById(R.id.status);
                 }
                 break;
             case ListActivity.NEW_BUTTON:
