@@ -455,7 +455,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         getApplicationContext(),
                         action).execute();
             }
-        }
     }
 
     @Override
