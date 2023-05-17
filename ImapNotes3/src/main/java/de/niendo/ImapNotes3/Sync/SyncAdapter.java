@@ -73,19 +73,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     //private Account account;
     private ImapNotesAccount account;
 
-// --Commented out by Inspection START (11/26/16 11:49 PM):
-//    /// See RFC 3501: http://www.faqs.org/rfcs/rfc3501.html
-//    @NonNull
-//    private Long UIDValidity = (long) -1;
-// --Commented out by Inspection STOP (11/26/16 11:49 PM)
-    // --Commented out by Inspection (11/26/16 11:49 PM):private final static int NEW = 1;
-    // --Commented out by Inspection (11/26/16 11:49 PM):private final static int DELETED = 2;
-
-    // --Commented out by Inspection (12/2/16 8:51 PM):private final ContentResolver mContentResolver;
+    private SyncUtils syncUtils;
 
     SyncAdapter(@NonNull Context applicationContext) {
         super(applicationContext, true);
         Log.d(TAG, "SyncAdapter");
+        if (syncUtils == null) {
+            syncUtils = new SyncUtils();
+        }
 
         //mContentResolver = applicationContext.getContentResolver();
         // TODO: do we really need a copy of the applicationContext reference?
@@ -142,7 +137,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         // Compare UIDValidity to old saved one
         //
         if (!(res.UIDValidity.equals(
-                SyncUtils.GetUIDValidity(accountArg, applicationContext)))) {
+                syncUtils.GetUIDValidity(accountArg, applicationContext)))) {
             // Replace local data by remote.  UIDs are no longer valid.
             try {
                 // delete notes in NotesDb for this account
@@ -153,7 +148,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 //SyncUtils.CreateLocalDirectories(accountArg.name, applicationContext);
                 account.CreateLocalDirectories();
                 // Get all notes from remote and replace local
-                SyncUtils.GetNotes(accountArg,
+                syncUtils.GetNotes(accountArg,
                         account.GetRootDirAccount(),
                         applicationContext, storedNotes, account.usesticky);
             } catch (MessagingException e) {
@@ -165,7 +160,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            SyncUtils.SetUIDValidity(accountArg, res.UIDValidity, applicationContext);
+            syncUtils.SetUIDValidity(accountArg, res.UIDValidity, applicationContext);
             // Notify ListActivity that it's finished, and that it can refresh display
             Log.d(TAG, "end on perform :" + errorMessage);
             NotifySyncFinished(true, true, errorMessage);
@@ -185,7 +180,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         boolean remoteNotesManaged = false;
         boolean useSticky = am.getUserData(accountArg, ConfigurationFieldNames.UseSticky).equals("true");
         try {
-            remoteNotesManaged = SyncUtils.handleRemoteNotes(applicationContext, account.GetRootDirAccount(),
+            remoteNotesManaged = syncUtils.handleRemoteNotes(account.GetRootDirAccount(),
                     storedNotes, accountArg.name, useSticky);
         } catch (MessagingException e) {
             errorMessage = e.getMessage();
@@ -199,7 +194,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (remoteNotesManaged) isChanged = true;
 
         // Disconnect from remote
-        SyncUtils.DisconnectFromRemote();
+        syncUtils.DisconnectFromRemote();
         //Log.d(TAG, "Network synchronization complete of account: "+account.name);
         // Notify ListActivity that it's finished, and that it can refresh display
         boolean refreshTags = extras.getBoolean(ListActivity.REFRESH_TAGS);
@@ -242,7 +237,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private ImapNotesResult ConnectToRemote() {
         Log.d(TAG, "ConnectToRemote");
         AccountManager am = AccountManager.get(applicationContext);
-        ImapNotesResult res = SyncUtils.ConnectToRemote(
+        ImapNotesResult res = syncUtils.ConnectToRemote(
                 account.username,
                 //am.getUserData(account.GetAccount(), ConfigurationFieldNames.UserName),
                 am.getPassword(account.GetAccount()),
@@ -268,20 +263,28 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(TAG, "dn path: " + dirNew.getAbsolutePath());
         Log.d(TAG, "dn exists: " + dirNew.exists());
         String[] listOfNew = dirNew.list();
+        AppendUID[] uids;
         for (String fileNew : listOfNew) {
             Log.d(TAG, "New Note to process:" + fileNew);
             newNotesManaged = true;
             // Read local new message from file
-            Message message = SyncUtils.ReadMailFromFileNew(fileNew, dirNew);
-            Log.d(TAG, "handleNewNotes message: " + message.toString());
+            File fileInNew = new File(dirNew, fileNew);
+            Message message = syncUtils.ReadMailFromFile(dirNew, fileNew);
+            try {
+                Log.d(TAG, "handleNewNotes message: " + message.getSize());
+                Log.d(TAG, "handleNewNotes message: " + fileInNew.length());
+            } catch (MessagingException e) {
+                continue;
+            }
             try {
                 message.setFlag(Flags.Flag.SEEN, true); // set message as seen
             } catch (MessagingException e) {
                 // TODO Auto-generated catch block
+                Log.d(TAG, "handleNewNotes setFlag Error: " + e.getMessage());
                 e.printStackTrace();
+                continue;
             }
             // Send this new message to remote
-            final MimeMessage[] msg = {(MimeMessage) message};
 
             try {
                 uids = syncUtils.sendMessageToRemote(new MimeMessage[]{(MimeMessage) message});
@@ -314,7 +317,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         String[] listOfDeleted = dirDeleted.list();
         for (String fileDeleted : listOfDeleted) {
             try {
-                SyncUtils.DeleteNote(Integer.parseInt(fileDeleted));
+                syncUtils.DeleteNote(Integer.parseInt(fileDeleted));
             } catch (Exception e) {
                 Log.d(TAG, "DeleteNote failed:");
                 e.printStackTrace();

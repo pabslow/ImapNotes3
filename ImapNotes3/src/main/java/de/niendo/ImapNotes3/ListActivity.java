@@ -412,11 +412,13 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
         String accountName = ImapNotesAccount.accountName;
-        if (!accountSpinner.isEnabled()) { // search is active
-            accountName = "";
-            listToView.getFilter().filter(mFilterString);
+        synchronized (this) {
+            accountName = ImapNotesAccount.accountName;
+            if (!accountSpinner.isEnabled()) { // search is active
+                accountName = "";
+                listToView.getFilter().filter(mFilterString);
+            }
         }
-
         new SyncThread(
                 accountName,
                 noteList,
