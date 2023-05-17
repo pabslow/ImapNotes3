@@ -116,5 +116,5 @@
     <string name="link_image_width">宽度</string>
     <string name="link_image_height">高度</string>
     <string name="image_size_relative">图片尺寸是相对于页面宽度而言的</string>
-    <string name="file_size_1k">仅允许小于 100 kb 的文件.</string>
+    <string name="file_size_allowed">仅允许小于 %1$.1f Mb 的文件.</string>
 </resources>

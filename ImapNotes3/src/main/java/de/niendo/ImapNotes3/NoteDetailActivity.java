@@ -111,7 +111,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
     public static final String DLG_INSERT_HASHTAG_NAME = "DLG_INSERT_HASHTAG_NAME";
     public static final String DLG_INSERT_HASHTAG = "DLG_INSERT_HASHTAG";
-
+    public static final double MAX_INSERT_FILE_SIZE_MB = 5.0;
     private static final int EDIT_BUTTON = 6;
     private static final String TAG = "IN_NoteDetailActivity";
     private boolean textChanged = false;
@@ -240,9 +240,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                 extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
                                 extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
                     } else {
-                        if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) / (scale * scale) > 100000) {
+                        if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) / (scale * scale) > MAX_INSERT_FILE_SIZE_MB * 1024 * 1024) {
                             Log.d(TAG, "FileSize:" + fileSize / (scale * scale));
-                            ImapNotes3.ShowMessage(R.string.file_size_1k, editText, 2);
+                            ImapNotes3.ShowMessage(String.format(getResources().getString(R.string.file_size_allowed), MAX_INSERT_FILE_SIZE_MB), editText, 2);
                         } else {
                             editText.insertImageAsBase64(uri, extras.getString(DLG_INSERT_LINK_IMAGE_ALT),
                                     extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
