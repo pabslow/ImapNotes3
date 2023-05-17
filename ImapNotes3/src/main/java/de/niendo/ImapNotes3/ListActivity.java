@@ -442,7 +442,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         synchronized (this) {
             if (accountName == null || accountName.isEmpty()) {
                 accountName = ImapNotesAccount.accountName;
-
+            }
                 updateThread = new UpdateThread(accountName,
                         this,
                         noteList,
