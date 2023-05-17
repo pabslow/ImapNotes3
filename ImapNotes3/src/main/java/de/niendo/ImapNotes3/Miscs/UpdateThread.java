@@ -60,6 +60,9 @@ import javax.mail.internet.MimeMultipart;
 
 // TODO: move arguments from execute to constructor.
 public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
+
+    //https://stackoverflow.com/questions/54346609/returning-boolean-from-onpostexecute-and-doinbackground
+    private FinishListener listener;
     private static final String TAG = "IN_UpdateThread";
     private final ImapNotesAccount ImapNotesAccount;
     private final @StringRes
@@ -82,6 +85,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     typesafe.  Make them final to prevent accidental reuse.
     */
     public UpdateThread(String accountName,
+                        FinishListener listener,
                         ArrayList<OneNote> noteList,
                         NotesListAdapter listToView,
                         @StringRes int resId,
@@ -91,10 +95,11 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                         Context context,
                         Action action) {
         //ImapNotesAccount ImapNotesAccount
-        Log.d(TAG, "UpdateThread: " + noteBody);
+        //Log.d(TAG, "UpdateThread: " + noteBody);
         this.accountName = accountName;
         Account account = new Account(accountName, Utilities.PackageName);
         this.ImapNotesAccount = new ImapNotesAccount(account, context);
+        this.listener = listener;
         this.notesList = noteList;
         this.adapter = listToView;
         this.resId = resId;
@@ -180,6 +185,9 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
             if (!(currentNote == null)) notesList.add(0, currentNote);
             adapter.notifyDataSetChanged();
         }
+
+        if (action == UpdateThread.Action.Delete) result = false;
+        listener.onFinishPerformed(result);
     }
 
     private int getIndexByNumber(String pNumber) {
@@ -280,6 +288,10 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         InternetAddress internetAddress = new InternetAddress();
         internetAddress.setAddress(name);
         return internetAddress;
+    }
+
+    public interface FinishListener {
+        void onFinishPerformed(Boolean result);
     }
 
     public enum Action {

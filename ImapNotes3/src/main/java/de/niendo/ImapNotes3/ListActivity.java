@@ -95,7 +95,7 @@ import java.util.regex.PatternSyntaxException;
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
 
-public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener {
+public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
     public static final int DELETE_BUTTON = 3;
     private static final int NEW_BUTTON = 4;
@@ -207,15 +207,13 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         super.onDestroy();
     }
 
-    private static void TriggerSync(@NonNull TextView statusField, boolean refreshTags) {
-        OldStatus = statusField.getText().toString();
-        statusField.setText(R.string.syncing);
+    private void TriggerSync(boolean refreshTags) {
+        OldStatus = status.getText().toString();
+        status.setText(R.string.syncing);
         Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
         Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         settingsBundle.putBoolean(REFRESH_TAGS, refreshTags);
         //Log.d(TAG,"Request a sync for:"+mAccount);
         ContentResolver.cancelSync(mAccount, AUTHORITY);
@@ -442,20 +440,26 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         synchronized (this) {
             if (accountName == null || accountName.isEmpty()) {
                 accountName = ImapNotesAccount.accountName;
+
+                updateThread = new UpdateThread(accountName,
+                        this,
+                        noteList,
+                        listToView,
+                        R.string.updating_notes_list,
+                        suid,
+                        noteBody,
+                        bgColor,
+                        // FIXME: this. ?
+                        getApplicationContext(),
+                        action).execute();
             }
-            updateThread = new UpdateThread(accountName,
-                    noteList,
-                    listToView,
-                    R.string.updating_notes_list,
-                    suid,
-                    noteBody,
-                    bgColor,
-                    // FIXME: this. ?
-                    getApplicationContext(),
-                    action).execute();
         }
     }
 
+    @Override
+    public void onFinishPerformed(Boolean result) {
+        if (result) TriggerSync(false);
+    }
 
     @SuppressLint("RestrictedApi")
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
@@ -590,7 +594,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 return true;
             case R.id.refresh:
                 //TextView status = (TextView) findViewById(R.id.status);
-                TriggerSync(status, true);
+                TriggerSync(true);
                 return true;
             case R.id.newnote:
                 Intent toNew;
@@ -667,7 +671,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     // Delete Message asked for
                     // String suid will contain the Message Imap UID to delete
                     String suid = data.getStringExtra(DELETE_ITEM_NUM_IMAP);
-                    this.UpdateList(suid, null, null, null, UpdateThread.Action.Delete);
+                    UpdateList(suid, null, null, null, UpdateThread.Action.Delete);
                 }
                 if (resultCode == ListActivity.EDIT_BUTTON) {
                     String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
@@ -676,9 +680,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
                     //Log.d(TAG,"Received request to edit message:"+suid);
                     //Log.d(TAG,"Received request to replace message with:"+txt);
-                    this.UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
+                    UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
                     //TextView status = (TextView) findViewById(R.id.status);
-                    TriggerSync(status, false);
                 }
                 break;
             case ListActivity.NEW_BUTTON:
@@ -689,8 +692,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     //Log.d(TAG,"Received request to save message:"+res);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
-                    this.UpdateList("", txt, bgcolor, accountName, UpdateThread.Action.Insert);
-                    TriggerSync(status, false);
+                    UpdateList("", txt, bgcolor, accountName, UpdateThread.Action.Insert);
                 }
                 break;
             case ListActivity.ADD_ACCOUNT:
