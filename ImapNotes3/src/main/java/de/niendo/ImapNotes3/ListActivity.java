@@ -140,7 +140,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static List<String> currentList;
     private static Menu actionMenu;
     private static CharSequence mFilterString = "";
-    private static String[] hashFilter;
+    static String[] hashFilter;
     private static ArrayList<String> hashFilterSelected = new ArrayList<>();
     @NonNull
     private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
@@ -411,16 +411,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
-        String accountName = ImapNotesAccount.accountName;
-        synchronized (this) {
-            accountName = ImapNotesAccount.accountName;
-            if (!accountSpinner.isEnabled()) { // search is active
-                accountName = "";
-                listToView.getFilter().filter(mFilterString);
-            }
+        if (getSelectedAccountName().isEmpty()) { // search is active
+            listToView.getFilter().filter(mFilterString);
         }
         new SyncThread(
-                accountName,
+                getSelectedAccountName(),
                 noteList,
                 listToView,
                 R.string.refreshing_notes_list,
@@ -618,7 +613,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             }
             case R.id.filter_by_hash: {
                 NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
-                List<String> tags = storedNotes.GetTags("", ImapNotesAccount.accountName);
+                List<String> tags = storedNotes.GetTags("", getSelectedAccountName());
                 List<Integer> positions = new ArrayList<>();
                 for (String tag : tags) {
                     if (hashFilterSelected.contains(tag))
@@ -737,6 +732,16 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     public void onNothingSelected(AdapterView<?> parent) {
         // TODO Auto-generated method stub
     }
+
+    // Hack: if the Spinner isDisabled Search is active->
+    //all accounts are selected
+    public String getSelectedAccountName() {
+        if (!accountSpinner.isEnabled())
+            return "";
+        return ImapNotesAccount.accountName;
+    }
+
+    ;
 
     private void updateAccountSpinner() {
         Log.d(TAG, "updateAccountSpinner");
