@@ -236,7 +236,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     Integer fileSize = extras.getInt(DLG_INSERT_IMAGE_FILE_SIZE);
                     editText.insertHTML(extras.getString(DLG_INSERT_LINK_IMAGE_ALT) + "\n<br>");
                     if (inline) {
-                        if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) / (scale * scale) > MAX_INSERT_FILE_SIZE_MB * 1024 * 1024) {
+                        if ((double) (Utilities.getRealSizeFromUri(this, uri) / (scale * scale)) > MAX_INSERT_FILE_SIZE_MB * 1024 * 1024) {
                             Log.d(TAG, "FileSize:" + fileSize / (scale * scale));
                             ImapNotes3.ShowMessage(String.format(getResources().getString(R.string.file_size_allowed), MAX_INSERT_FILE_SIZE_MB), editText, 2);
                         } else {
@@ -832,8 +832,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     String finalSubject = subject;
                     Bundle extra = new Bundle();
                     extra.putParcelable(Intent.EXTRA_STREAM, uri);
-                    Integer fileSize = Integer.valueOf(Utilities.getRealSizeFromUri(this, uri));
-                    extra.putInt(DLG_INSERT_IMAGE_FILE_SIZE, fileSize);
+                    double fileSize = Utilities.getRealSizeFromUri(this, uri);
+                    double fileSizeMB = fileSize / 1024 / 1024;
+                    int shrink = (int) Math.max(1, Math.ceil(Math.sqrt(fileSizeMB / MAX_INSERT_FILE_SIZE_MB)));
+                    extra.putDouble(DLG_INSERT_IMAGE_FILE_SIZE, fileSize);
                     SimpleFormDialog.build()
                             .title(R.string.insert_shared_image)
                             //.msg(R.string.please_fill_in_form)
@@ -851,8 +853,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                             required().
                                             hint(R.string.insert_image_shrink)
                                             .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
-                                            .text("1"),
-                                    Hint.plain(String.format(getResources().getString(R.string.file_size_info), (double) fileSize / 1024 / 1024, MAX_INSERT_FILE_SIZE_MB)),
+                                            .text(String.valueOf(shrink)),
+                                    Hint.plain(String.format(getResources().getString(R.string.file_size_info), fileSizeMB, MAX_INSERT_FILE_SIZE_MB)),
                                     Check.box(DLG_INSERT_LINK_IMAGE_RELATIVE)
                                             .check(true)
                                             .label(R.string.image_size_relative),

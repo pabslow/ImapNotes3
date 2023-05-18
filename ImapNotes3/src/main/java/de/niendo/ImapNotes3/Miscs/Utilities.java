@@ -103,7 +103,7 @@ public final class Utilities {
     }
 
 
-    public static String getRealSizeFromUri(Context context, Uri uri) {
+    public static int getRealSizeFromUri(Context context, Uri uri) {
         // https://stackoverflow.com/questions/45589736/uri-file-size-is-always-0
 
         Cursor cursor = null;
@@ -112,7 +112,7 @@ public final class Utilities {
             cursor = context.getContentResolver().query(uri, proj, null, null, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE);
             cursor.moveToFirst();
-            return cursor.getString(column_index);
+            return cursor.getInt(column_index);
         } finally {
             if (cursor != null) {
                 cursor.close();

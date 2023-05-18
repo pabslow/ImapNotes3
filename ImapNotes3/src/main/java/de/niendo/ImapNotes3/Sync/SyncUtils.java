@@ -285,7 +285,9 @@ public class SyncUtils {
                 Log.d(TAG, "exception opening mailFile: ");
                 e2.printStackTrace();
             } finally {
-                mailFileInputStream.close();
+                if (mailFileInputStream != null) {
+                    mailFileInputStream.close();
+                }
             }
         } catch (FileNotFoundException e1) {
             // TODO Auto-generated catch block
