@@ -100,7 +100,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     public static final String DLG_INSERT_LINK_TITLE = "DLG_INSERT_LINK_TITLE";
     public static final String DLG_INSERT_LINK_IMAGE = "DLG_INSERT_LINK_IMAGE";
     public static final String DLG_INSERT_IMAGE = "DLG_INSERT_IMAGE";
-    public static final String DLG_INSERT_IMAGE_LINK = "DLG_INSERT_IMAGE_LINK";
+    public static final String DLG_INSERT_IMAGE_INLINE = "DLG_INSERT_IMAGE_INLINE";
     public static final String DLG_INSERT_IMAGE_SHRINK_FACTOR = "DLG_INSERT_IMAGE_SHRINK_FACTOR";
     public static final String DLG_INSERT_LINK_IMAGE_URL = "DLG_INSERT_LINK_IMAGE_URL";
     public static final String DLG_INSERT_LINK_IMAGE_ALT = "DLG_INSERT_LINK_IMAGE_ALT";
@@ -111,7 +111,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
     public static final String DLG_INSERT_HASHTAG_NAME = "DLG_INSERT_HASHTAG_NAME";
     public static final String DLG_INSERT_HASHTAG = "DLG_INSERT_HASHTAG";
-    public static final double MAX_INSERT_FILE_SIZE_MB = 5.0;
+    public static final double MAX_INSERT_FILE_SIZE_MB = 1.0;
     private static final int EDIT_BUTTON = 6;
     private static final String TAG = "IN_NoteDetailActivity";
     private boolean textChanged = false;
@@ -230,16 +230,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     return true;
                 case DLG_INSERT_IMAGE: {
                     Boolean relative = extras.getBoolean(DLG_INSERT_LINK_IMAGE_RELATIVE);
-                    Boolean asLink = extras.getBoolean(DLG_INSERT_IMAGE_LINK);
+                    Boolean inline = extras.getBoolean(DLG_INSERT_IMAGE_INLINE);
                     Integer scale = Integer.valueOf(extras.getString(DLG_INSERT_IMAGE_SHRINK_FACTOR));
                     Uri uri = extras.getParcelable(Intent.EXTRA_STREAM);
                     Integer fileSize = extras.getInt(DLG_INSERT_IMAGE_FILE_SIZE);
-                    editText.insertHTML("Shared Image<br><br>");
-                    if (asLink) {
-                        editText.insertImage(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_IMAGE_URL)),
-                                extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
-                                extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
-                    } else {
+                    editText.insertHTML(extras.getString(DLG_INSERT_LINK_IMAGE_ALT) + "\n<br>");
+                    if (inline) {
                         if (Integer.valueOf(Utilities.getRealSizeFromUri(this, uri)) / (scale * scale) > MAX_INSERT_FILE_SIZE_MB * 1024 * 1024) {
                             Log.d(TAG, "FileSize:" + fileSize / (scale * scale));
                             ImapNotes3.ShowMessage(String.format(getResources().getString(R.string.file_size_allowed), MAX_INSERT_FILE_SIZE_MB), editText, 2);
@@ -248,8 +244,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                     extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
                                     extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative, scale);
                         }
+                    } else {
+                        editText.insertImage(Utilities.CheckUrlScheme(extras.getString(DLG_INSERT_LINK_IMAGE_URL)),
+                                extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
+                                extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
                     }
-                    editText.insertHTML("\n");
+                    editText.insertHTML("\n<br>");
 
                 }
             }
@@ -765,6 +765,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private void Save(boolean finish) {
         Log.d(TAG, "Save");
         editText.setOnJSDataListener(value -> {
+            Log.d(TAG, "Save setOnJSDataListener");
             Intent intent = new Intent();
             intent.putExtra(ListActivity.EDIT_ITEM_NUM_IMAP, suid);
             intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, accountName);
@@ -843,15 +844,15 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                             .hint(R.string.link_image_url)
                                             .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
                                             .text(uri.toString()),
-                                    Check.box(DLG_INSERT_IMAGE_LINK)
-                                            .check(true)
-                                            .label(R.string.insert_image_as_link),
+                                    Check.box(DLG_INSERT_IMAGE_INLINE)
+                                            .check(false)
+                                            .label(R.string.insert_image_as_inline),
                                     Input.plain(DLG_INSERT_IMAGE_SHRINK_FACTOR).
                                             required().
                                             hint(R.string.insert_image_shrink)
                                             .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
                                             .text("1"),
-                                    Hint.plain("FileSize is " + fileSize),
+                                    Hint.plain(String.format(getResources().getString(R.string.file_size_info), (double) fileSize / 1024 / 1024, MAX_INSERT_FILE_SIZE_MB)),
                                     Check.box(DLG_INSERT_LINK_IMAGE_RELATIVE)
                                             .check(true)
                                             .label(R.string.image_size_relative),
@@ -866,7 +867,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                     Input.plain(DLG_INSERT_LINK_IMAGE_ALT)
                                             .hint(R.string.link_alt_text)
                                             .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
-                                            .text(uri.getPath())
+                                            .text(uri.getLastPathSegment())
                             )
                             .neg(R.string.cancel)
                             .show(this, DLG_INSERT_IMAGE);

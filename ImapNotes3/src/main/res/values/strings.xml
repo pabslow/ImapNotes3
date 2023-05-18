@@ -116,13 +116,14 @@
     <string name="link_image_width">Width</string>
     <string name="link_image_height">Height</string>
     <string name="image_size_relative">Image size is relative to page width</string>
-    <string name="file_size_allowed">Only files smaller than %1$.1f MB allowed. (increase shrink)</string>
+    <string name="file_size_allowed">Only files smaller than %1$.1f MB allowed. (decrease resolution)</string>
+    <string name="file_size_info">File size %1$.1f MB. (only %2$.1f MB allowed)</string>
     <string name="insert_hashtag">Insert HashTag</string>
     <string name="insert_hashtag_name">HashTag Name</string>
     <string name="insert_hashtag_syntax">Not a valid HashTag</string>
     <string name="filter_by_hash">Filter by HashTag</string>
     <string name="reset_filter">Reset</string>
-    <string name="insert_image_as_link">Insert image as link</string>
-    <string name="insert_image_shrink">Shrink image</string>
+    <string name="insert_image_as_inline">Embedding image (no link)</string>
+    <string name="insert_image_shrink">decrease resolution by</string>
     <string name="insert_shared_image">Insert shared image</string>
 </resources>
