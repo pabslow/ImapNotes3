@@ -140,7 +140,7 @@ public class NotesDb extends SQLiteOpenHelper {
 
         // delete DS with TempNumber
         db.execSQL("delete from notesTable where number = '" + noteElement.GetUid() +
-                "' and accountname = '" + noteElement.GetAccount() + "' and title = 'tmp'");
+                "' and accountname = '" + noteElement.GetAccount() + "' and date = '" + noteElement.GetDate() + "'");
 
         ContentValues tableRow = new ContentValues();
         tableRow.put(COL_TITLE_NOTE, noteElement.GetTitle());
@@ -196,9 +196,10 @@ public class NotesDb extends SQLiteOpenHelper {
         return RetValue;
     }
 
-    public synchronized String GetTempNumber(@NonNull String accountname) {
+    public synchronized String GetTempNumber(@NonNull OneNote noteElement) {
         String RetValue = "-1";
-        String selectQuery = "select case when cast(max(abs(number)+2) as int) > 0 then cast(max(abs(number)+1) as int)*-1 else '-1' end from notesTable where number < '0' and accountname='" + accountname + "'";
+        String selectQuery = "select case when cast(max(abs(number)+2) as int) > 0 then cast(max(abs(number)+1) as int)*-1 " +
+                "else '-1' end from notesTable where number < '0' and accountname='" + noteElement.GetAccount() + "'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         try (Cursor c = db.rawQuery(selectQuery, null)) {
@@ -208,10 +209,10 @@ public class NotesDb extends SQLiteOpenHelper {
         }
         // Create DS with TempNumber, so it can not be given two times
         ContentValues tableRow = new ContentValues();
-        tableRow.put(COL_TITLE_NOTE, "tmp");
-        tableRow.put(COL_DATE, "");
+        tableRow.put(COL_TITLE_NOTE, "~" + noteElement.GetTitle());
+        tableRow.put(COL_DATE, noteElement.GetDate());
         tableRow.put(COL_NUMBER, RetValue);
-        tableRow.put(COL_ACCOUNT_NAME, accountname);
+        tableRow.put(COL_ACCOUNT_NAME, noteElement.GetAccount());
         tableRow.put(COL_BGCOLOR, "");
         db.insert(TABLE_NAME_NOTES, null, tableRow);
         db.close();

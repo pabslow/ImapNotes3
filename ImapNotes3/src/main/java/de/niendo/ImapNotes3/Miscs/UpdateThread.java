@@ -149,7 +149,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 // Add note to database
                 if (!suid.startsWith("-")) {
                     // no temp. suid in use
-                    suid = storedNotes.GetTempNumber(currentNote.GetAccount());
+                    suid = storedNotes.GetTempNumber(currentNote);
                 }
                 currentNote.SetUid(suid);
                 // Here we ask to add the new note to the new note folder
