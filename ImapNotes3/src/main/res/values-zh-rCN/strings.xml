@@ -116,5 +116,14 @@
     <string name="link_image_width">宽度</string>
     <string name="link_image_height">高度</string>
     <string name="image_size_relative">图片尺寸是相对于页面宽度而言的</string>
-    <string name="file_size_allowed">仅允许小于 %1$.1f Mb 的文件.</string>
+    <string name="file_size_allowed">只允许小于 %1$.1f MB 的文件。（降低分辨率）</string>
+    <string name="file_size_info">文件大小为 %1$.1f MB。（最多只允许 %2$.1f MB ）</string>
+    <string name="insert_hashtag">插入标签</string>
+    <string name="insert_hashtag_name">标签名</string>
+    <string name="insert_hashtag_syntax">非有效标签</string>
+    <string name="filter_by_hash">按标签过滤</string>
+    <string name="reset_filter">重置</string>
+    <string name="insert_image_as_inline">嵌入图片 （不是链接）</string>
+    <string name="insert_image_shrink">降低分辨率的比例</string>
+    <string name="insert_shared_image">插入共享的图片</string>
 </resources>
