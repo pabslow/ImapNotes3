@@ -1,3 +1,4 @@
-* add #HashTags to your notes
-* filter notes by #HashTags
+* add any HashTags to your notes
+* filter notes by HashTags
 * add dialog for insert shared images
+* rework sync to handle larger notes
