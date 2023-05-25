@@ -64,6 +64,7 @@ import de.niendo.ImapNotes3.Data.SyncInterval;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
 import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.Result;
+import de.niendo.ImapNotes3.Miscs.SmtpServerNameFinder;
 import de.niendo.ImapNotes3.Miscs.Utilities;
 
 import java.util.List;
@@ -214,10 +215,9 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     @SuppressLint("SetTextI18n")
     private final View.OnFocusChangeListener FinishEmailEdit = (v, r) -> {
         if (!v.hasFocus()) {
-            TextView tv = (TextView) v;
-            String[] mail = tv.getText().toString().split("@");
-            if ((mail.length == 2) && serverTextView.getText().toString().isEmpty()) {
-                serverTextView.setText("imap." + mail[1]);
+            String email = ((TextView) v).getText().toString();
+            if (email.contains("@") && serverTextView.getText().toString().isEmpty()) {
+                serverTextView.setText(SmtpServerNameFinder.getSmtpServerName(email));
             }
         }
     };
