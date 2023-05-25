@@ -285,9 +285,7 @@ public class SyncUtils {
                 Log.d(TAG, "exception opening mailFile: ");
                 e2.printStackTrace();
             } finally {
-                if (mailFileInputStream != null) {
-                    mailFileInputStream.close();
-                }
+                mailFileInputStream.close();
             }
         } catch (FileNotFoundException e1) {
             // TODO Auto-generated catch block
@@ -405,7 +403,9 @@ public class SyncUtils {
                 internaldate,
                 suid,
                 accountName,
-                bgColor);
+                bgColor,
+                OneNote.SAVE_STATE_OK);
+
         storedNotes.InsertANoteInDb(aNote);
         List<String> tags = ListActivity.searchHTMLTags(directory, suid, Utilities.HASHTAG_PATTERN, true);
         storedNotes.UpdateTags(tags, suid, accountName);

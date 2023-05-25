@@ -273,6 +273,18 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         listview.setOnItemClickListener((parent, widget, selectedNote, rowId) -> {
             Log.d(TAG, "onItemClick");
             Intent toDetail;
+
+            String saveState = noteList.get(selectedNote).GetState();
+            saveState = storedNotes.GetSaveState(noteList.get(selectedNote).GetUid(), noteList.get(selectedNote).GetAccount());
+
+            if (saveState.equals(OneNote.SAVE_STATE_SAVING)) {
+                ImapNotes3.ShowMessage(R.string.save_wait_necessary, listview, 3);
+                return;
+            } else if (saveState.equals(OneNote.SAVE_STATE_SYNCING)) {
+                ImapNotes3.ShowMessage(R.string.sync_wait_necessary, listview, 3);
+                return;
+            }
+
             if (intentActionSend != null)
                 // FIXME StrictMode policy violation: android.os.strictmode.UnsafeIntentLaunchViolation: Launch of unsafe intent: Intent
                 toDetail = intentActionSend;
@@ -341,6 +353,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             intentActionSend.setClass(this, NoteDetailActivity.class);
             intentActionSend.setFlags(0);
             intentActionSend.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
+            intentActionSend.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, ImapNotesAccount.accountName);
             intentActionSend.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAddShare);
 
             ImapNotes3.ShowAction(listview, R.string.insert_as_new_note, R.string.ok, 0,
@@ -600,6 +613,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     toNew = new Intent(this, NoteDetailActivity.class);
                 toNew.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
                 toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
+                toNew.putExtra(ListActivity.ACCOUNTNAME, ImapNotesAccount.accountName);
                 startActivityForResult(toNew, ListActivity.NEW_BUTTON);
                 if (intentActionSend != null)
                     intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);

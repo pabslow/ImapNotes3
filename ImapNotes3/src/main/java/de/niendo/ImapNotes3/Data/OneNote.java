@@ -30,12 +30,15 @@ import java.util.HashMap;
  * needs objects that have a map interface because it must fetch the items by string name.
  */
 public class OneNote extends HashMap<String, String> {
+    public static final String SAVE_STATE_OK = "";
+    public static final String SAVE_STATE_SAVING = "SAVE_STATE_SAVING";
+    public static final String SAVE_STATE_SYNCING = "SAVE_STATE_SYNCING";
     public static final String TITLE = "title";
     public static final String DATE = "date";
     public static final String BGCOLOR = "bgColor";
     public static final String UID = "uid";
     public static final String ACCOUNT = "account";
-
+    public static final String SAVE_STATE = "save_state";
 
     /**
      *
@@ -43,13 +46,14 @@ public class OneNote extends HashMap<String, String> {
     private static final long serialVersionUID = 1L;
 
 
-    public OneNote(@NonNull String title, @NonNull String date, @NonNull String uid, @NonNull String account, @NonNull String bgColor) {
+    public OneNote(@NonNull String title, @NonNull String date, @NonNull String uid, @NonNull String account, @NonNull String bgColor, @NonNull String saveState) {
         super();
         put(TITLE, title);
         put(DATE, date);
         put(UID, uid);
         put(ACCOUNT, account);
         put(BGCOLOR, bgColor);
+        put(SAVE_STATE, saveState);
     }
 
     @NonNull
@@ -77,6 +81,10 @@ public class OneNote extends HashMap<String, String> {
         return this.get(BGCOLOR);
     }
 
+    @NonNull
+    public String GetState() {
+        return this.get(SAVE_STATE);
+    }
 
     public void SetDate(String date) {
         this.put(DATE, date);
@@ -90,6 +98,10 @@ public class OneNote extends HashMap<String, String> {
         this.put(BGCOLOR, bgColor);
     }
 
+    public void SetState(String saveState) {
+        this.put(SAVE_STATE, saveState);
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -97,6 +109,7 @@ public class OneNote extends HashMap<String, String> {
                 " Date: " + this.GetDate() +
                 " BgColor: " + this.GetBgColor() +
                 " Account: " + this.GetAccount() +
+                " State: " + this.GetState() +
                 " Uid: " + this.GetUid());
     }
 }

@@ -122,8 +122,8 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 // Here we delete the note from the local notes list
                 //Log.d(TAG,"Delete note in Listview");
                 indexToDelete = getIndexByNumber(suid);
-                MoveMailToDeleted(suid);
                 storedNotes.DeleteANote(suid, accountName);
+                MoveMailToDeleted(suid);
                 bool_to_return = true;
             }
 
@@ -131,6 +131,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
             if ((action == Action.Insert) || (action == Action.Update)) {
                 Log.d(TAG, "Action Insert/Update:" + suid);
                 String oldSuid = suid;
+                storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
                 //Log.d(TAG, "Received request to add new message: " + noteBody + "===");
                 // Use the first line as the tile
                 String[] tok = Html.fromHtml(noteBody.substring(0, Math.min(noteBody.length(), 2000)), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
@@ -145,12 +146,13 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 Date date = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
                 String stringDate = sdf.format(date);
-                currentNote = new OneNote(title, stringDate, "", accountName, bgColor);
+                currentNote = new OneNote(title, stringDate, "", accountName, bgColor, OneNote.SAVE_STATE_SAVING);
                 // Add note to database
                 if (!suid.startsWith("-")) {
                     // no temp. suid in use
                     suid = storedNotes.GetTempNumber(currentNote);
                 }
+                storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
                 currentNote.SetUid(suid);
                 // Here we ask to add the new note to the new note folder
                 // Must be done AFTER uid has been set in currentNote
@@ -160,6 +162,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                     MoveMailToDeleted(oldSuid);
                 }
                 storedNotes.DeleteANote(oldSuid, currentNote.GetAccount());
+                currentNote.SetState(OneNote.SAVE_STATE_OK);
                 storedNotes.InsertANoteInDb(currentNote);
 
                 // Add note to noteList but change date format before

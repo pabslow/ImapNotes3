@@ -56,7 +56,8 @@
     <string name="alignment">Alignment</string>
     <string name="insert">insert</string>
     <string name="note_last_change">Last Change</string>
-    <string name="sync_wait_necessary">Wait for Synchronization finished</string>
+    <string name="sync_wait_necessary">please wait until sync is complete.</string>
+    <string name="save_wait_necessary">please wait until save is complete.</string>
     <string name="security">Security</string>
     <string name="note_title">Note Title</string>
     <string name="brown">Brown</string>
@@ -126,4 +127,5 @@
     <string name="insert_image_as_inline">Embedding image (no link)</string>
     <string name="insert_image_shrink">decrease resolution by</string>
     <string name="insert_shared_image">Insert shared image</string>
+    <string name="Invalid_Note">Invalid note</string>
 </resources>

@@ -39,6 +39,7 @@ import android.util.Log;
 import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
+import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.Security;
 import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.ListActivity;
@@ -69,8 +70,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     @NonNull
     private final Context applicationContext;
     private NotesDb storedNotes;
-    // TODO: Why was this static?
-    //private Account account;
     private ImapNotesAccount account;
 
     private SyncUtils syncUtils;
@@ -78,9 +77,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     SyncAdapter(@NonNull Context applicationContext) {
         super(applicationContext, true);
         Log.d(TAG, "SyncAdapter");
-        if (syncUtils == null) {
-            syncUtils = new SyncUtils();
-        }
+        syncUtils = new SyncUtils();
 
         //mContentResolver = applicationContext.getContentResolver();
         // TODO: do we really need a copy of the applicationContext reference?
@@ -269,6 +266,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             newNotesManaged = true;
             // Read local new message from file
             File fileInNew = new File(dirNew, fileNew);
+            storedNotes.SetSaveState("-" + fileNew, OneNote.SAVE_STATE_SYNCING, account.accountName);
             Message message = syncUtils.ReadMailFromFile(dirNew, fileNew);
             try {
                 Log.d(TAG, "handleNewNotes message: " + message.getSize());
@@ -300,11 +298,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             File to = new File(accountDir, newuid);
             fileInNew.renameTo(to);
-            storedNotes.UpdateANote(fileNew, newuid, account.accountName);
             // move new note from new dir, one level up
-
+            storedNotes.UpdateANote(fileNew, newuid, account.accountName);
             List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
             storedNotes.UpdateTags(tags, newuid, account.accountName);
+            storedNotes.SetSaveState(newuid, OneNote.SAVE_STATE_OK, account.accountName);
         }
         return newNotesManaged;
     }

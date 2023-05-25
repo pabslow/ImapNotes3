@@ -51,6 +51,7 @@ public class NotesDb extends SQLiteOpenHelper {
     private static final String COL_NUMBER = "number";
     private static final String COL_ACCOUNT_NAME = "accountname";
     private static final String COL_BGCOLOR = "bgcolor";
+    private static final String COL_SAVE_STATE = "saveState";
     private static final String TABLE_NAME_NOTES = "notesTable";
     private static final String COL_TITLE_TAG = "tag";
     private static final String TABLE_NAME_TAGS = "tagsTable";
@@ -69,6 +70,7 @@ public class NotesDb extends SQLiteOpenHelper {
             + COL_DATE + " text not null, "
             + COL_NUMBER + " text not null, "
             + COL_BGCOLOR + " text not null, "
+            + COL_SAVE_STATE + " text not null, "
             + COL_ACCOUNT_NAME + " text not null);";
     private static final String VIEW_NAME_TAGS = "tagsView";
     public static final String CREATE_TAGS_VIEW = "CREATE VIEW IF NOT EXISTS "
@@ -79,6 +81,7 @@ public class NotesDb extends SQLiteOpenHelper {
             + COL_DATE + ","
             + TABLE_NAME_NOTES + "." + COL_BGCOLOR + " AS " + COL_BGCOLOR + ","
             + TABLE_NAME_NOTES + "." + COL_ACCOUNT_NAME + " AS " + COL_ACCOUNT_NAME + ","
+            + TABLE_NAME_NOTES + "." + COL_SAVE_STATE + " AS " + COL_SAVE_STATE + ","
             + TABLE_NAME_TAGS + "." + COL_TITLE_TAG + " AS " + COL_TITLE_TAG
             + "\n FROM "
             + TABLE_NAME_NOTES
@@ -111,7 +114,6 @@ public class NotesDb extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         if (oldVersion != newVersion) {
             //SQLiteDatabase db = this.getWritableDatabase();
             // Version 4: new TABLE_NAME_TAGS and VIEW_NAME_TAGS
@@ -128,6 +130,10 @@ public class NotesDb extends SQLiteOpenHelper {
                     db.execSQL("Drop view " + VIEW_NAME_TAGS + ";");
                 } catch (Exception e) {
                 }
+//                try {
+//                        db.execSQL("ALTER TABLE " + TABLE_NAME_NOTES + " ADD " + COL_SAVE_STATE + " text not null;");
+//                } catch (Exception e) {
+//                }
             }
             db.execSQL(CREATE_NOTES_DB);
             db.execSQL(CREATE_TAGS_DB);
@@ -148,6 +154,7 @@ public class NotesDb extends SQLiteOpenHelper {
         tableRow.put(COL_NUMBER, noteElement.GetUid());
         tableRow.put(COL_BGCOLOR, noteElement.GetBgColor());
         tableRow.put(COL_ACCOUNT_NAME, noteElement.GetAccount());
+        tableRow.put(COL_SAVE_STATE, noteElement.GetState());
         db.insert(TABLE_NAME_NOTES, null, tableRow);
 
         //Log.d(TAG, "note inserted");
@@ -214,6 +221,7 @@ public class NotesDb extends SQLiteOpenHelper {
         tableRow.put(COL_NUMBER, RetValue);
         tableRow.put(COL_ACCOUNT_NAME, noteElement.GetAccount());
         tableRow.put(COL_BGCOLOR, "");
+        tableRow.put(COL_SAVE_STATE, "");
         db.insert(TABLE_NAME_NOTES, null, tableRow);
         db.close();
         return (RetValue);
@@ -259,6 +267,7 @@ public class NotesDb extends SQLiteOpenHelper {
                 int dateIndex = resultPointer.getColumnIndex(COL_DATE);
                 int numberIndex = resultPointer.getColumnIndex(COL_NUMBER);
                 int bgColorIndex = resultPointer.getColumnIndex(COL_BGCOLOR);
+                int bgSaveStateIndex = resultPointer.getColumnIndex(COL_SAVE_STATE);
                 do {
                     //String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
                     //SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
@@ -282,7 +291,8 @@ public class NotesDb extends SQLiteOpenHelper {
                             sdate,
                             resultPointer.getString(numberIndex),
                             resultPointer.getString(AccountNameIndex),
-                            resultPointer.getString(bgColorIndex)));
+                            resultPointer.getString(bgColorIndex),
+                            resultPointer.getString(bgSaveStateIndex)));
 
                 } while (resultPointer.moveToNext());
                 resultPointer.close();
@@ -290,6 +300,33 @@ public class NotesDb extends SQLiteOpenHelper {
         }
         db.close();
     }
+
+    public synchronized void SetSaveState(@NonNull String uid, @NonNull String saveState, @NonNull String accountname) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String req = "update notesTable set saveState='" + saveState + "' where number='" + uid + "' and accountname='" + accountname + "'";
+        db.execSQL(req);
+        db.close();
+        // Log.d(TAG,"SetSaveState:" + uid + "-->" + saveState + " Account "+ accountname);
+    }
+
+    ;
+
+    public synchronized String GetSaveState(@NonNull String uid, @NonNull String accountname) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String RetValue = OneNote.SAVE_STATE_SYNCING;
+        String selectQuery = "select saveState from notesTable where number = '" + uid + "' and accountname='" + accountname + "'";
+        try (Cursor c = db.rawQuery(selectQuery, null)) {
+            if (c.moveToFirst()) {
+                RetValue = c.getString(0);
+            }
+        }
+        db.close();
+        //Log.d(TAG,"GetSaveState:" + uid + "-->" + RetValue + " Account "+ accountname);
+        return RetValue;
+    }
+
+    ;
+
 
     public synchronized void UpdateTags(@NonNull List<String> tags, @NonNull String uid, @NonNull String accountname) {
         SQLiteDatabase db = this.getWritableDatabase();

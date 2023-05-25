@@ -55,7 +55,8 @@
     <string name="alignment">Ausrichtung</string>
     <string name="insert">Einfügen</string>
     <string name="note_last_change">Letzte Änderung</string>
-    <string name="sync_wait_necessary">Warten auf Ende Abgleich</string>
+    <string name="sync_wait_necessary">Bitte warten bis Abgleich abgeschlossen ist.</string>
+    <string name="save_wait_necessary">Notiz wird noch gespeichert. Bitte warten.</string>
     <string name="security">Sicherheit</string>
     <string name="note_title">Notiz-Titel</string>
     <string name="brown">Braun</string>
@@ -126,4 +127,5 @@
     <string name="insert_image_as_inline">Bild in Notiz einbetten (kein Link)</string>
     <string name="insert_image_shrink">Auflösung reduzieren um Faktor</string>
     <string name="insert_shared_image">Geteiltes Bild einfügen</string>
+    <string name="Invalid_Note">Invalid note</string>
 </resources>

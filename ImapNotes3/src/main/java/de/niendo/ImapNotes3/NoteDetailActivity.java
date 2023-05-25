@@ -158,32 +158,33 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             HashMap hm = (HashMap) intent.getSerializableExtra(selectedNote);
             boolean usesticky = intent.getBooleanExtra(useSticky, false);
 
-            if (hm != null) {
-                suid = hm.get(OneNote.UID).toString();
-                accountName = hm.get(OneNote.ACCOUNT).toString();
-                File rootDir = ImapNotes3.GetAccountDir(accountName);
-                Message message = SyncUtils.ReadMailFromFileRootAndNew(suid, rootDir);
-                Log.d(TAG, "rootDir: " + rootDir);
-                if (message != null) {
-                    if (usesticky) {
-                        StickyNote stickyNote = StickyNote.GetStickyFromMessage(message);
-                        stringres = stickyNote.text;
-                        //String position = sticky.position;
-                        bgColor = stickyNote.color;
-                    } else {
-                        HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
-                        stringres = htmlNote.text;
-                        bgColor = htmlNote.color;
-                    }
-                    SetupRichEditor();
-                    editText.setHtml(stringres);
+            if (hm == null) {
+                // Entry can not opened..
+                ImapNotes3.ShowMessage(R.string.Invalid_Note, null, 3);
+                finish();
+                return;
+            }
+            suid = hm.get(OneNote.UID).toString();
+            accountName = hm.get(OneNote.ACCOUNT).toString();
+
+            File rootDir = ImapNotes3.GetAccountDir(accountName);
+            Message message = SyncUtils.ReadMailFromFileRootAndNew(suid, rootDir);
+            Log.d(TAG, "rootDir: " + rootDir);
+            if (message != null) {
+                if (usesticky) {
+                    StickyNote stickyNote = StickyNote.GetStickyFromMessage(message);
+                    stringres = stickyNote.text;
+                    //String position = sticky.position;
+                    bgColor = stickyNote.color;
                 } else {
-                    // Entry can not opened..
-                    ImapNotes3.ShowMessage(R.string.sync_wait_necessary, null, 3);
-                    finish();
-                    return;
+                    HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
+                    stringres = htmlNote.text;
+                    bgColor = htmlNote.color;
                 }
-            } else { // Entry can not opened..
+                SetupRichEditor();
+                editText.setHtml(stringres);
+            } else {
+                // Entry can not opened..
                 ImapNotes3.ShowMessage(R.string.Invalid_Message, null, 3);
                 finish();
                 return;
@@ -233,7 +234,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     Boolean inline = extras.getBoolean(DLG_INSERT_IMAGE_INLINE);
                     Integer scale = Integer.valueOf(extras.getString(DLG_INSERT_IMAGE_SHRINK_FACTOR));
                     Uri uri = extras.getParcelable(Intent.EXTRA_STREAM);
-                    Integer fileSize = extras.getInt(DLG_INSERT_IMAGE_FILE_SIZE);
+                    double fileSize = extras.getDouble(DLG_INSERT_IMAGE_FILE_SIZE);
                     editText.insertHTML(extras.getString(DLG_INSERT_LINK_IMAGE_ALT) + "\n<br>");
                     if (inline) {
                         if ((double) (Utilities.getRealSizeFromUri(this, uri) / (scale * scale)) > MAX_INSERT_FILE_SIZE_MB * 1024 * 1024) {
@@ -778,6 +779,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         });
         // data comes via callback
         editText.getHtml();
+        NotesDb storedNotes = NotesDb.getInstance(getApplicationContext());
+        storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
     }
 
     private void Share() {
