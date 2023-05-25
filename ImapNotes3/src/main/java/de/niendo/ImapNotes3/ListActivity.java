@@ -651,6 +651,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 String about = getString(R.string.license) + "\n";
                 about += "Name: " + BuildConfig.APPLICATION_ID + "\n";
                 about += "Version: " + BuildConfig.VERSION_NAME + "\n";
+                about += "DB-Version: " + NotesDb.NOTES_VERSION + "\n";
                 about += "Code: " + BuildConfig.VERSION_CODE + "\n";
                 about += "Build typ: " + BuildConfig.BUILD_TYPE + "\n";
                 about += getString(R.string.internet) + "\n";

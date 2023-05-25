@@ -88,7 +88,7 @@ public class NotesDb extends SQLiteOpenHelper {
             + "\n INNER JOIN " + TABLE_NAME_TAGS + " ON " + TABLE_NAME_NOTES + "." + COL_NUMBER + " = " + TABLE_NAME_TAGS + "." + COL_NUMBER
             + "\n AND " + TABLE_NAME_NOTES + "." + COL_ACCOUNT_NAME + " = " + TABLE_NAME_TAGS + "." + COL_ACCOUNT_NAME + ";";
 
-    private static final int NOTES_VERSION = 4;
+    public static final int NOTES_VERSION = 4;
     private static final String DATABASE_NAME = "NotesDb";
 
     private static NotesDb instance = null;
@@ -116,8 +116,10 @@ public class NotesDb extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
             //SQLiteDatabase db = this.getWritableDatabase();
-            // Version 4: new TABLE_NAME_TAGS and VIEW_NAME_TAGS
-            if (!(oldVersion == 3 && newVersion == 4)) {
+
+            // Version 3: ImapNotes2
+            // Version 4: new TABLE_NAME_TAGS and VIEW_NAME_TAGS and SaveState
+            if (oldVersion < 3) {
                 try {
                     db.execSQL("Drop table " + TABLE_NAME_NOTES + ";");
                 } catch (Exception e) {
@@ -130,10 +132,11 @@ public class NotesDb extends SQLiteOpenHelper {
                     db.execSQL("Drop view " + VIEW_NAME_TAGS + ";");
                 } catch (Exception e) {
                 }
-//                try {
-//                        db.execSQL("ALTER TABLE " + TABLE_NAME_NOTES + " ADD " + COL_SAVE_STATE + " text not null;");
-//                } catch (Exception e) {
-//                }
+            } else {
+                try {
+                    db.execSQL("ALTER TABLE " + TABLE_NAME_NOTES + " ADD " + COL_SAVE_STATE + " text not null DEFAULT '';");
+                } catch (Exception e) {
+                }
             }
             db.execSQL(CREATE_NOTES_DB);
             db.execSQL(CREATE_TAGS_DB);
