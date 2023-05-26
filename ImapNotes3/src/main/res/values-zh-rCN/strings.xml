@@ -56,7 +56,8 @@
     <string name="alignment">对齐</string>
     <string name="insert">插入</string>
     <string name="note_last_change">最后更改</string>
-    <string name="sync_wait_necessary">等待同步完成</string>
+    <string name="sync_wait_necessary">请等待至同步结束。</string>
+    <string name="save_wait_necessary">请等待至保存结束。</string>
     <string name="security">安全性</string>
     <string name="note_title">笔记标题</string>
     <string name="brown">棕</string>
@@ -126,4 +127,5 @@
     <string name="insert_image_as_inline">嵌入图片 （不是链接）</string>
     <string name="insert_image_shrink">降低分辨率的比例</string>
     <string name="insert_shared_image">插入共享的图片</string>
+    <string name="Invalid_Note">无效笔记</string>
 </resources>
