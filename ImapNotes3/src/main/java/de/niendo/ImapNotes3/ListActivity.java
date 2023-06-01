@@ -759,7 +759,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         this.spinnerList.notifyDataSetChanged();
         setPreferences();
         long id = this.accountSpinner.getSelectedItemId();
-        if (id == android.widget.AdapterView.INVALID_ROW_ID) {
+        if ((id == android.widget.AdapterView.INVALID_ROW_ID) || (id >= ListActivity.currentList.size())) {
             this.accountSpinner.setSelection(0);
             id = 0;
         }
