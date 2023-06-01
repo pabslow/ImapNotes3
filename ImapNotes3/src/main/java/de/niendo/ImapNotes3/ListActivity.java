@@ -29,7 +29,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -648,21 +647,18 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 return true;
             }
             case R.id.about:
-                String about = getString(R.string.license) + "\n";
-                about += "Name: " + BuildConfig.APPLICATION_ID + "\n";
-                about += "Version: " + BuildConfig.VERSION_NAME + "\n";
-                about += "DB-Version: " + NotesDb.NOTES_VERSION + "\n";
-                about += "Code: " + BuildConfig.VERSION_CODE + "\n";
-                about += "Build typ: " + BuildConfig.BUILD_TYPE + "\n";
-                about += getString(R.string.internet) + "\n";
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.about) + " " + BuildConfig.APPLICATION_NAME)
-                        .setIcon(R.mipmap.ic_launcher)
-                        .setMessage(about)
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            // Do nothing
-                        })
-                        .show();
+                String about = getString(R.string.license) + "<br>";
+                about += "ID: " + BuildConfig.APPLICATION_ID + "<br>";
+                about += "Version: " + BuildConfig.VERSION_NAME + "<br>";
+                about += "Code: " + BuildConfig.VERSION_CODE + "<br>";
+                about += "DB-Version: " + NotesDb.NOTES_VERSION + "<br>";
+                about += "Build typ: " + BuildConfig.BUILD_TYPE + "<br>";
+                about += getString(R.string.internet) + "<br>";
+                SimpleDialog.build()
+                        .title(getString(R.string.about) + " " + BuildConfig.APPLICATION_NAME)
+                        .icon(R.mipmap.ic_launcher)
+                        .msgHtml(about)
+                        .show(this);
                 return true;
             case R.id.send_debug_report:
                 SendLogcatMail();
