@@ -25,12 +25,9 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.SyncRequest;
+import android.app.AlertDialog;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
-import android.net.TrafficStats;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.LayoutRes;
@@ -61,15 +58,16 @@ import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.Security;
 import de.niendo.ImapNotes3.Data.SyncInterval;
-import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
 import de.niendo.ImapNotes3.Miscs.Imaper;
+import de.niendo.ImapNotes3.Miscs.LoginThread;
 import de.niendo.ImapNotes3.Miscs.Result;
 import de.niendo.ImapNotes3.Miscs.SmtpServerNameFinder;
 import de.niendo.ImapNotes3.Miscs.Utilities;
+import eltos.simpledialogfragment.SimpleDialog;
 
 import java.util.List;
 
-public class AccountConfigurationActivity extends AccountAuthenticatorActivity implements OnItemSelectedListener {
+public class AccountConfigurationActivity extends AccountAuthenticatorActivity implements OnItemSelectedListener, SimpleDialog.OnDialogResultListener, LoginThread.FinishListener {
     /**
      * Cannot be final or NonNull because it needs the application context which is not available
      * until onCreate.
@@ -79,10 +77,10 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     //region Intent item names and values.
     public static final String ACTION = "ACTION";
     public static final String ACCOUNTNAME = "ACCOUNTNAME";
-    private static final int TO_REFRESH = 999;
-    private static final String AUTHORITY = Utilities.PackageName + ".provider";
+    public static final int TO_REFRESH = 999;
+    public static final String AUTHORITY = Utilities.PackageName + ".provider";
     private static final String TAG = "IN_AccountConfActivity";
-    private static final int THREAD_ID = 0xF00D;
+
 
     @Nullable
     private static Account myAccount = null;
@@ -97,7 +95,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         }
     };
     private AppCompatDelegate mDelegate;
-    private Imaper imapFolder;
+    public Imaper imapFolder;
     private TextView accountnameTextView;
     private TextView usernameTextView;
     private TextView passwordTextView;
@@ -118,6 +116,12 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         getDelegate().onPostCreate(savedInstanceState);
     }
 
+    @Override
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
+
+        return false;
+    }
+
     public ActionBar getSupportActionBar() {
         return getDelegate().getSupportActionBar();
     }
@@ -129,6 +133,36 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         return getDelegate().getMenuInflater();
     }
   */
+    //@Override
+    public void onFinishPerformed(@NonNull Result<String> result) {
+
+        if (result.succeeded) {
+            Clear();
+            // Hack! accountManager.addOnAccountsUpdatedListener
+            setResult(ListActivity.ResultCodeSuccess);
+            finish();
+        } else {
+            //ImapNotes3.ShowMessage(result.result, accountConfigurationActivity.usernameTextView, 5);
+            // Hack! accountManager.addOnAccountsUpdatedListener
+            setResult(ListActivity.ResultCodeError);
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.IMAP_operation_failed)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setMessage(result.result)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        // Do nothing
+                    })
+                    .show();
+            /*
+            SimpleDialog.build()
+                    .title("R.string.hello")
+                    .msg("R.string.hello_world")
+                    .show(ListActivity);
+
+             */
+        }
+
+    }
 
     public void setSupportActionBar(@Nullable Toolbar toolbar) {
         getDelegate().setSupportActionBar(toolbar);
@@ -413,7 +447,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         // TODO Auto-generated method stub
     }
 
-    void Clear() {
+    public void Clear() {
 
         accountnameTextView.setText("");
         usernameTextView.setText("");
@@ -426,112 +460,13 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         stickyCheckBox.setChecked(false);
     }
 
+
     /**
      *
      */
-    enum Actions {
+    public enum Actions {
         CREATE_ACCOUNT,
         EDIT_ACCOUNT
     }
 
-    class LoginThread extends AsyncTask<Void, Void, Result<String>> {
-
-        private final ImapNotesAccount ImapNotesAccount;
-
-        private final AccountConfigurationActivity accountConfigurationActivity;
-
-        private final Actions action;
-
-        LoginThread(ImapNotesAccount ImapNotesAccount,
-                    AccountConfigurationActivity accountConfigurationActivity,
-                    Actions action) {
-            this.ImapNotesAccount = ImapNotesAccount;
-            this.accountConfigurationActivity = accountConfigurationActivity;
-            this.action = action;
-            ImapNotes3.ShowMessage(R.string.logging_in, accountnameTextView, 3);
-        }
-
-        @NonNull
-        protected Result<String> doInBackground(Void... none) {
-            Log.d(TAG, "doInBackground");
-            try {
-
-                ImapNotesResult res = imapFolder.ConnectToProvider(
-                        ImapNotesAccount.username,
-                        ImapNotesAccount.password,
-                        ImapNotesAccount.server,
-                        ImapNotesAccount.portnum,
-                        ImapNotesAccount.security,
-                        THREAD_ID
-                );
-                //accountConfigurationActivity = accountConfigurationActivity;
-                if (res.returnCode != Imaper.ResultCodeSuccess) {
-                    Log.d(TAG, "doInBackground IMAP Failed");
-                    return new Result<>("IMAP operation failed: " + res.errorMessage, false);
-                }
-
-                final Account account = new Account(ImapNotesAccount.accountName, Utilities.PackageName);
-                final AccountManager am = AccountManager.get(accountConfigurationActivity);
-                accountConfigurationActivity.setResult(AccountConfigurationActivity.TO_REFRESH);
-                int resultTxtId;
-                if (action == Actions.EDIT_ACCOUNT) {
-                    resultTxtId = R.string.account_modified;
-                } else {
-                    if (!am.addAccountExplicitly(account, ImapNotesAccount.password, null)) {
-                        return new Result<>(getString(R.string.account_already_exists_or_is_null), false);
-                    }
-                    resultTxtId = R.string.account_added;
-                }
-
-                final Bundle result = new Bundle();
-                result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-                result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-                setAccountAuthenticatorResult(result);
-                setUserData(am, account);
-                // Run the Sync Adapter Periodically
-                ContentResolver.setIsSyncable(account, AUTHORITY, 1);
-                ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
-                // we can enable inexact timers in our periodic sync
-                SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval.time, ImapNotesAccount.syncInterval.time)
-                        .setSyncAdapter(account, AUTHORITY).setExtras(new Bundle()).build();
-                if (ImapNotesAccount.syncInterval.time > 0) {
-                    ContentResolver.requestSync(request);
-                } else {
-                    ContentResolver.cancelSync(request);
-                }
-
-                Log.d(TAG, "doInBackground success");
-                return new Result<>(getString(resultTxtId), true);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new Result<>("Unexpected exception: " + e.getMessage(), false);
-            }
-        }
-
-        private void setUserData(@NonNull AccountManager am,
-                                 @NonNull Account account) {
-            am.setUserData(account, ConfigurationFieldNames.UserName, ImapNotesAccount.username);
-            am.setUserData(account, ConfigurationFieldNames.Server, ImapNotesAccount.server);
-            am.setUserData(account, ConfigurationFieldNames.PortNumber, ImapNotesAccount.portnum);
-            am.setUserData(account, ConfigurationFieldNames.SyncInterval, ImapNotesAccount.syncInterval.name());
-            am.setUserData(account, ConfigurationFieldNames.Security, ImapNotesAccount.security.name());
-            am.setUserData(account, ConfigurationFieldNames.UseSticky, String.valueOf(ImapNotesAccount.usesticky));
-            am.setUserData(account, ConfigurationFieldNames.ImapFolder, ImapNotesAccount.GetImapFolder());
-        }
-
-        protected void onPostExecute(@NonNull Result<String> result) {
-            TrafficStats.clearThreadStatsTag();
-            if (result.succeeded) {
-                accountConfigurationActivity.Clear();
-                // Hack! accountManager.addOnAccountsUpdatedListener
-                setResult(ListActivity.ResultCodeSuccess);
-                finish();
-            } else {
-                ImapNotes3.ShowMessage(result.result, usernameTextView, 5);
-                // Hack! accountManager.addOnAccountsUpdatedListener
-                setResult(ListActivity.ResultCodeError);
-            }
-        }
-
-    }
 }

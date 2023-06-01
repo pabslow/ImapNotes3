@@ -128,4 +128,5 @@
     <string name="insert_image_shrink">Auflösung reduzieren um Faktor</string>
     <string name="insert_shared_image">Geteiltes Bild einfügen</string>
     <string name="Invalid_Note">Invalid note</string>
+    <string name="IMAP_operation_failed">IMAP-Verbindungsaufbau fehlgeschlagen</string>
 </resources>
