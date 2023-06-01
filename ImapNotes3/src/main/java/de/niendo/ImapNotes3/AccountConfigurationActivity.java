@@ -26,6 +26,7 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -137,9 +138,11 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     public void onFinishPerformed(@NonNull Result<String> result) {
 
         if (result.succeeded) {
-            Clear();
+            Intent intent = new Intent();
+            intent.putExtra(ListActivity.ACCOUNTNAME, GetTextViewText(accountnameTextView));
             // Hack! accountManager.addOnAccountsUpdatedListener
-            setResult(ListActivity.ResultCodeSuccess);
+            setResult(ListActivity.ResultCodeSuccess, intent);
+            Clear();
             finish();
         } else {
             //ImapNotes3.ShowMessage(result.result, accountConfigurationActivity.usernameTextView, 5);

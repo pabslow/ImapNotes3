@@ -598,7 +598,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 res.setComponent(new ComponentName(mPackage, mPackage + mClass));
                 res.putExtra(ACTION, AccountConfigurationActivity.Actions.CREATE_ACCOUNT);
                 res.putExtra(ACCOUNTNAME, ImapNotesAccount.accountName);
-                startActivity(res);
+                startActivityForResult(res, ListActivity.ADD_ACCOUNT);
                 return true;
             case R.id.refresh:
                 //TextView status = (TextView) findViewById(R.id.status);
@@ -708,6 +708,18 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     EnableAccountsUpdate = true;
                     ListActivity.accountManager.addOnAccountsUpdatedListener(
                             new AccountsUpdateListener(), null, true);
+                    String newAccount = data.getStringExtra(ACCOUNTNAME);
+                    // activate last added account
+                    ArrayAdapter adapter = (ArrayAdapter) accountSpinner.getAdapter();
+                    int n = adapter.getCount();
+                    for (int i = 0; i < n; i++) {
+                        if (newAccount.equals(adapter.getItem(i).toString())) {
+                            accountSpinner.setSelection(i);
+                            Account account = ListActivity.accounts[(int) i];
+                            ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
+                        }
+                    }
+                    TriggerSync(false);
                 }
                 break;
             default:
