@@ -207,6 +207,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     private void TriggerSync(boolean refreshTags) {
+        if (ListActivity.ImapNotesAccount == null) return;
         OldStatus = status.getText().toString();
         status.setText(R.string.syncing);
         Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
