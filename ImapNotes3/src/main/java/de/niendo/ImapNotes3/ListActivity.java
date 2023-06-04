@@ -705,7 +705,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case ListActivity.ADD_ACCOUNT:
                 Log.d(TAG, "onActivityResult AccountsUpdateListener");
                 // Hack! accountManager.addOnAccountsUpdatedListener
-                if (resultCode == ResultCodeSuccess) {
+                if ((data != null) && (resultCode == ResultCodeSuccess)) {
                     EnableAccountsUpdate = true;
                     ListActivity.accountManager.addOnAccountsUpdatedListener(
                             new AccountsUpdateListener(), null, true);
