@@ -149,9 +149,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             boolean isChanged = intent.getBooleanExtra(CHANGED, false);
             boolean isSynced = intent.getBooleanExtra(SYNCED, false);
             String errorMessage = intent.getStringExtra(SYNCED_ERR_MSG);
-            Log.d(TAG, "if " + accountName + " " + ImapNotesAccount.accountName);
             SyncInterval syncInterval = SyncInterval.from(intent.getStringExtra(SYNCINTERVAL));
-            if (accountName.equals(ImapNotesAccount.accountName)) {
+            if ((ImapNotesAccount != null) && accountName.equals(ImapNotesAccount.accountName)) {
+                Log.d(TAG, "if " + accountName + " " + ImapNotesAccount.accountName);
                 String statusText = OldStatus;
                 if (isSynced) {
                     // Display last sync date
@@ -170,11 +170,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
 
                 status.setText(statusText);
-
-                //if (isChanged) {
-                storedNotes.GetStoredNotes(noteList, accountName, getSortOrder(), hashFilter);
                 listToView.notifyDataSetChanged();
-                //}
+                RefreshList();
             }
         }
     };
@@ -188,6 +185,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static Account[] accounts = new Account[0];
     private static String OldStatus;
     private final OnClickListener clickListenerEditAccount = v -> {
+        if (getSelectedAccountName().equals("")) {
+            ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
+            return;
+        }
         Intent res = new Intent();
         String mPackage = Utilities.PackageName;
         String mClass = ".AccountConfigurationActivity";
@@ -207,7 +208,14 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     private void TriggerSync(boolean refreshTags) {
-        if (ListActivity.ImapNotesAccount == null) return;
+        if (ListActivity.ImapNotesAccount == null) {
+            Log.d(TAG, "TriggerSync: Account==null");
+            return;
+        }
+        if (getSelectedAccountName().equals("")) {
+            ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
+            return;
+        }
         OldStatus = status.getText().toString();
         status.setText(R.string.syncing);
         Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
@@ -424,9 +432,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
-        if (getSelectedAccountName().isEmpty()) { // search is active
-            listToView.getFilter().filter(mFilterString);
-        }
+        listToView.setAccountName(getSelectedAccountName());
+        listToView.getFilter().filter(mFilterString);
         new SyncThread(
                 getSelectedAccountName(),
                 noteList,
@@ -522,7 +529,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 //searchView.requestFocus(); - doesn't work properly
                 searchView.setIconifiedByDefault(false);
                 searchView.setIconified(false);
-                accountSpinner.setEnabled(false);
                 mFilterString = "";
                 listToView.getFilter().filter("");
                 return true;
@@ -530,9 +536,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                accountSpinner.setEnabled(true);
                 //listToView.getFilter().filter("");
-                storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder(), hashFilter);
+                storedNotes.GetStoredNotes(noteList, getSelectedAccountName(), getSortOrder(), hashFilter);
                 mFilterString = "";
                 listToView.ResetFilterData(noteList);
                 listToView.notifyDataSetChanged();
@@ -606,6 +611,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 TriggerSync(true);
                 return true;
             case R.id.newnote:
+                if (getSelectedAccountName().equals("")) {
+                    ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
+                    return false;
+                }
                 Intent toNew;
                 if (intentActionSend != null)
                     toNew = intentActionSend;
@@ -705,19 +714,22 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case ListActivity.ADD_ACCOUNT:
                 Log.d(TAG, "onActivityResult AccountsUpdateListener");
                 // Hack! accountManager.addOnAccountsUpdatedListener
-                if ((data != null) && (resultCode == ResultCodeSuccess)) {
+                if (resultCode == ResultCodeSuccess) {
                     EnableAccountsUpdate = true;
                     ListActivity.accountManager.addOnAccountsUpdatedListener(
                             new AccountsUpdateListener(), null, true);
-                    String newAccount = data.getStringExtra(ACCOUNTNAME);
-                    // activate last added account
-                    ArrayAdapter adapter = (ArrayAdapter) accountSpinner.getAdapter();
-                    int n = adapter.getCount();
-                    for (int i = 0; i < n; i++) {
-                        if (newAccount.equals(adapter.getItem(i).toString())) {
-                            accountSpinner.setSelection(i);
-                            Account account = ListActivity.accounts[(int) i];
-                            ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
+                    if (data != null) {
+                        String newAccount = data.getStringExtra(ACCOUNTNAME);
+                        // activate last added account
+                        ArrayAdapter adapter = (ArrayAdapter) accountSpinner.getAdapter();
+                        int n = adapter.getCount();
+                        for (int i = 1; i < n; i++) {
+                            Log.d(TAG, "onActivityResult AccountsUpdateListener" + i + ":" + adapter.getItem(i).toString());
+                            if (newAccount.equals(adapter.getItem(i).toString())) {
+                                accountSpinner.setSelection(i);
+                                Account account = ListActivity.accounts[i - 1];
+                                ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
+                            }
                         }
                     }
                     TriggerSync(false);
@@ -732,23 +744,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         Log.d(TAG, "onItemSelected");
-        Account account = ListActivity.accounts[pos];
-        /* Check periodic sync. If set to 86400 (once a day), set it to 900 (15 minutes)
-        // this is due to bad upgrade to v4 which handles offline mode and syncing
-        // Remove this code after V4.0 if version no more used
-        List<PeriodicSync> currentSyncs = ContentResolver.getPeriodicSyncs(account, AUTHORITY);
-        for (PeriodicSync onesync : currentSyncs) {
-            if (onesync.period == 86400) {
-                ContentResolver.setIsSyncable(account, AUTHORITY, 1);
-                ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
-                ContentResolver.addPeriodicSync(account, AUTHORITY, new Bundle(), 60);
-                ImapNotes3.ShowMessage("Recreating this account is recommended to manage sync interval. Set to 15 minutes in the meantime", accountSpinner, 2);
-            }
+        if (pos > 0) {
+            Account account = ListActivity.accounts[pos - 1];
+            ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
         }
-         */
-        ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
-//        storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder());
-//        listToView.ResetFilterData(noteList);
         RefreshList();
     }
 
@@ -760,7 +759,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     // Hack: if the Spinner isDisabled Search is active->
     //all accounts are selected
     public String getSelectedAccountName() {
-        if (!accountSpinner.isEnabled())
+        if (accountSpinner.getSelectedItemId() == 0)
             return "";
         return ImapNotesAccount.accountName;
     }
@@ -773,12 +772,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         setPreferences();
         long id = this.accountSpinner.getSelectedItemId();
         if ((id == android.widget.AdapterView.INVALID_ROW_ID) || (id >= ListActivity.currentList.size())) {
-            this.accountSpinner.setSelection(0);
-            id = 0;
+            this.accountSpinner.setSelection(1);
+            id = 1;
         }
 
-        if (ListActivity.currentList.size() > 0) {
-            Account account = ListActivity.accounts[(int) id];
+        if ((ListActivity.currentList.size() > 1) && (id >= 1)) {
+            Account account = ListActivity.accounts[(int) id - 1];
             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
             // FIXME his place is not nice..but no other is working
             Check_Action_Send(null);
@@ -846,15 +845,21 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
                 ListActivity.accounts = ImapNotesAccounts;
                 newList = new ArrayList<>();
+                newList.add(getString(R.string.all_accounts));
                 for (Account account : ListActivity.accounts) {
                     newList.add(account.name);
                 }
-                if (newList.size() == 0) return;
+                if (newList.size() == 1) return;
 
                 boolean equalLists = true;
                 ListIterator<String> iter = ListActivity.currentList.listIterator();
+                boolean first = true;
                 while (iter.hasNext()) {
                     String s = iter.next();
+                    // skip first entry (All)
+                    if (first) iter.next();
+                    first = false;
+
                     if (!(newList.contains(s))) {
                         iter.remove();
                         // Why try here?
@@ -867,9 +872,15 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         equalLists = false;
                     }
                 }
+                first = true;
                 for (String accountName : newList) {
                     if (!(ListActivity.currentList.contains(accountName))) {
                         ListActivity.currentList.add(accountName);
+                        // skip first entry (All)
+                        if (first) {
+                            first = false;
+                            continue;
+                        }
                         SyncUtils.CreateLocalDirectories(ImapNotes3.GetAccountDir(accountName));
                         equalLists = false;
                     }

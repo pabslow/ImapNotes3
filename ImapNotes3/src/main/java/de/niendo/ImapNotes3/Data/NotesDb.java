@@ -234,6 +234,7 @@ public class NotesDb extends SQLiteOpenHelper {
                                             @NonNull String accountName,
                                             @NonNull String sortOrder,
                                             String[] hashFilter) {
+        Log.d(TAG, "GetStoredNotes:" + accountName + " " + sortOrder);
         String table = TABLE_NAME_NOTES;
         noteList.clear();
         Date date = null;
@@ -298,6 +299,7 @@ public class NotesDb extends SQLiteOpenHelper {
                             resultPointer.getString(bgSaveStateIndex)));
 
                 } while (resultPointer.moveToNext());
+                // Log.d(TAG,"GetStoredNotes: Anzahl" + resultPointer.getCount());
                 resultPointer.close();
             }
         }

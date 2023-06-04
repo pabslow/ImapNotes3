@@ -507,11 +507,11 @@ public class SyncUtils {
     /* Copy all notes from the IMAP server to the local directory using the UID as the file name.
 
      */
-    void GetNotes(@NonNull Account account,
-                  @NonNull File RootDirAccount,
-                  @NonNull Context applicationContext,
-                  @NonNull NotesDb storedNotes,
-                  @NonNull boolean useSticky) throws MessagingException, IOException {
+    synchronized void GetNotes(@NonNull Account account,
+                               @NonNull File RootDirAccount,
+                               @NonNull Context applicationContext,
+                               @NonNull NotesDb storedNotes,
+                               @NonNull boolean useSticky) throws MessagingException, IOException {
         Log.d(TAG, "GetNotes: " + account.name);
         //Long UIDM;
         //Message notesMessage;
@@ -553,13 +553,15 @@ public class SyncUtils {
 
     @Override
     protected void finalize() {
-        if (IsConnected()) {
+     /*   if (IsConnected()) {
             try {
                 store.close();
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
         }
+
+      */
     }
 
 }

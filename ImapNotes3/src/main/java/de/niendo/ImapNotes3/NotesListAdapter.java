@@ -82,6 +82,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     private final String[] mFrom;
     private final String mBgColor;
     private String mSortOrder;
+    private String mAccountName = "";
 
     private List<? extends Map<String, ?>> mData;
 
@@ -118,6 +119,11 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     public void setSortOrder(String sortOrder) {
         mUnfilteredData = null;
         mSortOrder = sortOrder;
+    }
+
+    public void setAccountName(String setAccountName) {
+        mUnfilteredData = null;
+        mAccountName = setAccountName;
     }
 
     /**
@@ -407,7 +413,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
 
             if (mUnfilteredData == null) {
                 mUnfilteredData = new ArrayList<>();
-                storedNotes.GetStoredNotes(mUnfilteredData, "", mSortOrder, ListActivity.hashFilter);
+                storedNotes.GetStoredNotes(mUnfilteredData, mAccountName, mSortOrder, ListActivity.hashFilter);
             }
 
             if (prefix == null || prefix.length() == 0) {
