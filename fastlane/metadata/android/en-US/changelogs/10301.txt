@@ -1,0 +1,6 @@
+* add HashTags to your notes
+* filter notes by your HashTags
+* add dialog for insert shared images
+* rework sync to handle larger notes
+* improve suggest smtp server by email address
+* activate and sync new added accounts
