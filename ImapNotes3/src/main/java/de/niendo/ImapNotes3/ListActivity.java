@@ -769,9 +769,16 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     private void updateAccountSpinner() {
         Log.d(TAG, "updateAccountSpinner");
+        this.accountSpinner.setEnabled(true);
         this.spinnerList.notifyDataSetChanged();
         setPreferences();
         long id = this.accountSpinner.getSelectedItemId();
+        // only one account active..disable selection
+        if (ListActivity.currentList.size() == 2) {
+            this.accountSpinner.setEnabled(false);
+            this.accountSpinner.setSelection(1);
+            id = 1;
+        }
         if ((id == android.widget.AdapterView.INVALID_ROW_ID) || (id >= ListActivity.currentList.size())) {
             this.accountSpinner.setSelection(1);
             id = 1;
@@ -856,10 +863,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 ListIterator<String> iter = ListActivity.currentList.listIterator();
                 boolean first = true;
                 while (iter.hasNext()) {
-                    String s = iter.next();
                     // skip first entry (All)
                     if (first) iter.next();
                     first = false;
+                    String s = iter.next();
 
                     if (!(newList.contains(s))) {
                         iter.remove();
@@ -877,14 +884,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 for (String accountName : newList) {
                     if (!(ListActivity.currentList.contains(accountName))) {
                         ListActivity.currentList.add(accountName);
-                        // skip first entry (All)
-                        if (first) {
-                            first = false;
-                            continue;
-                        }
-                        SyncUtils.CreateLocalDirectories(ImapNotes3.GetAccountDir(accountName));
                         equalLists = false;
+                        // skip first entry (All)
+                        if (!first)
+                            SyncUtils.CreateLocalDirectories(ImapNotes3.GetAccountDir(accountName));
                     }
+                    first = false;
                 }
                 if (equalLists) return;
                 updateAccountSpinner();
