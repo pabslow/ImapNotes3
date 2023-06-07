@@ -23,6 +23,7 @@ package de.niendo.ImapNotes3.Miscs;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -82,32 +83,12 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
     @NonNull
     @Override
     protected Boolean doInBackground(Object... stuffs) {
-        /*String username = null;
-        String password = null;
-        String server = null;
-        String portnum = null;
-        String security = null;
-        String usesticky = null;
-*/
-         /*       this.adapter = ((NotesListAdapter) stuffs[3]);
-        this.notesList = ((ArrayList<OneNote>) stuffs[2]);
-        this.storedNotes = ((NotesDb) stuffs[5]);
-        this.ctx = (Context) stuffs[6];
- */
-        //username = ((ImapNotesAccount) stuffs[1]).GetUsername();
-        //password = ((ImapNotesAccount) stuffs[1]).GetPassword();
-        //server = ((ImapNotesAccount) stuffs[1]).GetServer();
-        //portnum = ((ImapNotesAccount) stuffs[1]).GetPortnum();
-        //security = ((ImapNotesAccount) stuffs[1]).GetSecurity();
-        //usesticky = ((ImapNotesAccount) stuffs[1]).GetUsesticky();
-
+        Log.d(TAG, "doInBackground");
         storedNotes.GetStoredNotes(this.notesList, accountName, sortOrder, hashFilter);
         return true;
     }
 
     protected void onPostExecute(Boolean result) {
-        //if (result) {
             this.adapter.notifyDataSetChanged();
-        //}
     }
 }

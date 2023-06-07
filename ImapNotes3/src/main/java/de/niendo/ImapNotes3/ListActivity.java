@@ -503,6 +503,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 // this is your adapter that will be filtered
                 // mFilterString = newText;
                 // listToView.getFilter().filter(newText);
+                if ((newText == null) || (newText.isEmpty())) {
+                    mFilterString = "";
+                    listToView.ResetFilterData(noteList);
+                    RefreshList();
+                }
                 return true;
             }
 
@@ -516,10 +521,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         };
         // restore List and Filter after closing search
         searchView.setOnCloseListener(() -> {
-            storedNotes.GetStoredNotes(noteList, ImapNotesAccount.accountName, getSortOrder(), hashFilter);
             mFilterString = "";
             this.listToView.ResetFilterData(noteList);
-            listToView.notifyDataSetChanged();
+            RefreshList();
             return true;
         });
 
@@ -536,12 +540,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                //listToView.getFilter().filter("");
-                storedNotes.GetStoredNotes(noteList, getSelectedAccountName(), getSortOrder(), hashFilter);
                 mFilterString = "";
-                listToView.ResetFilterData(noteList);
-                listToView.notifyDataSetChanged();
                 searchView.clearFocus();
+                listToView.ResetFilterData(noteList);
                 return true;
             }
         });

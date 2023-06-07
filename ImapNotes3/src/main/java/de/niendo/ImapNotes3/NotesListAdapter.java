@@ -410,17 +410,21 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
         protected FilterResults performFiltering(@Nullable CharSequence prefix) {
             FilterResults results = new FilterResults();
             NotesDb storedNotes = NotesDb.getInstance(mContext);
-
-            if (mUnfilteredData == null) {
-                mUnfilteredData = new ArrayList<>();
-                storedNotes.GetStoredNotes(mUnfilteredData, mAccountName, mSortOrder, ListActivity.hashFilter);
-            }
+            Log.d(TAG, "performFiltering");
 
             if (prefix == null || prefix.length() == 0) {
-                ArrayList<OneNote> list = mUnfilteredData;
-                results.values = list;
-                results.count = list.size();
+                // filter necessary
+                return null;
+                //ArrayList<OneNote> list = mUnfilteredData;
+                //results.values = list;
+                //results.count = list.size();
             } else {
+
+                if (mUnfilteredData == null) {
+                    mUnfilteredData = new ArrayList<>();
+                    storedNotes.GetStoredNotes(mUnfilteredData, mAccountName, mSortOrder, ListActivity.hashFilter);
+                }
+
                 String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
 
                 ArrayList<OneNote> unfilteredValues = mUnfilteredData;
@@ -459,6 +463,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
         @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, @NonNull FilterResults results) {
             //noinspection unchecked
+            if (results == null) return;
             mData = (List<Map<String, ?>>) results.values;
             if (results.count > 0) {
                 notifyDataSetChanged();
