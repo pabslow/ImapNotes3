@@ -213,7 +213,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             return;
         }
         if (getSelectedAccountName().equals("")) {
-            ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
+            ImapNotes3.ShowMessage(R.string.select_one_account_to_sync, accountSpinner, 3);
             return;
         }
         OldStatus = status.getText().toString();
@@ -720,25 +720,31 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     ListActivity.accountManager.addOnAccountsUpdatedListener(
                             new AccountsUpdateListener(), null, true);
                     if (data != null) {
-                        String newAccount = data.getStringExtra(ACCOUNTNAME);
-                        // activate last added account
-                        ArrayAdapter adapter = (ArrayAdapter) accountSpinner.getAdapter();
-                        int n = adapter.getCount();
-                        for (int i = 1; i < n; i++) {
-                            Log.d(TAG, "onActivityResult AccountsUpdateListener" + i + ":" + adapter.getItem(i).toString());
-                            if (newAccount.equals(adapter.getItem(i).toString())) {
-                                accountSpinner.setSelection(i);
-                                Account account = ListActivity.accounts[i - 1];
-                                ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
-                            }
+                        Integer pos = getSpinnerPos(data.getStringExtra(ACCOUNTNAME));
+                        if (pos > 0) {
+                            accountSpinner.setSelection(pos);
+                            Account account = ListActivity.accounts[pos - 1];
+                            ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
                         }
                     }
+                    ;
                     TriggerSync(false);
                 }
                 break;
             default:
                 Log.d(TAG, "Received wrong request to save message");
         }
+    }
+
+    private Integer getSpinnerPos(String accountName) {
+        ArrayAdapter adapter = (ArrayAdapter) accountSpinner.getAdapter();
+        int n = adapter.getCount();
+        for (int i = 1; i < n; i++) {
+            if (accountName.equals(adapter.getItem(i).toString())) {
+                return (i);
+            }
+        }
+        return 0;
     }
 
     // Spinner item selected listener

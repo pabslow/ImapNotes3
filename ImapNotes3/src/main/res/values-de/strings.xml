@@ -130,5 +130,6 @@
     <string name="Invalid_Note">Invalid note</string>
     <string name="IMAP_operation_failed">IMAP-Verbindungsaufbau fehlgeschlagen</string>
     <string name="select_one_account">Ein Konto/Notizbuch wählen!</string>
+    <string name="select_one_account_to_sync">Ein Konto/Notizbuch zum Abgleich wählen!</string>
     <string name="all_accounts">Alle</string>
 </resources>
