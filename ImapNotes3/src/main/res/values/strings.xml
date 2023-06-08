@@ -130,6 +130,5 @@
     <string name="Invalid_Note">Invalid note</string>
     <string name="IMAP_operation_failed">IMAP operation failed</string>
     <string name="select_one_account">Select one account/notepad</string>
-    <string name="select_one_account_to_sync">Select one account/notepad to sync.</string>
     <string name="all_accounts">All</string>
 </resources>

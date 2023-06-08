@@ -208,24 +208,29 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     private void TriggerSync(boolean refreshTags) {
-        if (ListActivity.ImapNotesAccount == null) {
+        if (ListActivity.ImapNotesAccount == null && !getSelectedAccountName().equals("")) {
             Log.d(TAG, "TriggerSync: Account==null");
             return;
         }
-        if (getSelectedAccountName().equals("")) {
-            ImapNotes3.ShowMessage(R.string.select_one_account_to_sync, accountSpinner, 3);
-            return;
-        }
+
         OldStatus = status.getText().toString();
         status.setText(R.string.syncing);
-        Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
         Bundle settingsBundle = new Bundle();
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         settingsBundle.putBoolean(REFRESH_TAGS, refreshTags);
         //Log.d(TAG,"Request a sync for:"+mAccount);
-        ContentResolver.cancelSync(mAccount, AUTHORITY);
-        ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
+
+        if (getSelectedAccountName().equals("")) {
+            for (Account mAccount : ListActivity.accounts) {
+                ContentResolver.cancelSync(mAccount, AUTHORITY);
+                ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
+            }
+        } else {
+            Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
+            ContentResolver.cancelSync(mAccount, AUTHORITY);
+            ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
+        }
     }
 
     /**
