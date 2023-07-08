@@ -8,7 +8,7 @@
     <color name="brown">#FEAD6F</color>
     <color name="gray">#D1D1D1</color>
     <color name="black">#000000</color>
-    <color name="red">#FE877C</color>
+    <color name="red">#FA8C82</color>
     <color name="none">@color/yellow</color>
 
     <color name="ActionBgColor">#C7C49E</color>
@@ -16,7 +16,7 @@
 
     <color name="ListBgColor">#FFFFAE</color>
     <color name="ListTxtColor">#3C490D</color>
-    <color name="ListInfoTxtColor">#C7C49E</color>
+    <color name="ListInfoTxtColor">#959478</color>
 
     <color name="StatusBgColor">#FFFFAE</color>
     <color name="StatusBgErrColor">#FE877C</color>
