@@ -3,13 +3,13 @@
 
     <color name="blue">#2E3E6B</color>
     <color name="white">#FFFFFFCC</color>
-    <color name="yellow">#808037</color>
+    <color name="yellow">#D7BD16</color>
     <color name="pink">#4C2540</color>
-    <color name="green">#597147</color>
+    <color name="green">#2F4F4F</color>
     <color name="brown">#6D4A2F</color>
     <color name="gray">#696969</color>
     <color name="black">#14150E</color>
-    <color name="red">#713631</color>
+    <color name="red">#710D05</color>
     <color name="none">@color/black</color>
 
     <color name="ActionBgColor">#2F2F2F</color>
@@ -17,7 +17,7 @@
 
     <color name="ListBgColor">#191C12</color>
     <color name="ListTxtColor">#AB9C69</color>
-    <color name="ListInfoTxtColor">#AB9C69</color>
+    <color name="ListInfoTxtColor">#8B7E56</color>
 
     <color name="StatusBgColor">#2F4F4F</color>
     <color name="StatusBgErrColor">#713631</color>
