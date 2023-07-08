@@ -6,7 +6,7 @@
     <color name="pink">#FABCE7</color>
     <color name="green">#D4E88B</color>
     <color name="brown">#FEAD6F</color>
-    <color name="grey">#D1D1D1</color>
+    <color name="gray">#D1D1D1</color>
     <color name="black">#000000</color>
     <color name="red">#FE877C</color>
     <color name="none">@color/yellow</color>

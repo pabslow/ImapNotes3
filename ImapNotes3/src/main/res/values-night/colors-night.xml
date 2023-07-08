@@ -7,7 +7,7 @@
     <color name="pink">#4C2540</color>
     <color name="green">#597147</color>
     <color name="brown">#6D4A2F</color>
-    <color name="grey">#696969</color>
+    <color name="gray">#696969</color>
     <color name="black">#14150E</color>
     <color name="red">#713631</color>
     <color name="none">@color/black</color>
