@@ -33,6 +33,8 @@
     <string name="yellow">Gelb</string>
     <string name="pink">Pink</string>
     <string name="green">Grün</string>
+    <string name="red">Rot</string>
+    <string name="gray">Grau</string>
     <string name="syncing">Abgleich läuft…</string>
     <string name="port_number">Portnummer</string>
     <string name="notes_folder_optional">Ordner für Notizen (optional)</string>

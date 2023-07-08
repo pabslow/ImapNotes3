@@ -1,1 +1,2 @@
 * update libs
+* add gray and red as note colors

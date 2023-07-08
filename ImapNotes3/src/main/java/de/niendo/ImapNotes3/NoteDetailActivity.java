@@ -727,6 +727,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 bgColor = "white";
                 ResetColors();
                 return true;
+            case R.id.gray:
+                item.setChecked(true);
+                bgColor = "gray";
+                ResetColors();
+                return true;
             case R.id.black:
                 item.setChecked(true);
                 bgColor = "black";
@@ -752,7 +757,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 bgColor = "brown";
                 ResetColors();
                 return true;
-
+            case R.id.red:
+                item.setChecked(true);
+                bgColor = "red";
+                ResetColors();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

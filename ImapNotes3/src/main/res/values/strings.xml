@@ -38,6 +38,8 @@
     <string name="yellow">Yellow</string>
     <string name="pink">Pink</string>
     <string name="green">Green</string>
+    <string name="red">Red</string>
+    <string name="gray">Gray</string>
     <string name="syncing">Synchronising…</string>
     <string name="refreshing_notes_list">Refreshing notes list…</string>
     <string name="updating_notes_list">Updating notes list…</string>

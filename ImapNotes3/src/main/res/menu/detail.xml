@@ -39,6 +39,9 @@
                     android:id="@+id/white"
                     android:title="@string/white" />
                 <item
+                    android:id="@+id/gray"
+                    android:title="@string/gray" />
+                <item
                     android:id="@+id/black"
                     android:title="@string/black" />
                 <item
@@ -53,6 +56,9 @@
                 <item
                     android:id="@+id/brown"
                     android:title="@string/brown" />
+                <item
+                    android:id="@+id/red"
+                    android:title="@string/red" />
             </group>
         </menu>
     </item>
