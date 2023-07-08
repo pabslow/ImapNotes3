@@ -304,7 +304,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             else
                 toDetail = new Intent(widget.getContext(), NoteDetailActivity.class);
             toDetail.putExtra(NoteDetailActivity.selectedNote, (OneNote) parent.getItemAtPosition(selectedNote));
-            toDetail.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
+            boolean usesticky = false;
+            if (ListActivity.ImapNotesAccount != null)
+                usesticky = ListActivity.ImapNotesAccount.usesticky;
+            toDetail.putExtra(NoteDetailActivity.useSticky, usesticky);
             toDetail.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeEdit);
             startActivityForResult(toDetail, SEE_DETAIL);
             if (intentActionSend != null)
