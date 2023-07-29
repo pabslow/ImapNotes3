@@ -397,6 +397,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onPause() {
         Log.d(TAG, "onPause");
         super.onPause();
+        savePreferences();
         if (!(updateThread == null)) {
             // for some reason this helps...
             synchronized (updateThread) {
@@ -417,13 +418,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
-
-        SharedPreferences.Editor preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE).edit();
-        preferences.putLong(ACCOUNTSPINNER_POS, accountSpinner.getSelectedItemId());
-        preferences.putBoolean(SORT_BY_DATE, actionMenu.findItem(R.id.sort_date).isChecked());
-        preferences.putBoolean(SORT_BY_TITLE, actionMenu.findItem(R.id.sort_title).isChecked());
-        preferences.putBoolean(SORT_BY_COLOR, actionMenu.findItem(R.id.sort_color).isChecked());
-        preferences.apply();
+        savePreferences();
     }
 
     @Override
@@ -432,11 +427,21 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         Log.d(TAG, "onRestoreInstanceState");
     }
 
+    private void savePreferences() {
+        SharedPreferences.Editor preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE).edit();
+        preferences.putLong(ACCOUNTSPINNER_POS, accountSpinner.getSelectedItemId());
+        preferences.putBoolean(SORT_BY_DATE, actionMenu.findItem(R.id.sort_date).isChecked());
+        preferences.putBoolean(SORT_BY_TITLE, actionMenu.findItem(R.id.sort_title).isChecked());
+        preferences.putBoolean(SORT_BY_COLOR, actionMenu.findItem(R.id.sort_color).isChecked());
+        preferences.apply();
+    }
+
     private void setPreferences() {
         Log.d(TAG, "setPreferences:");
         SharedPreferences preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE);
         accountSpinner.setSelection((int) preferences.getLong(ACCOUNTSPINNER_POS, 0));
     }
+
 
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
@@ -801,9 +806,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         if ((ListActivity.currentList.size() > 1) && (id >= 1)) {
             Account account = ListActivity.accounts[(int) id - 1];
             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
-            // FIXME his place is not nice..but no other is working
-            Check_Action_Send(null);
         }
+        // FIXME his place is not nice..but no other is working
+        Check_Action_Send(null);
+
     }
 
     // In case of necessary debug  with user approval
