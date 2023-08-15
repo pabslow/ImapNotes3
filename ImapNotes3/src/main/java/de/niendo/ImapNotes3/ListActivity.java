@@ -430,6 +430,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private void savePreferences() {
         SharedPreferences.Editor preferences = getApplicationContext().getSharedPreferences(Utilities.PackageName, MODE_PRIVATE).edit();
         preferences.putLong(ACCOUNTSPINNER_POS, accountSpinner.getSelectedItemId());
+        if (actionMenu == null) return;
         preferences.putBoolean(SORT_BY_DATE, actionMenu.findItem(R.id.sort_date).isChecked());
         preferences.putBoolean(SORT_BY_TITLE, actionMenu.findItem(R.id.sort_title).isChecked());
         preferences.putBoolean(SORT_BY_COLOR, actionMenu.findItem(R.id.sort_color).isChecked());
