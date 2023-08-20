@@ -1,3 +1,5 @@
+* possibility to select all accounts/notepads
 * update libs
 * add gray and red as note colors
 * minor layout changes
+* fix SaveChangesDialog

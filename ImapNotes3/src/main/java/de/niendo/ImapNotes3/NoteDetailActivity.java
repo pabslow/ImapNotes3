@@ -46,6 +46,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.FileProvider;
 
 import de.niendo.ImapNotes3.Data.NotesDb;
@@ -147,6 +148,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         if (action == null)
             action = "";
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                saveChangesDialog();
+            }
+        });
 
         if (action.equals(Intent.ACTION_SEND) && !ChangeNote.equals(ActivityTypeAddShare) && !intent.getBooleanExtra(NoteDetailActivity.ActivityTypeProcessed, false)) {
             ImapNotes3.ShowAction(editText, R.string.insert_in_note, R.string.ok, 60,
@@ -709,8 +716,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 Share();
                 return true;
             case android.R.id.home:
-                onBackPressed();
-                //NavUtils.navigateUpFromSameTask(this);
+                saveChangesDialog();
                 return true;
             case R.id.none:
                 item.setChecked(true);
@@ -927,23 +933,20 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         super.onPause();
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
+    public void saveChangesDialog() {
+        Log.d(TAG, "saveChangesDialog");
         if (textChanged) {
             new AlertDialog.Builder(this)
                     .setIcon(R.mipmap.ic_launcher)
                     .setTitle(R.string.made_changes)
                     .setMessage(R.string.save_changes)
-                    .setNegativeButton(R.string.no, (arg0, arg1) -> NoteDetailActivity.super.onBackPressed())
+                    .setNegativeButton(R.string.no, (arg0, arg1) -> finish())
                     .setNeutralButton(android.R.string.cancel, null)
                     .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
                         Save(true);
                     }).create().show();
         } else {
-            NoteDetailActivity.super.onBackPressed();
+            finish();
         }
     }
-
-
 }
