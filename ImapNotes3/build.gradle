@@ -10,7 +10,7 @@ android {
         }
     }
 
-    compileSdk 34
+    compileSdk 33
     buildToolsVersion "34.0.0"
 
     //noinspection GroovyMissingReturnStatement
@@ -33,7 +33,7 @@ android {
             // Android Gradle plugin.
             shrinkResources false
 
-            // Includes the default ProGuard rules files that are packaged with
+            // Includes the default ProGuard rules fil es that are packaged with
             // the Android Gradle plugin. To learn more, go to the section about
             // R8 configuration files.
             proguardFiles getDefaultProguardFile(
