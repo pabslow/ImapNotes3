@@ -185,9 +185,9 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         if (result) {
             if (indexToDelete >= 0) notesList.remove(indexToDelete);
             if (!(currentNote == null)) notesList.add(0, currentNote);
-            adapter.notifyDataSetChanged();
         }
 
+        adapter.notifyDataSetChanged();
         if (action == UpdateThread.Action.Delete) result = false;
         listener.onFinishPerformed(result);
     }

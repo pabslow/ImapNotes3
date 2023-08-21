@@ -260,7 +260,6 @@ public class NotesDb extends SQLiteOpenHelper {
         }
 
         String[] selectionArgs = new String[selectionArgsList.size()];
-        ;
         selectionArgsList.toArray(selectionArgs);
 
         try (Cursor resultPointer = db.query(table, null, selection,

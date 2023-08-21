@@ -429,7 +429,7 @@ public class SyncUtils {
         // Get local list of notes uids
         File[] files = rootFolderAccount.listFiles();
         for (File file : files) {
-            if (file.isFile()) {
+            if (file.isFile() && (file.length() > 1)) {
                 localListOfNotes.add(file.getName());
             }
         }
