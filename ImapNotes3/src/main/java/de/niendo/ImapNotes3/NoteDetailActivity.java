@@ -971,7 +971,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     .setMessage(R.string.save_changes)
                     .setNegativeButton(R.string.no, (arg0, arg1) -> finish())
                     .setNeutralButton(android.R.string.cancel, null)
-                    .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
+                    .setPositiveButton(R.string.yes, (arg0, arg1) -> {
                         saveNote(true);
                     }).create().show();
         } else {
