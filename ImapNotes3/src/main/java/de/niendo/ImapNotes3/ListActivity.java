@@ -619,8 +619,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 startActivityForResult(res, ListActivity.ADD_ACCOUNT);
                 return true;
             case R.id.refresh:
-                //TextView status = (TextView) findViewById(R.id.status);
-                TriggerSync(true);
+                if (getSelectedAccountName().equals(""))
+                    ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
+                else
+                    TriggerSync(true);
                 return true;
             case R.id.newnote:
                 Intent toNew;
