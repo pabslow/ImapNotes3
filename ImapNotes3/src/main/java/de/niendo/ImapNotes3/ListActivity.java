@@ -207,30 +207,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         super.onDestroy();
     }
 
-    private void TriggerSync(boolean refreshTags) {
-        if (ListActivity.ImapNotesAccount == null && !getSelectedAccountName().equals("")) {
-            Log.d(TAG, "TriggerSync: Account==null");
-            return;
+    public static ArrayList getAccountList() {
+        ArrayList accounts = new ArrayList<>();
+        for (Account mAccount : ListActivity.accounts) {
+            accounts.add(mAccount.name);
         }
-
-        OldStatus = status.getText().toString();
-        status.setText(R.string.syncing);
-        Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        settingsBundle.putBoolean(REFRESH_TAGS, refreshTags);
-        //Log.d(TAG,"Request a sync for:"+mAccount);
-
-        if (getSelectedAccountName().equals("")) {
-            for (Account mAccount : ListActivity.accounts) {
-                ContentResolver.cancelSync(mAccount, AUTHORITY);
-                ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
-            }
-        } else {
-            Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
-            ContentResolver.cancelSync(mAccount, AUTHORITY);
-            ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
-        }
+        return accounts;
     }
 
     /**
@@ -469,9 +451,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             String accountName,
             UpdateThread.Action action) {
         synchronized (this) {
-            if (accountName == null || accountName.isEmpty()) {
-                accountName = ImapNotesAccount.accountName;
-            }
                 updateThread = new UpdateThread(accountName,
                         this,
                         noteList,
@@ -610,6 +589,25 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         return retVal;
     }
 
+    private void TriggerSync(boolean refreshTags) {
+        if (ListActivity.ImapNotesAccount == null) {
+            Log.d(TAG, "TriggerSync: Account==null");
+            return;
+        }
+
+        OldStatus = status.getText().toString();
+        status.setText(R.string.syncing);
+        Bundle settingsBundle = new Bundle();
+        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        settingsBundle.putBoolean(REFRESH_TAGS, refreshTags);
+        //Log.d(TAG,"Request a sync for:"+mAccount);
+
+        Account mAccount = ListActivity.ImapNotesAccount.GetAccount();
+        ContentResolver.cancelSync(mAccount, AUTHORITY);
+        ContentResolver.requestSync(mAccount, AUTHORITY, settingsBundle);
+    }
+
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.newaccount:
@@ -618,7 +616,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 String mClass = ".AccountConfigurationActivity";
                 res.setComponent(new ComponentName(mPackage, mPackage + mClass));
                 res.putExtra(ACTION, AccountConfigurationActivity.Actions.CREATE_ACCOUNT);
-                res.putExtra(ACCOUNTNAME, ImapNotesAccount.accountName);
                 startActivityForResult(res, ListActivity.ADD_ACCOUNT);
                 return true;
             case R.id.refresh:
@@ -626,18 +623,14 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 TriggerSync(true);
                 return true;
             case R.id.newnote:
-                if (getSelectedAccountName().equals("")) {
-                    ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
-                    return false;
-                }
                 Intent toNew;
                 if (intentActionSend != null)
                     toNew = intentActionSend;
                 else
                     toNew = new Intent(this, NoteDetailActivity.class);
-                toNew.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
+                //toNew.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
                 toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
-                toNew.putExtra(ListActivity.ACCOUNTNAME, ImapNotesAccount.accountName);
+                toNew.putExtra(ListActivity.ACCOUNTNAME, getSelectedAccountName());
                 startActivityForResult(toNew, ListActivity.NEW_BUTTON);
                 if (intentActionSend != null)
                     intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);
@@ -693,63 +686,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         }
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: " + requestCode + " " + resultCode);
-        switch (requestCode) {
-            case ListActivity.SEE_DETAIL:
-                // Returning from NoteDetailActivity
-                if (resultCode == ListActivity.DELETE_BUTTON) {
-                    // Delete Message asked for
-                    // String suid will contain the Message Imap UID to delete
-                    String suid = data.getStringExtra(DELETE_ITEM_NUM_IMAP);
-                    UpdateList(suid, null, null, null, UpdateThread.Action.Delete);
-                }
-                if (resultCode == ListActivity.EDIT_BUTTON) {
-                    String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
-                    String suid = data.getStringExtra(EDIT_ITEM_NUM_IMAP);
-                    String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
-                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
-                    //Log.d(TAG,"Received request to edit message:"+suid);
-                    //Log.d(TAG,"Received request to replace message with:"+txt);
-                    UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
-                }
-                break;
-            case ListActivity.NEW_BUTTON:
-                // Returning from NewNoteActivity
-                if (resultCode == ListActivity.EDIT_BUTTON) {
-                    //String res = data.getStringExtra(SAVE_ITEM);
-                    String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
-                    //Log.d(TAG,"Received request to save message:"+res);
-                    String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
-                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
-                    UpdateList("", txt, bgcolor, accountName, UpdateThread.Action.Insert);
-                }
-                break;
-            case ListActivity.ADD_ACCOUNT:
-                Log.d(TAG, "onActivityResult AccountsUpdateListener");
-                // Hack! accountManager.addOnAccountsUpdatedListener
-                if (resultCode == ResultCodeSuccess) {
-                    EnableAccountsUpdate = true;
-                    ListActivity.accountManager.addOnAccountsUpdatedListener(
-                            new AccountsUpdateListener(), null, true);
-                    if (data != null) {
-                        Integer pos = getSpinnerPos(data.getStringExtra(ACCOUNTNAME));
-                        if (pos > 0) {
-                            accountSpinner.setSelection(pos);
-                            Account account = ListActivity.accounts[pos - 1];
-                            ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
-                        }
-                    }
-                    ;
-                    TriggerSync(false);
-                }
-                break;
-            default:
-                Log.d(TAG, "Received wrong request to save message");
-        }
-    }
-
     private Integer getSpinnerPos(String accountName) {
         ArrayAdapter adapter = (ArrayAdapter) accountSpinner.getAdapter();
         int n = adapter.getCount();
@@ -783,6 +719,80 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         if ((ImapNotesAccount == null) || accountSpinner.getSelectedItemId() == 0)
             return "";
         return ImapNotesAccount.accountName;
+    }
+
+    ;
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: " + requestCode + " " + resultCode);
+        switch (requestCode) {
+            case ListActivity.SEE_DETAIL:
+                // Returning from NoteDetailActivity
+                if (resultCode == ListActivity.DELETE_BUTTON) {
+                    // Delete Message asked for
+                    // String suid will contain the Message Imap UID to delete
+                    String suid = data.getStringExtra(DELETE_ITEM_NUM_IMAP);
+                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
+                    ListActivity.ImapNotesAccount = new ImapNotesAccount(getAccountFromName(accountName), getApplicationContext());
+                    UpdateList(suid, null, null, accountName, UpdateThread.Action.Delete);
+                }
+                if (resultCode == ListActivity.EDIT_BUTTON) {
+                    String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
+                    String suid = data.getStringExtra(EDIT_ITEM_NUM_IMAP);
+                    String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
+                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
+                    //Log.d(TAG,"Received request to edit message:"+suid);
+                    //Log.d(TAG,"Received request to replace message with:"+txt);
+                    ListActivity.ImapNotesAccount = new ImapNotesAccount(getAccountFromName(accountName), getApplicationContext());
+                    UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
+                }
+                break;
+            case ListActivity.NEW_BUTTON:
+                // Returning from NewNoteActivity
+                if (resultCode == ListActivity.EDIT_BUTTON) {
+                    //String res = data.getStringExtra(SAVE_ITEM);
+                    String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
+                    //Log.d(TAG,"Received request to save message:"+res);
+                    String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
+                    String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
+                    ListActivity.ImapNotesAccount = new ImapNotesAccount(getAccountFromName(accountName), getApplicationContext());
+                    UpdateList("", txt, bgcolor, accountName, UpdateThread.Action.Insert);
+                }
+                break;
+            case ListActivity.ADD_ACCOUNT:
+                Log.d(TAG, "onActivityResult AccountsUpdateListener");
+                // Hack! accountManager.addOnAccountsUpdatedListener
+                if (resultCode == ResultCodeSuccess) {
+                    EnableAccountsUpdate = true;
+                    ListActivity.accountManager.addOnAccountsUpdatedListener(
+                            new AccountsUpdateListener(), null, true);
+                    if (data != null) {
+                        Integer pos = getSpinnerPos(data.getStringExtra(ACCOUNTNAME));
+                        if (pos > 0) {
+                            accountSpinner.setSelection(pos);
+                            Account account = ListActivity.accounts[pos - 1];
+                            ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
+                        }
+                    }
+                    ;
+                    TriggerSync(false);
+                }
+                break;
+            default:
+                Log.d(TAG, "Received wrong request to save message");
+        }
+    }
+
+    ;
+
+    public Account getAccountFromName(String accountname) {
+        for (Account account : ListActivity.accounts
+        ) {
+            if (account.name.equals(accountname))
+                return account;
+        }
+        return null;
     }
 
     ;

@@ -64,6 +64,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +113,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
     public static final String DLG_INSERT_HASHTAG_NAME = "DLG_INSERT_HASHTAG_NAME";
     public static final String DLG_INSERT_HASHTAG = "DLG_INSERT_HASHTAG";
+    public static final String DLG_SELECT_ACCOUNT = "DLG_SELECT_ACCOUNT";
+    public static final String DLG_SELECT_ACCOUNT_ACCOUNT = "DLG_SELECT_ACCOUNT_ACCOUNT";
+    public static final String DLG_SELECT_ACCOUNT_FINISH = "DLG_SELECT_ACCOUNT_FINISH";
     public static final double MAX_INSERT_FILE_SIZE_MB = 1.0;
     private static final int EDIT_BUTTON = 6;
     private static final String TAG = "IN_NoteDetailActivity";
@@ -259,6 +263,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     }
                     editText.insertHTML("\n<br>");
 
+                }
+                case DLG_SELECT_ACCOUNT: {
+                    accountName = extras.getString(DLG_SELECT_ACCOUNT_ACCOUNT);
+                    saveNote(extras.getBoolean(DLG_SELECT_ACCOUNT_FINISH));
                 }
             }
         }
@@ -704,13 +712,14 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .setPositiveButton(R.string.yes, (dialog, whichButton) -> {
                             //Log.d(TAG,"We ask to delete Message #"+this.currentNote.get("number"));
                             intent.putExtra("DELETE_ITEM_NUM_IMAP", suid);
+                            intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, accountName);
                             setResult(ListActivity.DELETE_BUTTON, intent);
                             finish();//finishing activity
                         })
                         .setNegativeButton(R.string.no, null).show();
                 return true;
             case R.id.save:
-                Save(true);
+                saveNote(true);
                 return true;
             case R.id.share:
                 Share();
@@ -778,8 +787,28 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
      * Note that this function does not save the note to permanent storage it just passes it back to
      * the calling activity to be saved in whatever fashion it that activity wishes.
      */
-    private void Save(boolean finish) {
-        Log.d(TAG, "Save");
+    private void saveNote(boolean finish) {
+        Log.d(TAG, "saveNote");
+
+        if (accountName.equals("")) {
+            Bundle extra = new Bundle();
+            extra.putBoolean(DLG_SELECT_ACCOUNT_FINISH, finish);
+
+            ArrayList accounts = ListActivity.getAccountList();
+
+            SimpleFormDialog.build()
+                    .extra(extra)
+                    .title(R.string.select_one_account)
+                    .fields(
+                            Input.spinner(DLG_SELECT_ACCOUNT_ACCOUNT, accounts)
+                                    .required()
+                                    .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL))
+
+                    .neg(R.string.cancel)
+                    .show(this, DLG_SELECT_ACCOUNT);
+            return;
+        }
+
         editText.setOnJSDataListener(value -> {
             Log.d(TAG, "Save setOnJSDataListener");
             Intent intent = new Intent();
@@ -943,7 +972,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     .setNegativeButton(R.string.no, (arg0, arg1) -> finish())
                     .setNeutralButton(android.R.string.cancel, null)
                     .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
-                        Save(true);
+                        saveNote(true);
                     }).create().show();
         } else {
             finish();

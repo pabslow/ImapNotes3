@@ -34,7 +34,6 @@ import android.util.Log;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
-import de.niendo.ImapNotes3.ListActivity;
 import de.niendo.ImapNotes3.NotesListAdapter;
 
 import java.io.File;
@@ -204,7 +203,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
      * @param suid IMAP ID of the note.
      */
     private void MoveMailToDeleted(@NonNull String suid) {
-        File directory = ListActivity.ImapNotesAccount.GetRootDirAccount();
+        File directory = ImapNotesAccount.GetRootDirAccount();
         // TODO: Explain why we need to omit the first character of the UID
         File from = new File(directory, suid);
         if (!from.exists()) {
