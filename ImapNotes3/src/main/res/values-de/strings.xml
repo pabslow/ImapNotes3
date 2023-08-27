@@ -15,7 +15,7 @@
     <string name="account_added">Konto angelegt</string>
     <string name="add_account">Konto/Notizblock hinzufügen</string>
     <string name="account_name">Name für Lokales Konto/Notizbuch</string>
-    <string name="account_name_description">einen Namen für das Notizbuch bzw. das Konto</string>
+    <string name="account_name_description">MeinNotizblock</string>
     <string name="username">Benutzer / E-Mail</string>
     <string name="your_login_name">Login auf Mail-Server</string>
     <string name="password">Passwort</string>
@@ -37,8 +37,8 @@
     <string name="gray">Grau</string>
     <string name="syncing">Abgleich läuft…</string>
     <string name="port_number">Portnummer</string>
-    <string name="notes_folder_optional">Ordner für Notizen (optional)</string>
-    <string name="manually_set_full_imap_path_to_notes_folder">Ordner für Notizen auf dem IMAP-Server</string>
+    <string name="notes_folder_optional">Ordner für Notizen auf Server (optional)</string>
+    <string name="manually_set_full_imap_path_to_notes_folder">Notes</string>
     <string name="use_sticky_notes">Sticky-Notiz-Format benutzen (nicht empfohlen)</string>
     <string name="refreshing_notes_list">Abgleich der Notizenliste</string>
     <string name="updating_notes_list">Aktualisieren der Notizenliste</string>
