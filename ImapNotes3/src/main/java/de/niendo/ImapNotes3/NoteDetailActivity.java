@@ -201,8 +201,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 return;
             }
         } else if (ChangeNote.equals(ActivityTypeAdd)) {   // new entry
+            accountName = intent.getStringExtra(ListActivity.ACCOUNTNAME);
             SetupRichEditor();
         } else if (ChangeNote.equals(ActivityTypeAddShare)) {   // new Entry from Share
+            accountName = intent.getStringExtra(ListActivity.ACCOUNTNAME);
             SetupRichEditor();
             processShareIntent(intent);
         }
@@ -790,7 +792,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private void saveNote(boolean finish) {
         Log.d(TAG, "saveNote");
 
-        if (accountName.equals("")) {
+        if (accountName == null || accountName.equals("")) {
             Bundle extra = new Bundle();
             extra.putBoolean(DLG_SELECT_ACCOUNT_FINISH, finish);
 

@@ -723,8 +723,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     // Hack: if the Spinner isDisabled Search is active->
     //all accounts are selected
     public String getSelectedAccountName() {
-        if ((ImapNotesAccount == null) || accountSpinner.getSelectedItemId() == 0)
+        if ((ImapNotesAccount == null) || accountSpinner.getSelectedItemId() == 0) {
+            if (accounts.length == 1) {
+                return accounts[0].name;
+            }
             return "";
+        }
         return ImapNotesAccount.accountName;
     }
 
