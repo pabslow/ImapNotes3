@@ -316,8 +316,8 @@ public class SyncUtils {
      * @param outfile      Name of local file in which to store the note.
      * @param notesMessage The note in the form of a mail message.
      */
-    synchronized private static void SaveNote(@NonNull File outfile,
-                                              @NonNull Message notesMessage) {
+    private static void SaveNote(@NonNull File outfile,
+                                 @NonNull Message notesMessage) {
         try (OutputStream str = new FileOutputStream(outfile)) {
             Log.d(TAG, "SaveNote: " + outfile.getCanonicalPath());
             notesMessage.writeTo(str);

@@ -32,7 +32,6 @@ import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.NotesListAdapter;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class SyncThread extends AsyncTask<Object, Void, Boolean> {

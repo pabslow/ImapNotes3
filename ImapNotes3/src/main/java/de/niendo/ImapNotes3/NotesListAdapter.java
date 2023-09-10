@@ -200,7 +200,12 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
     }
 
     private void bindView(int position, @NonNull View view) {
-        final Map dataSet = mData.get(position);
+        final Map dataSet;
+        try {
+            dataSet = mData.get(position);
+        } catch (Exception e) {
+            return;
+        }
         if (dataSet == null) {
             return;
         }
@@ -455,7 +460,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
                 results.values = newValues;
                 results.count = newValues.size();
             }
-
+            Log.d(TAG, "finish");
             return results;
         }
 
@@ -463,13 +468,12 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
         @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, @NonNull FilterResults results) {
             //noinspection unchecked
-            if (results == null) return;
-            mData = (List<Map<String, ?>>) results.values;
-            if (results.count > 0) {
-                notifyDataSetChanged();
-            } else {
+            if (results == null) {
                 notifyDataSetInvalidated();
+                return;
             }
+            mData = (List<Map<String, ?>>) results.values;
+            notifyDataSetChanged();
         }
     }
 

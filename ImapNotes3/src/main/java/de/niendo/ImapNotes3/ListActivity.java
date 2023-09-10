@@ -29,12 +29,9 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.graphics.drawable.ColorDrawable;
@@ -379,7 +376,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        registerReceiver(syncFinishedReceiver, new IntentFilter(SyncService.SYNC_FINISHED));
     }
 
     @Override
@@ -596,7 +592,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         return retVal;
     }
 
-    private void TriggerSync(boolean refreshTags) {
+    synchronized private void TriggerSync(boolean refreshTags) {
+        Log.d(TAG, "TriggerSync");
         if (ListActivity.ImapNotesAccount == null) {
             Log.d(TAG, "TriggerSync: Account==null");
             return;
@@ -785,7 +782,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         }
                     }
                     ;
-                    TriggerSync(false);
                 }
                 break;
             default:

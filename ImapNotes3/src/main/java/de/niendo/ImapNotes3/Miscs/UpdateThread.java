@@ -113,7 +113,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Object... stuffs) {
-
+        Log.d(TAG, "doInBackground");
         try {
             // Do we have a note to remove?
             if (action == Action.Delete) {

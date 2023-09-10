@@ -30,12 +30,14 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
 import android.util.Log;
 
+import de.niendo.ImapNotes3.BuildConfig;
 import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
