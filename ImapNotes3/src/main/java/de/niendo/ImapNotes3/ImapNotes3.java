@@ -23,6 +23,7 @@ package de.niendo.ImapNotes3;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.StrictMode;
 import android.view.View;
 
@@ -39,6 +40,7 @@ public class ImapNotes3 extends Application {
     private static Context mContext;
     private static View mContent;
     private Imaper thisSessionImapFolder;
+    public static Intent intent; // For Data-Exchange SyncAdapater
     private static final String ReservedChars = "[\\\\/:*?\"<>|'!]";
 
     public static Context getAppContext() {

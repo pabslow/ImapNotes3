@@ -36,7 +36,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -45,6 +47,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,7 +74,6 @@ import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
 import de.niendo.ImapNotes3.Miscs.Utilities;
-import de.niendo.ImapNotes3.Sync.SyncService;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.list.SimpleListDialog;
@@ -104,7 +107,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     public static final int ResultCodeSuccess = 0;
     public static final int ResultCodeError = -1;
-
 
     //region Intent item names
     public static final String EDIT_ITEM_NUM_IMAP = "EDIT_ITEM_NUM_IMAP";
@@ -142,39 +144,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     static String[] hashFilter;
     private static ArrayList<String> hashFilterSelected = new ArrayList<>();
     @NonNull
-    private final BroadcastReceiver syncFinishedReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, @NonNull Intent intent) {
-            Log.d(TAG, "BroadcastReceiver.onReceive");
-            String accountName = intent.getStringExtra(ACCOUNTNAME);
-            boolean isChanged = intent.getBooleanExtra(CHANGED, false);
-            boolean isSynced = intent.getBooleanExtra(SYNCED, false);
-            String errorMessage = intent.getStringExtra(SYNCED_ERR_MSG);
-            SyncInterval syncInterval = SyncInterval.from(intent.getStringExtra(SYNCINTERVAL));
-            if ((ImapNotesAccount != null) && accountName.equals(ImapNotesAccount.accountName)) {
-                Log.d(TAG, "if " + accountName + " " + ImapNotesAccount.accountName);
-                String statusText = OldStatus;
-                if (isSynced) {
-                    // Display last sync date
-                    //DateFormat dateFormat =
-                    //        android.text.format.DateFormat.getDateFormat(getApplicationContext());
-                    Date date = new Date();
-                    String sdate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
-                    statusText = getText(R.string.Last_sync) + sdate;
-                    if (!syncInterval.equals("0"))
-                        statusText += " (" + getText(syncInterval.textID) + ")";
-                }
-                status.setBackgroundColor(getColor(R.color.StatusBgColor));
-                if (!errorMessage.isEmpty()) {
-                    statusText = errorMessage;
-                    status.setBackgroundColor(getColor(R.color.StatusBgErrColor));
-                }
+    private ContentObserver mObserver;
 
-                status.setText(statusText);
-                listToView.notifyDataSetChanged();
-                RefreshList();
-            }
-        }
-    };
     // FIXME
     // Hack! accountManager.addOnAccountsUpdatedListener
     // OnAccountsUpdatedListener is called to early - so not all
@@ -203,8 +174,10 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private ListView listview;
     private AsyncTask updateThread;
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
+        getContentResolver().unregisterContentObserver(mObserver);
     }
 
     public static ArrayList getAccountList() {
@@ -302,6 +275,40 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
         Button editAccountButton = findViewById(R.id.editAccountButton);
         editAccountButton.setOnClickListener(clickListenerEditAccount);
+
+        mObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+            public void onChange(boolean selfChange) {
+                Log.d(TAG, "ContentObserver.OnChange");
+                if (selfChange || ImapNotes3.intent == null) return;
+                String accountName = ImapNotes3.intent.getStringExtra(ACCOUNTNAME);
+                boolean isChanged = ImapNotes3.intent.getBooleanExtra(CHANGED, false);
+                boolean isSynced = ImapNotes3.intent.getBooleanExtra(SYNCED, false);
+                String errorMessage = ImapNotes3.intent.getStringExtra(SYNCED_ERR_MSG);
+                SyncInterval syncInterval = SyncInterval.from(ImapNotes3.intent.getStringExtra(SYNCINTERVAL));
+                if ((ImapNotesAccount != null) && accountName.equals(ImapNotesAccount.accountName)) {
+                    Log.d(TAG, "if " + accountName + " " + ImapNotesAccount.accountName);
+                    String statusText = OldStatus;
+                    if (isSynced) {
+
+                        Date date = new Date();
+
+                        String sdate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
+                        statusText = getText(R.string.Last_sync) + sdate;
+                        if (!syncInterval.equals("0"))
+                            statusText += " (" + getText(syncInterval.textID) + ")";
+                    }
+                    status.setBackgroundColor(getColor(R.color.StatusBgColor));
+                    if (!errorMessage.isEmpty()) {
+                        statusText = errorMessage;
+                        status.setBackgroundColor(getColor(R.color.StatusBgErrColor));
+                    }
+                    status.setText(statusText);
+                }
+                if (isChanged) RefreshList();
+            }
+        };
+        getContentResolver().registerContentObserver(Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/"), false, mObserver);
+
     }
 
 

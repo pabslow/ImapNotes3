@@ -75,7 +75,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private SyncUtils syncUtils;
 
     SyncAdapter(@NonNull Context applicationContext) {
-        super(applicationContext, true);
+        super(applicationContext, true, false);
         Log.d(TAG, "SyncAdapter");
         syncUtils = new SyncUtils();
 
@@ -84,25 +84,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         this.applicationContext = applicationContext;
     }
 
-
-// --Commented out by Inspection START (12/2/16 8:50 PM):
-//    /**
-//     * TODO: What does allowParallelSyncs do and is it useful to us?
-//     *
-//     * @param applicationContext In our case this is always the global application context but it
-//     *                           might not need to be.
-//     * @param autoInitialize     I've read the documentation for this argument and am no wiser.
-//     * @param allowParallelSyncs Allow sync for different accounts to run at the same time.
-//     */
-//    public SyncAdapter(@NonNull Context applicationContext,
-//                       boolean autoInitialize, // ?
-//                       boolean allowParallelSyncs // always false, set in syncadapter.xml
-//    ) {
-//        super(applicationContext, autoInitialize, allowParallelSyncs);
-//        mContentResolver = applicationContext.getContentResolver();
-//        this.applicationContext = applicationContext;
-//    }
-// --Commented out by Inspection STOP (12/2/16 8:50 PM)
 
     @Override
     public void onPerformSync(@NonNull Account accountArg,
@@ -216,13 +197,14 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                                     boolean isSynced,
                                     String errorMessage) {
         Log.d(TAG, "NotifySyncFinished: " + isChanged + " " + isSynced);
-        Intent i = new Intent(SyncService.SYNC_FINISHED);
-        i.putExtra(ListActivity.ACCOUNTNAME, account.accountName);
-        i.putExtra(ListActivity.CHANGED, isChanged);
-        i.putExtra(ListActivity.SYNCED, isSynced);
-        i.putExtra(ListActivity.SYNCINTERVAL, account.syncInterval.name());
-        i.putExtra(ListActivity.SYNCED_ERR_MSG, errorMessage);
-        applicationContext.sendBroadcast(i);
+        if (ImapNotes3.intent == null) ImapNotes3.intent = new Intent(SyncService.SYNC_FINISHED);
+        ImapNotes3.intent.putExtra(ListActivity.ACCOUNTNAME, account.accountName);
+        ImapNotes3.intent.putExtra(ListActivity.CHANGED, isChanged);
+        ImapNotes3.intent.putExtra(ListActivity.SYNCED, isSynced);
+        ImapNotes3.intent.putExtra(ListActivity.SYNCINTERVAL, account.syncInterval.name());
+        ImapNotes3.intent.putExtra(ListActivity.SYNCED_ERR_MSG, errorMessage);
+        getContext().getContentResolver().notifyChange(Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/"), null, false);
+
     }
 
     /* It is possible for this function to throw exceptions; the original code caught
