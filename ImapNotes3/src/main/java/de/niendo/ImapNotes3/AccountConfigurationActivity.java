@@ -107,7 +107,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private CheckBox stickyCheckBox;
     private Spinner securitySpinner;
     @NonNull
-    private SyncInterval syncInterval = SyncInterval.t1h;
+    private SyncInterval syncInterval = SyncInterval.t6h;
     @NonNull
     private Security security = Security.None;
 
@@ -301,7 +301,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         ArrayAdapter<String> dataAdapterInterval = new ArrayAdapter<>
                 (this, R.layout.ssl_spinner_item, listInterval);
         syncIntervalSpinner.setAdapter(dataAdapterInterval);
-        syncIntervalSpinner.setSelection(SyncInterval.t1h.ordinal());
+        syncIntervalSpinner.setSelection(SyncInterval.t6h.ordinal());
         syncIntervalSpinner.setOnItemSelectedListener(this);
 
         folderTextView = findTextViewById(R.id.folderEdit);
