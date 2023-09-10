@@ -47,7 +47,9 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
     private final ArrayList<OneNote> notesList;
     private final String sortOrder;
     private final String[] hashFilter;
+    private final CharSequence filterString;
     private final String accountName;
+    private ArrayList<OneNote> myNoteList;
     //private final WeakReference<Context> applicationContextRef;
 
     /**
@@ -64,6 +66,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
                       @StringRes int resId,
                       String sortOrder,
                       String[] hashFilter,
+                      CharSequence filterString,
                       Context context) {
         //this.imapFolder = imapFolder;
         this.accountName = accountName;
@@ -72,6 +75,7 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
         this.resId = resId;
         this.sortOrder = sortOrder;
         this.hashFilter = hashFilter;
+        this.filterString = filterString;
         //Notifier.Show(resId, applicationContext, 1);
         this.storedNotes = NotesDb.getInstance(context);
         //this applicationContextRef= new WeakReference<>(context);;
@@ -83,11 +87,17 @@ public class SyncThread extends AsyncTask<Object, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Object... stuffs) {
         Log.d(TAG, "doInBackground");
-        storedNotes.GetStoredNotes(this.notesList, accountName, sortOrder, hashFilter);
+        myNoteList = new ArrayList<>();
+        storedNotes.GetStoredNotes(myNoteList, accountName, sortOrder, hashFilter);
         return true;
     }
 
     protected void onPostExecute(Boolean result) {
-            this.adapter.notifyDataSetChanged();
+        Log.d(TAG, "onPostExecute");
+        this.notesList.clear();
+        this.notesList.addAll(myNoteList);
+        if (filterString.length() > 0)
+            this.adapter.getFilter().filter(filterString);
+        this.adapter.notifyDataSetChanged();
     }
 }

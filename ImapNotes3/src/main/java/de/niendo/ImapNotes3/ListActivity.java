@@ -432,17 +432,18 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
         listToView.setAccountName(getSelectedAccountName());
-        listToView.getFilter().filter(mFilterString);
-        new SyncThread(
-                getSelectedAccountName(),
-                noteList,
-                listToView,
-                R.string.refreshing_notes_list,
-                getSortOrder(),
-                hashFilter,
-                // FIXME: this. ?
-                getApplicationContext()).execute();
-
+        synchronized (this) {
+            new SyncThread(
+                    getSelectedAccountName(),
+                    noteList,
+                    listToView,
+                    R.string.refreshing_notes_list,
+                    getSortOrder(),
+                    hashFilter,
+                    mFilterString,
+                    // FIXME: this. ?
+                    getApplicationContext()).execute();
+        }
         status.setBackgroundColor(getColor(R.color.StatusBgColor));
         status.setText(R.string.welcome);
     }
