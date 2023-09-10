@@ -286,10 +286,14 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     Log.d(TAG, "if " + accountName + " " + ImapNotesAccount.accountName);
                     String statusText = OldStatus;
                     if (isSynced) {
-
                         Date date = new Date();
+                        String sdate;
+                        try {
+                            sdate = DateFormat.getDateTimeInstance().format(date);
+                        } catch (Exception e) {
+                            sdate = "";
+                        }
 
-                        String sdate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
                         statusText = getText(R.string.Last_sync) + sdate;
                         if (!syncInterval.equals("0"))
                             statusText += " (" + getText(syncInterval.textID) + ")";
