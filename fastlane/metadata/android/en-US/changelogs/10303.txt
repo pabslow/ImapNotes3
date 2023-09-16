@@ -1,5 +1,7 @@
-* possibility to select all accounts/notepads
+* possibility to show notes from all accounts/notepads
 * update libs
 * add gray and red as note colors
 * minor layout changes
 * fix SaveChangesDialog
+* fix some crashes related to sync
+* fix sync interval
