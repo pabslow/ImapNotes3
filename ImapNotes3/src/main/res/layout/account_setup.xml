@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -61,13 +62,23 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/AccountTxtColor" />
 
-        <EditText
-            android:id="@+id/passwordEdit"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/your_password"
-            android:autofillHints="yes"
-            android:inputType="textPassword" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:textColorHint="#B9B8B8"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordEdit"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="yes"
+                android:hint="@string/your_password"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <TextView
             android:layout_width="wrap_content"

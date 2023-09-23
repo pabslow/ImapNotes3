@@ -356,7 +356,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
             accountnameTextView.setText(accountname);
             accountnameTextView.setEnabled(false);
             usernameTextView.setText(GetConfigValue(ConfigurationFieldNames.UserName));
-            passwordTextView.setText(accountManager.getPassword(myAccount));
+            //passwordTextView.setText(accountManager.getPassword(myAccount));
             serverTextView.setText(GetConfigValue(ConfigurationFieldNames.Server));
             portnumTextView.setText(GetConfigValue(ConfigurationFieldNames.PortNumber));
             Log.d(TAG, "Security: " + GetConfigValue(ConfigurationFieldNames.Security));
@@ -405,10 +405,17 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     // DoLogin method is defined in account_selection.xml (account_selection layout)
     private void DoLogin() {
         Log.d(TAG, "DoLogin");
+
+        //password will not shown if account is edit and have to be loaded;
+        String password = GetTextViewText(passwordTextView);
+        if ((action == Actions.EDIT_ACCOUNT) && (password.isEmpty())) {
+            password = accountManager.getPassword(myAccount);
+        }
+
         final ImapNotesAccount ImapNotesAccount = new ImapNotesAccount(
                 GetTextViewText(accountnameTextView),
                 GetTextViewText(usernameTextView),
-                GetTextViewText(passwordTextView),
+                password,
                 GetTextViewText(serverTextView),
                 GetTextViewText(portnumTextView),
                 security,
