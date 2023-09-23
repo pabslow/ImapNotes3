@@ -128,7 +128,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private RichEditor editText;
     private @ColorInt int lastTxtColor = 0x80e9a11d;
     private @ColorInt int lastBgColor = 0x80e9a11d;
-    private String lastTag = "#tag";
+    private String lastTag = "#";
     private List<String> tagList;
     //endregion
 
@@ -619,6 +619,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                 Input.plain(DLG_INSERT_HASHTAG_NAME).required().hint(R.string.insert_hashtag_name)
                                         .inputType(InputType.TYPE_TEXT_VARIATION_NORMAL | InputType.TYPE_CLASS_TEXT)
                                         .suggest(tagArray)
+                                        .asSpinner(false)
                                         .validatePattern(Utilities.HASHTAG_PATTERN, getString(R.string.insert_hashtag_syntax))
                                         .text(lastTag)
                         )
