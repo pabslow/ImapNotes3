@@ -155,6 +155,14 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                         // Do nothing
                     })
+                    .setNeutralButton(R.string.help, (dialog, which) -> {
+                        new AlertDialog.Builder(this)
+                                .setTitle(R.string.help)
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .setMessage(R.string.imap_help_text)
+                                .setPositiveButton(android.R.string.ok, (dialog1, which1) -> {
+                                }).show();
+                    })
                     .show();
             /*
             SimpleDialog.build()

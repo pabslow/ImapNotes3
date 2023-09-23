@@ -133,4 +133,8 @@
     <string name="IMAP_operation_failed">IMAP-Verbindungsaufbau fehlgeschlagen</string>
     <string name="select_one_account">Ein Konto/Notizbuch wählen!</string>
     <string name="all_accounts">Alle</string>
+    <string name="help">Hilfe</string>
+    <string name="imap_help_text">Bei Problemen mit der Anmeldung:\n
+    Einige Provider (gmail, gmx) verlangen ein app Passwort für die Anmeldung an einem Imap-Server. Dieses ist für die Aktivierung der Zwei-Faktor-Authentifizierung notwendig\n
+        Ein solches Passwort muss beim Provider erstellt werden.</string>
 </resources>

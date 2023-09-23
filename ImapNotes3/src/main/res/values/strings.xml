@@ -133,4 +133,9 @@
     <string name="IMAP_operation_failed">IMAP operation failed</string>
     <string name="select_one_account">Select one account/notepad</string>
     <string name="all_accounts">All</string>
+    <string name="help">Help</string>
+    <string name="imap_help_text">If you get Invalid credentials error:\n
+                                  Some providers like gmail or gmx require an app specific password to sign in to IMAP. Its needed for activating two factor authentication.\n
+                                  You can create such a password with your provider.
+    </string>
 </resources>
