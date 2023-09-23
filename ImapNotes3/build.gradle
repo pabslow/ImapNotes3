@@ -10,13 +10,13 @@ android {
         }
     }
 
-    compileSdk 33
-    buildToolsVersion "34.0.0"
+    compileSdk 34
+    // buildToolsVersion "34.0.0"
 
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "de.niendo.ImapNotes3"
-        targetSdkVersion 33
+        targetSdkVersion 34
         minSdkVersion 25
         signingConfig signingConfigs.release
         buildConfigField 'String', 'APPLICATION_NAME', '"ImapNotes3"'
@@ -61,8 +61,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'de.niendo.ImapNotes3'
 
