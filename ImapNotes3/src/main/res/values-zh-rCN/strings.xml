@@ -16,7 +16,7 @@
     <string name="account_added">已添加账户</string>
     <string name="add_account">添加账户、笔记本</string>
     <string name="account_name">本地账户/笔记本的名称</string>
-    <string name="account_name_description">z该账户和/或笔记本的名称</string>
+    <string name="account_name_description">我的笔记本</string>
     <string name="username">用户名/电子邮箱</string>
     <string name="your_login_name">邮件服务器的用户名</string>
     <string name="password">密码</string>
@@ -26,8 +26,8 @@
     <string name="server_port_number_to_use">所用的服务器端口</string>
     <string name="port_number">端口号</string>
     <string name="sync_interval">同步间隔</string>
-    <string name="notes_folder_optional">笔记文件夹 (可选)</string>
-    <string name="manually_set_full_imap_path_to_notes_folder">手动设置笔记文件夹路径</string>
+    <string name="notes_folder_optional">服务器上的笔记文件夹 (可选)</string>
+    <string name="manually_set_full_imap_path_to_notes_folder">笔记</string>
     <string name="use_sticky_notes">使用便利贴格式（不推荐）</string>
     <string name="welcome">欢迎</string>
     <string name="delete">删除</string>
@@ -38,6 +38,8 @@
     <string name="yellow">黄</string>
     <string name="pink">粉</string>
     <string name="green">绿</string>
+    <string name="red">红</string>
+    <string name="gray">灰</string>
     <string name="syncing">同步中…</string>
     <string name="refreshing_notes_list">正在刷新笔记列表…</string>
     <string name="updating_notes_list">正在更新笔记列表…</string>
@@ -128,4 +130,12 @@
     <string name="insert_image_shrink">降低分辨率的比例</string>
     <string name="insert_shared_image">插入共享的图片</string>
     <string name="Invalid_Note">无效笔记</string>
+    <string name="IMAP_operation_failed">IMAP 操作失败了</string>
+    <string name="select_one_account">选择一个账户/笔记本</string>
+    <string name="all_accounts">全部</string>
+    <string name="help">帮助</string>
+    <string name="imap_help_text">关于凭据无效错误：\n
+                                                         一些电子邮箱提供商，比如 gmail 或 gmx，需要设置应用密码才允许在第三方应用上登录 IMAP。你必须激活双因素身份验证。\n
+                                                         如有必要，你可以在提供商那里创建这样的一个密码。
+    </string>
 </resources>
