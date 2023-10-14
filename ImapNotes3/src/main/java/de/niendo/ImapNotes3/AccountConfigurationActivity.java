@@ -110,6 +110,8 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private SyncInterval syncInterval = SyncInterval.t6h;
     @NonNull
     private Security security = Security.None;
+    @Nullable
+    private String accountname;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -119,7 +121,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
 
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
-
         return false;
     }
 
@@ -277,12 +278,14 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
             }
 
         };*/
-    @Nullable
-    private String accountname;
 
     private void CheckNameAndLogIn() {
         String name = accountnameTextView.getText().toString();
-        if (name.contains("'") || name.contains("\"") || name.isEmpty())
+        if (name.isEmpty()) {
+            accountnameTextView.setText(R.string.account_name_description);
+            name = getString(R.string.account_name_description);
+        }
+        if (name.contains("'") || name.contains("\""))
             ImapNotes3.ShowMessage(R.string.quotation_marks_not_allowed, accountnameTextView, 3);
         else
             DoLogin();

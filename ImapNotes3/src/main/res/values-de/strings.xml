@@ -14,7 +14,7 @@
     <string name="account_already_exists_or_is_null">Konto existiert oder ist ungültig</string>
     <string name="account_added">Konto angelegt</string>
     <string name="add_account">Konto/Notizblock hinzufügen</string>
-    <string name="account_name">Name für Lokales Konto/Notizbuch</string>
+    <string name="account_name">Name für Lokales Konto/Notizbuch (optional)</string>
     <string name="account_name_description">MeinNotizblock</string>
     <string name="username">Benutzer / E-Mail</string>
     <string name="your_login_name">Login auf Mail-Server</string>
