@@ -25,6 +25,7 @@
 
     <color name="AccountBgColor">#2F4F4F</color>
     <color name="AccountTxtColor">#AB9C69</color>
+    <color name="AccountHintColor">#6B6A54</color>
 
     <color name="EditorMenuBgColor">#2F2F2F</color>
     <color name="EditorTxtColor">#AB9C69</color>
