@@ -187,14 +187,14 @@
                 android:textColor="@color/AccountTxtColor" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
+        <!-- CheckBox
             android:id="@+id/stickyCheckBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/AccountTxtColor"
             android:text="@string/use_sticky_notes" />
 
-        <!-- <Button
+        <Button
             android:id="@+id/loginButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

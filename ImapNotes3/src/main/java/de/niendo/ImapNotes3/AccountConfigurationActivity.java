@@ -104,7 +104,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private TextView portnumTextView;
     private Spinner syncIntervalSpinner;
     private TextView folderTextView;
-    private CheckBox stickyCheckBox;
     private Spinner securitySpinner;
     @NonNull
     private SyncInterval syncInterval = SyncInterval.t6h;
@@ -316,7 +315,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         syncIntervalSpinner.setOnItemSelectedListener(this);
 
         folderTextView = findTextViewById(R.id.folderEdit);
-        stickyCheckBox = findViewById(R.id.stickyCheckBox);
 
         securitySpinner = findViewById(R.id.securitySpinner);
         List<String> list = Security.Printables(getResources());
@@ -365,7 +363,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
             Log.d(TAG, "Security: " + GetConfigValue(ConfigurationFieldNames.Security));
             security = Security.from(GetConfigValue(ConfigurationFieldNames.Security));
             securitySpinner.setSelection(security.ordinal());
-            stickyCheckBox.setChecked(Boolean.parseBoolean(GetConfigValue(ConfigurationFieldNames.UseSticky)));
             syncInterval = SyncInterval.from(GetConfigValue(ConfigurationFieldNames.SyncInterval));
             syncIntervalSpinner.setSelection(syncInterval.ordinal());
             folderTextView.setText(GetConfigValue(ConfigurationFieldNames.ImapFolder));
@@ -422,7 +419,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
                 GetTextViewText(serverTextView),
                 GetTextViewText(portnumTextView),
                 security,
-                stickyCheckBox.isChecked(),
                 syncInterval,
                 GetTextViewText(folderTextView));
         // No need to check for valid numbers because the field only allows digits.  But it is
@@ -478,7 +474,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         syncIntervalSpinner.setSelection(0);
         securitySpinner.setSelection(0);
         folderTextView.setText("");
-        stickyCheckBox.setChecked(false);
     }
 
 

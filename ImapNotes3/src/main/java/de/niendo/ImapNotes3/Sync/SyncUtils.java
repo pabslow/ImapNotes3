@@ -41,7 +41,6 @@ import de.niendo.ImapNotes3.ListActivity;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
 import de.niendo.ImapNotes3.Miscs.Imaper;
-import de.niendo.ImapNotes3.Miscs.StickyNote;
 
 import com.sun.mail.imap.AppendUID;
 import com.sun.mail.imap.IMAPFolder;
@@ -413,10 +412,9 @@ public class SyncUtils {
 
     synchronized boolean handleRemoteNotes(@NonNull File rootFolderAccount,
                                            @NonNull NotesDb storedNotes,
-                                           @NonNull String accountName,
-                                           @NonNull Boolean useSticky)
+                                           @NonNull String accountName)
             throws MessagingException, IOException {
-        Log.d(TAG, "handleRemoteNotes: " + remoteIMAPNotesFolder.getFullName() + " " + accountName + " " + useSticky);
+        Log.d(TAG, "handleRemoteNotes: " + remoteIMAPNotesFolder.getFullName() + " " + accountName);
 
         Message notesMessage;
         boolean result = false;
@@ -453,23 +451,9 @@ public class SyncUtils {
                 }
                 String suid = uid.toString();
                 if (!(localListOfNotes.contains(suid))) {
-                    String bgColor;
-                    if (useSticky) {
-                        bgColor = StickyNote.GetStickyFromMessage(notesMessage).color;
-                    } else {
-                        bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
-                    }
+                    String bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
                     SaveNoteAndUpdateDatabase(rootFolderAccount, notesMessage, storedNotes, accountName, suid, bgColor);
                     result = true;
-                } else if (useSticky) {
-                    //Log.d (TAG,"MANAGE STICKY");
-                    remoteInternaldate = DateFormat.getDateInstance().format(notesMessage.getSentDate());
-                    localInternaldate = storedNotes.GetDate(suid, accountName);
-                    if (!(remoteInternaldate.equals(localInternaldate))) {
-                        File outfile = new File(rootFolderAccount, suid);
-                        SaveNote(outfile, notesMessage);
-                        result = true;
-                    }
                 }
             } catch (Exception e) {
                 Log.d(TAG, "error " + e.getMessage());
@@ -510,8 +494,7 @@ public class SyncUtils {
     synchronized void GetNotes(@NonNull Account account,
                                @NonNull File RootDirAccount,
                                @NonNull Context applicationContext,
-                               @NonNull NotesDb storedNotes,
-                               @NonNull boolean useSticky) throws MessagingException, IOException {
+                               @NonNull NotesDb storedNotes) throws MessagingException, IOException {
         Log.d(TAG, "GetNotes: " + account.name);
         //Long UIDM;
         //Message notesMessage;
@@ -532,12 +515,7 @@ public class SyncUtils {
             // filename is the original message uid
             Long UIDM = remoteIMAPNotesFolder.getUID(notesMessage);
             String suid = UIDM.toString();
-            String bgColor;
-            if (useSticky) {
-                bgColor = StickyNote.GetStickyFromMessage(notesMessage).color;
-            } else {
-                bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
-            }
+            String bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
             SaveNoteAndUpdateDatabase(RootDirAccount, notesMessage, storedNotes, account.name, suid, bgColor);
         }
     }

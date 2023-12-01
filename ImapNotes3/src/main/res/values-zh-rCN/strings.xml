@@ -28,7 +28,6 @@
     <string name="sync_interval">同步间隔</string>
     <string name="notes_folder_optional">服务器上的笔记文件夹 (可选)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">笔记</string>
-    <string name="use_sticky_notes">使用便利贴格式（不推荐）</string>
     <string name="welcome">欢迎</string>
     <string name="delete">删除</string>
     <string name="color">颜色</string>

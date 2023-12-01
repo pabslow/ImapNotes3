@@ -56,7 +56,6 @@ public class ImapNotesAccount {
     public final String portnum;
     @NonNull
     public final Security security;
-    public final boolean usesticky;
     public final SyncInterval syncInterval;
     @NonNull
     private final String imapfolder;
@@ -73,7 +72,6 @@ public class ImapNotesAccount {
                             @NonNull String server,
                             @NonNull String portNumber,
                             @NonNull Security security,
-                            boolean useSticky,
                             @NonNull SyncInterval syncInterval,
                             @NonNull String folderName) {
         account = null;
@@ -83,7 +81,6 @@ public class ImapNotesAccount {
         this.server = server;
         this.portnum = portNumber;
         this.security = security;
-        this.usesticky = useSticky;
         this.syncInterval = syncInterval;
         this.imapfolder = folderName;
     }
@@ -104,7 +101,6 @@ public class ImapNotesAccount {
         server = am.getUserData(account, ConfigurationFieldNames.Server);
         portnum = am.getUserData(account, ConfigurationFieldNames.PortNumber);
         security = Security.from(am.getUserData(account, ConfigurationFieldNames.Security));
-        usesticky = "true".equals(am.getUserData(account, ConfigurationFieldNames.UseSticky));
         imapfolder = am.getUserData(account, ConfigurationFieldNames.ImapFolder);
 
     }

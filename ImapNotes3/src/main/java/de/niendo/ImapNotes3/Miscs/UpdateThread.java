@@ -136,8 +136,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 String[] tok = Html.fromHtml(noteBody.substring(0, Math.min(noteBody.length(), 2000)), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
                 String title = tok[0];
                 //String position = "0 0 0 0";
-                String body = (ImapNotesAccount.usesticky) ?
-                        noteBody.replaceAll("\n", "\\\\n") : noteBody;
+                String body = noteBody;
 
                 //"<html><head></head><body>" + noteBody + "</body></html>";
 
@@ -156,7 +155,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 // Here we ask to add the new note to the new note folder
                 // Must be done AFTER uid has been set in currentNote
                 Log.d(TAG, "doInBackground body: ");
-                WriteMailToNew(currentNote, ImapNotesAccount.usesticky, body);
+                WriteMailToNew(currentNote, body);
                 if ((action == Action.Update) && (!oldSuid.startsWith("-"))) {
                     MoveMailToDeleted(oldSuid);
                 }
@@ -256,7 +255,6 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     }
 
     private void WriteMailToNew(@NonNull OneNote note,
-                                boolean useSticky,
                                 String noteBody) throws MessagingException, IOException {
         Log.d(TAG, "WriteMailToNew: " + noteBody.length() + "Bytes");
         //String body = null;
@@ -264,11 +262,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         // Here we add the new note to the new note folder
         //Log.d(TAG,"Add new note");
         Message message;
-        if (useSticky) {
-            message = StickyNote.GetMessageFromNote(note, noteBody);
-        } else {
-            message = HtmlNote.GetMessageFromNote(note, noteBody);
-        }
+        message = HtmlNote.GetMessageFromNote(note, noteBody);
         message.setSubject(note.GetTitle());
         MailDateFormat mailDateFormat = new MailDateFormat();
         // Remove (CET) or (GMT+1) part as asked in github issue #13

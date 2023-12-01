@@ -54,7 +54,6 @@ import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Miscs.EditorMenuAdapter;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.NDSpinner;
-import de.niendo.ImapNotes3.Miscs.StickyNote;
 import de.niendo.ImapNotes3.Miscs.Utilities;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 
@@ -83,7 +82,6 @@ import eltos.simpledialogfragment.color.SimpleColorDialog;
 public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleDialog.OnDialogResultListener {
 
     //region Intent item names
-    public static final String useSticky = "useSticky";
     public static final String selectedNote = "selectedNote";
     public static final String ActivityType = "ActivityType";
     public static final String ActivityTypeEdit = "ActivityTypeEdit";
@@ -167,7 +165,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         }
         if (ChangeNote.equals(ActivityTypeEdit)) {
             HashMap hm = (HashMap) intent.getSerializableExtra(selectedNote);
-            boolean usesticky = intent.getBooleanExtra(useSticky, false);
 
             if (hm == null) {
                 // Entry can not opened..
@@ -182,16 +179,9 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             Message message = SyncUtils.ReadMailFromFileRootAndNew(suid, rootDir);
             Log.d(TAG, "rootDir: " + rootDir);
             if (message != null) {
-                if (usesticky) {
-                    StickyNote stickyNote = StickyNote.GetStickyFromMessage(message);
-                    stringres = stickyNote.text;
-                    //String position = sticky.position;
-                    bgColor = stickyNote.color;
-                } else {
-                    HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
-                    stringres = htmlNote.text;
-                    bgColor = htmlNote.color;
-                }
+                HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
+                stringres = htmlNote.text;
+                bgColor = htmlNote.color;
                 SetupRichEditor();
                 editText.setHtml(stringres);
             } else {

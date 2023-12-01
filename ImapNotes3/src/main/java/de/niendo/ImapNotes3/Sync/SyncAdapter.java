@@ -130,7 +130,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 // Get all notes from remote and replace local
                 syncUtils.GetNotes(accountArg,
                         account.GetRootDirAccount(),
-                        applicationContext, storedNotes, account.usesticky);
+                        applicationContext, storedNotes);
             } catch (MessagingException e) {
                 // TODO Auto-generated catch block
                 errorMessage = e.getMessage();
@@ -158,10 +158,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // handle notes created or removed on remote
         boolean remoteNotesManaged = false;
-        boolean useSticky = am.getUserData(accountArg, ConfigurationFieldNames.UseSticky).equals("true");
         try {
             remoteNotesManaged = syncUtils.handleRemoteNotes(account.GetRootDirAccount(),
-                    storedNotes, accountArg.name, useSticky);
+                    storedNotes, accountArg.name);
         } catch (MessagingException e) {
             errorMessage = e.getMessage();
             // TODO Auto-generated catch block

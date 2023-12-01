@@ -121,7 +121,6 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
         am.setUserData(account, ConfigurationFieldNames.PortNumber, ImapNotesAccount.portnum);
         am.setUserData(account, ConfigurationFieldNames.SyncInterval, ImapNotesAccount.syncInterval.name());
         am.setUserData(account, ConfigurationFieldNames.Security, ImapNotesAccount.security.name());
-        am.setUserData(account, ConfigurationFieldNames.UseSticky, String.valueOf(ImapNotesAccount.usesticky));
         am.setUserData(account, ConfigurationFieldNames.ImapFolder, ImapNotesAccount.GetImapFolder());
     }
 
