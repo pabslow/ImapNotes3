@@ -137,4 +137,5 @@
                                   Some providers like gmail or gmx require an app specific password to sign in to IMAP. Its needed for activating two factor authentication.\n
                                   You can create such a password with your provider.
     </string>
+    <string name="search_any_keyword">Search any keyword..</string>
 </resources>

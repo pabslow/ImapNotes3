@@ -1,0 +1,2 @@
+* remove sticky support
+* search within notes in editor

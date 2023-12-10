@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--Search menu item-->
+    <item
+        android:id="@+id/itemSearch"
+        android:icon="@drawable/ic_action_search"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+
+    <!--make sure you add the collapseActionView in showsAsAction-->
+
+    <!--menu item to jump to next keyword-->
+    <item
+        android:id="@+id/itemNext"
+        android:icon="@drawable/arrow_drop_down"
+        android:title="Next Item"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <!--menu item to jump to previous keyword-->
+    <item
+        android:id="@+id/itemPrevious"
+        android:icon="@drawable/arrow_drop_up"
+        android:title="Previous Item"
+        android:visible="false"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/save"
         android:icon="@drawable/ic_action_save"

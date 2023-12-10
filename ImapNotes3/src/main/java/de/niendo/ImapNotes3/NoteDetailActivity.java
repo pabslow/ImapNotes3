@@ -46,6 +46,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.FileProvider;
 
@@ -128,6 +129,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private @ColorInt int lastBgColor = 0x80e9a11d;
     private String lastTag = "#";
     private List<String> tagList;
+    private MenuItem itemNext;
+    private MenuItem itemPrevious;
     //endregion
 
     public void onCreate(Bundle savedInstanceState) {
@@ -680,6 +683,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         getMenuInflater().inflate(R.menu.detail, menu);
         MenuBuilder m = (MenuBuilder) menu;
         m.setOptionalIconsVisible(true);
+        itemNext = menu.findItem(R.id.itemNext);
+        itemPrevious = menu.findItem(R.id.itemPrevious);
         return true;
     }
 
@@ -688,8 +693,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         //MenuItem item = menu.findItem(R.id.color);
         super.onPrepareOptionsMenu(menu);
         //depending on your conditions, either enable/disable
-        //item.setVisible(usesticky);
-        //menu.findItem(color.id).setChecked(true);
         return true;
     }
 
@@ -697,6 +700,46 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
         final Intent intent = new Intent();
         int itemId = item.getItemId();
         switch (itemId) {
+            case R.id.itemSearch:
+                SearchView searchView = (SearchView) item.getActionView();
+                searchView.setQueryHint(getText(R.string.search_any_keyword));
+
+                // set a listener when the start typing in the SearchView
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        searchView.clearFocus();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String query) {
+                        // When the query length is greater
+                        // than 0 we will perform the search
+                        if (query.length() > 0) {
+                            // findAllAsync finds all instances
+                            // on the page and
+                            // highlights them,asynchronously.
+                            editText.findAllAsync(query);
+
+                            itemNext.setVisible(true);
+                            itemPrevious.setVisible(true);
+                        } else {
+                            editText.clearMatches();
+                            itemNext.setVisible(false);
+                            itemPrevious.setVisible(false);
+                        }
+
+                        return true;
+                    }
+                });
+                break;
+            case R.id.itemNext:
+                editText.findNext(true);
+                break;
+            case R.id.itemPrevious:
+                editText.findNext(false);
+                break;
             case R.id.delete:
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.delete_note)
@@ -773,6 +816,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return false;
     }
 
 

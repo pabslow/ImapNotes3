@@ -489,6 +489,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         //        (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint(getText(R.string.search_any_keyword));
 
         // searchView.setSearchableInfo(
         //         searchManager.getSearchableInfo(getComponentName()));
