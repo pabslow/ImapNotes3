@@ -976,16 +976,22 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     }
                 }
             } else {
-                if (subject != null) {
-                    subject = "<b>" + subject + "</b><br>";
-                } else subject = "";
-                if (sharedText != null) {
-                    if (type.equals("text/html")) {
-                        editText.insertHTML(subject + sharedText);
-                    } else if (type.startsWith("text/")) {
-                        editText.insertHTML(Html.escapeHtml(subject + sharedText));
-                    } else if (type.startsWith("image/")) {
-                        editText.insertImage(sharedText, "shared image", "100", "", true);
+                if (Utilities.IsUrlScheme(sharedText)) {
+                    if (subject == null) subject = sharedText;
+                    editText.insertLink(sharedText, subject, subject);
+                } else {
+                    if (subject != null) {
+                        subject = "<b>" + subject + "</b><br>";
+                    } else subject = "";
+                    if (sharedText != null) {
+
+                        if (type.equals("text/html")) {
+                            editText.insertHTML(subject + sharedText);
+                        } else if (type.startsWith("text/")) {
+                            editText.insertHTML(subject + Html.escapeHtml(sharedText));
+                        } else if (type.startsWith("image/")) {
+                            editText.insertImage(sharedText, "shared image", "100", "", true);
+                        }
                     }
                 }
             }

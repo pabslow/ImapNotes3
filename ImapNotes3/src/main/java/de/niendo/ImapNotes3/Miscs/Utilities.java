@@ -97,11 +97,14 @@ public final class Utilities {
     }
 
     public static String CheckUrlScheme(String url) {
-        Uri uri = Uri.parse(url);
-        if (uri.getScheme() == null) return "http://" + url;
-        return url;
+        if (IsUrlScheme(url)) return url;
+        return "http://" + url;
     }
 
+    public static boolean IsUrlScheme(String url) {
+        Uri uri = Uri.parse(url);
+        return (uri.getScheme() != null);
+    }
 
     public static int getRealSizeFromUri(Context context, Uri uri) {
         // https://stackoverflow.com/questions/45589736/uri-file-size-is-always-0
