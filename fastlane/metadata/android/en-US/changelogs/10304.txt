@@ -1,2 +1,3 @@
 * remove sticky support
 * search within notes in editor
+* insert shared URL as link
