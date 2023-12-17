@@ -1,4 +1,5 @@
 [submodule "richeditor-android"]
 	path = richeditor-android
 	url = https://github.com/niendo1/richeditor-android.git
-	tag = ImapNotes3-v1.3-release
+	tag = 97a160c
+
