@@ -31,11 +31,6 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
-
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spanned;
@@ -45,18 +40,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.FileProvider;
-
-import de.niendo.ImapNotes3.Data.NotesDb;
-import de.niendo.ImapNotes3.Data.OneNote;
-import de.niendo.ImapNotes3.Miscs.EditorMenuAdapter;
-import de.niendo.ImapNotes3.Miscs.HtmlNote;
-import de.niendo.ImapNotes3.Miscs.NDSpinner;
-import de.niendo.ImapNotes3.Miscs.Utilities;
-import de.niendo.ImapNotes3.Sync.SyncUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -71,13 +61,20 @@ import java.util.List;
 
 import javax.mail.Message;
 
+import de.niendo.ImapNotes3.Data.NotesDb;
+import de.niendo.ImapNotes3.Data.OneNote;
+import de.niendo.ImapNotes3.Miscs.EditorMenuAdapter;
+import de.niendo.ImapNotes3.Miscs.HtmlNote;
+import de.niendo.ImapNotes3.Miscs.NDSpinner;
+import de.niendo.ImapNotes3.Miscs.Utilities;
+import de.niendo.ImapNotes3.Sync.SyncUtils;
 import eltos.simpledialogfragment.SimpleDialog;
+import eltos.simpledialogfragment.color.SimpleColorDialog;
 import eltos.simpledialogfragment.form.Check;
 import eltos.simpledialogfragment.form.Hint;
 import eltos.simpledialogfragment.form.Input;
 import eltos.simpledialogfragment.form.SimpleFormDialog;
 import jp.wasabeef.richeditor.RichEditor;
-import eltos.simpledialogfragment.color.SimpleColorDialog;
 
 
 public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleDialog.OnDialogResultListener {
