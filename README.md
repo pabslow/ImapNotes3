@@ -1,9 +1,19 @@
-<img width="20%" align="right" src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/icon.png"/>
+<p style="text-align:center">
+  <img src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/featureGraphic.png" alt="Logo"/>
+</p>
+<p style="text-align:center"><a href="https://android-arsenal.com/details/1/1696"><img src="https://img.shields.io/badge/Android%20Arsenal-richeditor--android-brightgreen.svg?style=flat" alt="Android Arsenal"></a> 
+<a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"/></a>
+
+<!-- a href="https://jitpack.io/#niendo1/richeditor-android"><img src="https://jitpack.io/v/niendo1/richeditor-android.svg" alt="JitPack-Lib"/></a>
+<a href="https://javadoc.jitpack.io/com/github/niendo1/richeditor-android/latest/javadoc/"><img src="https://github.com/niendo1/richeditor-android/raw/master/art/javadoc.svg" alt="JavaDoc"/></a 
+-->
+</p>
+
 
 ImapNotes3
 ==========
 
-View, edit and synchronize HTML notes and check lists on your IMAP mailboxes
+Android app to view, edit and synchronize HTML notes and check lists on your IMAP mailboxes.
 
 ### Screenshots
 
