@@ -2,8 +2,10 @@
   <img src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/featureGraphic.png" alt="Logo"/>
 </p>
 <p style="text-align: center;">
-<a href="https://android-arsenal.com/details/1/1696"><img src="https://img.shields.io/badge/Android%20Arsenal-richeditor--android-brightgreen.svg?style=flat" alt="AndroidArsenal"></a> 
+<a href="https://github.com/niendo1/ImapNotes3/releases"><img alt="GitHub Release ImapNote3" src="https://img.shields.io/github/v/release/niendo1/ImapNotes3"></a>
+<a href="https://github.com/niendo1/richeditor-android"><img alt="GitHub Release RichEditor-Android" src="https://img.shields.io/github/v/release/niendo1/richeditor-android"></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License_GPL_v3"/></a>
+<a href="https://f-droid.org/packages/de.niendo.ImapNotes3/"><img alt="F-Droid Version" src="https://img.shields.io/f-droid/v/de.niendo.ImapNotes3"></a>
 </p>
 
 ImapNotes3
