@@ -498,10 +498,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_audio:
                 // 1. get the selected text via callback
-                // 2. make the Image
+                // 2. insert audio
                 editText.setOnJSDataListener(value -> {
                     if (!value.isEmpty()) {
-                        editText.insertAudio(value);
+                        editText.insertAudio(value, "");
                     } else
                         ImapNotes3.ShowMessage(R.string.select_link_audio, editText, 1);
                 });
@@ -509,14 +509,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_video:
                 // 1. get the selected text via callback
-                // 2. make the Image
+                // 2. insert video
                 editText.setOnJSDataListener(value -> {
                     if (!value.isEmpty()) {
-                        if (value.startsWith("https://www.youtube.com"))
-                            value = value.replace("watch?v=", "embed/");
-                        // https://www.youtube.com/watch?v=3AeYHDZ2riI
-                        // https://www.youtube.com/embed/3AeYHDZ2riI
-                        editText.insertVideo(value, "video", "auto", "");
+                        editText.insertVideo(value, "video", "100", "", true, "controls");
                     } else
                         ImapNotes3.ShowMessage(R.string.select_link_video, editText, 3);
                 });
@@ -524,16 +520,14 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 break;
             case R.id.action_insert_youtube:
                 // 1. get the selected text via callback
-                // 2. make the Image
+                // 2. insert voutube video
                 editText.setOnJSDataListener(value -> {
                     if (!value.isEmpty()) {
                         if (value.startsWith("https://www.youtube.com"))
                             value = value.replace("watch?v=", "embed/");
-
                         // https://www.youtube.com/watch?v=3AeYHDZ2riI
                         // https://www.youtube.com/embed/3AeYHDZ2riI
-
-                        editText.insertYoutubeVideo(value);
+                        editText.insertYoutubeVideo(value, "100", "", true);
                     } else
                         ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 3);
                 });
