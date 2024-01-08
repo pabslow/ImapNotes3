@@ -480,11 +480,11 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                             .label(R.string.image_size_relative),
                                     Input.plain(DLG_INSERT_LINK_IMAGE_WIDTH)
                                             .hint(R.string.link_image_width)
-                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
-                                            .text("100"),
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
+                                            .text("100%"),
                                     Input.plain(DLG_INSERT_LINK_IMAGE_HEIGHT)
                                             .hint(R.string.link_image_height)
-                                            .inputType(InputType.TYPE_NUMBER_VARIATION_NORMAL | InputType.TYPE_CLASS_NUMBER)
+                                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL)
                                             .text(""),
                                     Input.plain(DLG_INSERT_LINK_IMAGE_ALT)
                                             .hint(R.string.link_alt_text)
@@ -512,7 +512,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 // 2. insert video
                 editText.setOnJSDataListener(value -> {
                     if (!value.isEmpty()) {
-                        editText.insertVideo(value, "video", "100", "", true, "controls");
+                        editText.insertVideo(value, "video", "100%", "", true, "controls");
                     } else
                         ImapNotes3.ShowMessage(R.string.select_link_video, editText, 3);
                 });
@@ -527,7 +527,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                             value = value.replace("watch?v=", "embed/");
                         // https://www.youtube.com/watch?v=3AeYHDZ2riI
                         // https://www.youtube.com/embed/3AeYHDZ2riI
-                        editText.insertYoutubeVideo(value, "100", "", true);
+                        editText.insertYoutubeVideo(value, "100%", "", true);
                     } else
                         ImapNotes3.ShowMessage(R.string.select_link_youtube, editText, 3);
                 });

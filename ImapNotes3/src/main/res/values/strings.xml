@@ -115,8 +115,8 @@
     <string name="insert_link_image">Insert linked image</string>
     <string name="link_image_url">Image URL</string>
     <string name="link_alt_text">Alternative text</string>
-    <string name="link_image_width">Width</string>
-    <string name="link_image_height">Height</string>
+    <string name="link_image_width">Width (% or px)</string>
+    <string name="link_image_height">Height (% or px)</string>
     <string name="image_size_relative">Image size is relative to page width</string>
     <string name="file_size_allowed">Only files smaller than %1$.1f MB allowed. (decrease resolution)</string>
     <string name="file_size_info">File size %1$.1f MB. (only %2$.1f MB allowed)</string>

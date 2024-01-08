@@ -115,8 +115,8 @@
     <string name="insert_link_image">Verlinktes Bild einfügen</string>
     <string name="link_image_url">Adresse des Bildes (URL)</string>
     <string name="link_alt_text">Alternativer Text</string>
-    <string name="link_image_width">Breite</string>
-    <string name="link_image_height">Höhe</string>
+    <string name="link_image_width">Breite (% oder px)</string>
+    <string name="link_image_height">Höhe (% oder px)</string>
     <string name="image_size_relative">Bildgröße relativ zur Seitenbreite</string>
     <string name="file_size_allowed">Nur Dateien kleiner %1$.1f MB erlaubt. (Auflösung verkleinern)</string>
     <string name="file_size_info">Dateigröße %1$.1f MB. (nur %2$.1f MB erlaubt)</string>
