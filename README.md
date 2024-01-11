@@ -69,7 +69,7 @@ Main changes in ImapNotes3 are:
 
 - uses a customized version of [RichEditor-Android](https://github.com/niendo1/richeditor-android)
   with a lot of new features
-- runs und android studio 2022
+- developed with android studio 2023 and latest tool chain
 - HTML Editor with tables, images, sections, check boxes and much more
 - color support
 - full text search

@@ -1,4 +1,5 @@
 * remove sticky support
 * search within notes in editor
 * insert shared URL as link
-* update to latest version of richeditor
+* improve insert image
+* update to latest version (3.0.0) of richeditor
