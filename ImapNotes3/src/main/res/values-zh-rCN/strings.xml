@@ -15,7 +15,7 @@
     <string name="account_already_exists_or_is_null">账户已存在或为空</string>
     <string name="account_added">已添加账户</string>
     <string name="add_account">添加账户、笔记本</string>
-    <string name="account_name">本地账户/笔记本的名称</string>
+    <string name="account_name">本地账户/笔记本的名称（可选）</string>
     <string name="account_name_description">我的笔记本</string>
     <string name="username">用户名/电子邮箱</string>
     <string name="your_login_name">邮件服务器的用户名</string>
@@ -115,8 +115,8 @@
     <string name="insert_link_image">插入链接的图片</string>
     <string name="link_image_url">图片 URL</string>
     <string name="link_alt_text">备选文本</string>
-    <string name="link_image_width">宽度</string>
-    <string name="link_image_height">高度</string>
+    <string name="link_image_width">宽度（百分比或像素）</string>
+    <string name="link_image_height">高度（百分比或像素）</string>
     <string name="image_size_relative">图片尺寸是相对于页面宽度而言的</string>
     <string name="file_size_allowed">只允许小于 %1$.1f MB 的文件。（降低分辨率）</string>
     <string name="file_size_info">文件大小为 %1$.1f MB。（最多只允许 %2$.1f MB ）</string>
@@ -137,4 +137,5 @@
                                                          一些电子邮箱提供商，比如 gmail 或 gmx，需要设置应用密码才允许在第三方应用上登录 IMAP。你必须激活双因素身份验证。\n
                                                          如有必要，你可以在提供商那里创建这样的一个密码。
     </string>
+    <string name="search_any_keyword">搜索任何关键词..</string>
 </resources>
