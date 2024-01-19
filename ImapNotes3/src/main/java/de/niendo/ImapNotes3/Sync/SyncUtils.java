@@ -55,7 +55,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -311,6 +310,7 @@ public class SyncUtils {
         (new File(rootDirAccount, "deleted")).mkdirs();
     }
 
+
     /**
      * @param outfile      Name of local file in which to store the note.
      * @param notesMessage The note in the form of a mail message.
@@ -488,8 +488,12 @@ public class SyncUtils {
         }
     }
 
-    /* Copy all notes from the IMAP server to the local directory using the UID as the file name.
+    synchronized void SyncFolder() {
 
+
+    }
+
+    /* Copy all notes from the IMAP server to the local directory using the UID as the file name.
      */
     synchronized void GetNotes(@NonNull Account account,
                                @NonNull File RootDirAccount,
