@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) 2022-2024 - Peter Korf <peter@niendo.de>
  * Copyright (C)      2023 - woheller69
  * Copyright (C)         ? - kwhitefoot
  * Copyright (C)      2016 - Martin Carpella
@@ -43,6 +43,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.content.FileProvider;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -71,6 +72,7 @@ import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
 import de.niendo.ImapNotes3.Miscs.Utilities;
+import de.niendo.ImapNotes3.Miscs.ZipUtils;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.list.SimpleListDialog;
@@ -689,6 +691,9 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case R.id.send_debug_report:
                 SendLogcatMail();
                 return true;
+            case R.id.make_archive:
+                SendArchive(getSelectedAccountName());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -863,6 +868,47 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Logcat content for " + Utilities.FullApplicationName + " debugging");
         emailIntent.setType("message/rfc822");
         startActivity(Intent.createChooser(emailIntent, "Send email..."));
+    }
+
+    public void SendArchive(String accountname) {
+        Log.d(TAG, "SendArchive");
+        String directory;
+        String title;
+
+        if (accountname.isEmpty()) {
+            directory = ImapNotes3.GetRootDir().toString();
+            title = Utilities.ApplicationName + "_" + getString(R.string.all_accounts);
+        } else {
+            directory = ImapNotes3.GetAccountDir(accountname).toString();
+            title = Utilities.ApplicationName + "_" + accountname;
+        }
+
+        File outfile = new File(getApplicationContext().getCacheDir().toString(), title + ".zip");
+
+        try {
+            ZipUtils.zipDirectory(directory, outfile.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Uri logUri =
+                FileProvider.getUriForFile(
+                        getApplicationContext(),
+                        Utilities.PackageName, outfile);
+
+        Intent sendIntent = new Intent();
+
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.setType("application/zip");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, title);
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+
+        sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
+
+        Intent shareIntent = Intent.createChooser(sendIntent, title);
+        startActivity(shareIntent);
+
     }
 
     @Nullable

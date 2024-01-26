@@ -76,6 +76,14 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/make_archive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_action_make_archive"
+        android:title="@string/make_archive"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/about"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

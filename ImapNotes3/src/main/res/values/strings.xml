@@ -138,4 +138,5 @@
                                   You can create such a password with your provider.
     </string>
     <string name="search_any_keyword">Search any keyword..</string>
+    <string name="make_archive">Create Backup</string>
 </resources>
