@@ -85,6 +85,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -883,6 +885,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             title = Utilities.ApplicationName + "_" + accountname;
         }
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            title = title + "_" + currentDateTime.format(formatter);
+        }
+
         File outfile = new File(getApplicationContext().getCacheDir().toString(), title + ".zip");
 
         try {
@@ -890,7 +898,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         Uri logUri =
                 FileProvider.getUriForFile(
@@ -903,7 +910,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         sendIntent.setType("application/zip");
         sendIntent.putExtra(Intent.EXTRA_TEXT, title);
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
-
         sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
 
         Intent shareIntent = Intent.createChooser(sendIntent, title);
