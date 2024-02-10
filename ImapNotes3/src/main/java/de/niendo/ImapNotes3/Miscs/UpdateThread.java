@@ -204,15 +204,15 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     private void MoveMailToDeleted(@NonNull String suid) {
         File directory = ImapNotesAccount.GetRootDirAccount();
         // TODO: Explain why we need to omit the first character of the UID
-        File from = new File(directory, suid);
+        File from = new File(directory, Utilities.addMailExt(suid));
         if (!from.exists()) {
             String positiveUid = suid.substring(1);
-            from = new File(directory + "/new", positiveUid);
+            from = new File(directory + "/new", Utilities.addMailExt(positiveUid));
             // TODO: Explain why it is safe to ignore the result of delete.
             //noinspection ResultOfMethodCallIgnored
             from.delete();
         } else {
-            File to = new File(directory + "/deleted/" + suid);
+            File to = new File(directory + "/deleted/" + Utilities.addMailExt(suid));
             // TODO: Explain why it is safe to ignore the result of rename.
             //noinspection ResultOfMethodCallIgnored
             from.renameTo(to);
@@ -273,11 +273,10 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         File accountDirectory = ImapNotesAccount.GetRootDirAccount();
         File directory = new File(accountDirectory, "new");
         message.setFrom(UserNameToEmail(ImapNotesAccount.username));
-        File outfile = new File(directory, uid);
+        File outfile = new File(directory, Utilities.addMailExt(uid));
         try {
             outfile.delete();
         } catch (Exception e) {
-
         }
         OutputStream str = new FileOutputStream(outfile, false);
         message.writeTo(str);

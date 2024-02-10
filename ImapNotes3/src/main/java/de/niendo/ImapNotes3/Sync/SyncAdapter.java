@@ -183,9 +183,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             File[] listOfFiles = directory.listFiles();
             for (File file : listOfFiles) {
                 if (file.isFile()) {
-                    String uid = file.getName();
-                    List<String> tags = ListActivity.searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
+                    String uid = Utilities.removeMailExt(file.getName());
                     Log.d(TAG, "FilterResults: " + file.getName());
+                    List<String> tags = ListActivity.searchHTMLTags(directory, uid, Utilities.HASHTAG_PATTERN, true);
                     storedNotes.UpdateTags(tags, uid, account.accountName);
                 }
             }
@@ -245,12 +245,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         String[] listOfNew = dirNew.list();
         AppendUID[] uids;
         for (String fileNew : listOfNew) {
+            String suidFileNew = Utilities.removeMailExt(fileNew);
             Log.d(TAG, "New Note to process:" + fileNew);
             newNotesManaged = true;
             // Read local new message from file
             File fileInNew = new File(dirNew, fileNew);
-            storedNotes.SetSaveState("-" + fileNew, OneNote.SAVE_STATE_SYNCING, account.accountName);
-            Message message = syncUtils.ReadMailFromFile(dirNew, fileNew);
+            storedNotes.SetSaveState("-" + suidFileNew, OneNote.SAVE_STATE_SYNCING, account.accountName);
+            Message message = syncUtils.ReadMailFromFile(dirNew, suidFileNew);
             try {
                 Log.d(TAG, "handleNewNotes message: " + message.getSize());
                 Log.d(TAG, "handleNewNotes message: " + fileInNew.length());
@@ -279,10 +280,10 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             String newuid = Long.toString(uids[0].uid);
             Log.d(TAG, "handleNewNotes uid: " + newuid);
 
-            File to = new File(accountDir, newuid);
+            File to = new File(accountDir, Utilities.addMailExt(newuid));
             fileInNew.renameTo(to);
             // move new note from new dir, one level up
-            storedNotes.UpdateANote(fileNew, newuid, account.accountName);
+            storedNotes.UpdateANote(suidFileNew, newuid, account.accountName);
             List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
             storedNotes.UpdateTags(tags, newuid, account.accountName);
             storedNotes.SetSaveState(newuid, OneNote.SAVE_STATE_OK, account.accountName);
@@ -298,7 +299,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         String[] listOfDeleted = dirDeleted.list();
         for (String fileDeleted : listOfDeleted) {
             try {
-                syncUtils.DeleteNote(Integer.parseInt(fileDeleted));
+                syncUtils.DeleteNote(fileDeleted);
             } catch (Exception e) {
                 Log.d(TAG, "DeleteNote failed:");
                 e.printStackTrace();

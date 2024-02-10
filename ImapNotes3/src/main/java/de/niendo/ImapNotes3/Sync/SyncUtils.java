@@ -245,13 +245,6 @@ public class SyncUtils {
             uid = uid.substring(1);
             fileDir = new File(fileDir, "new");
         }
-        File mailFile = new File(fileDir, uid);
-
-        if (!mailFile.exists()) {
-            Log.d(TAG, "ReadMailFromFileRootAndNew: file not found.." + mailFile);
-            return null;
-        }
-
         return ReadMailFromFile(fileDir, uid);
     }
 
@@ -264,8 +257,21 @@ public class SyncUtils {
     @Nullable
     public static Message ReadMailFromFile(@NonNull File nameDir,
                                            @NonNull String uid) {
-        Log.d(TAG, "ReadMailFromFile: " + nameDir.getPath() + " " + uid);
-        File mailFile = new File(nameDir, uid);
+        Log.d(TAG, "ReadMailFromFile: " + nameDir.getPath() + " " + Utilities.addMailExt(uid));
+
+        File mailFile;
+        mailFile = new File(nameDir, Utilities.addMailExt(uid));
+        if (!mailFile.exists()) {
+            // old: only UID is used
+            mailFile = new File(nameDir, uid);
+            if (!mailFile.exists()) {
+                mailFile = new File(nameDir, uid);
+                if (!mailFile.exists()) {
+                    Log.d(TAG, "ReadMailFromFile: file not found.." + mailFile);
+                    return null;
+                }
+            }
+        }
 
         try (InputStream mailFileInputStream = new FileInputStream(mailFile)) {
             try {
@@ -329,6 +335,7 @@ public class SyncUtils {
 
     synchronized static void RemoveAccount(@NonNull Context context, @NonNull Account account) {
         Log.d(TAG, "RemoveAccount: " + account.name);
+        // Delete account name entries in database
         NotesDb storedNotes = NotesDb.getInstance(context);
         storedNotes.ClearDb(account.name);
         // remove Shared Preference file
@@ -342,8 +349,6 @@ public class SyncUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
-        // Delete account name entries in database
-
     }
 
     synchronized AppendUID[] sendMessageToRemote(@NonNull Message[] message) throws MessagingException {
@@ -357,7 +362,7 @@ public class SyncUtils {
                                                         @NonNull String accountName,
                                                         @NonNull String suid,
                                                         @NonNull String bgColor) throws IOException, MessagingException {
-        File outfile = new File(directory, suid);
+        File outfile = new File(directory, Utilities.addMailExt(suid));
         Log.d(TAG, "SaveNoteAndUpdateDatabase: " + outfile.getCanonicalPath() + " " + accountName);
         SaveNote(outfile, notesMessage);
 
@@ -420,15 +425,12 @@ public class SyncUtils {
         boolean result = false;
         ArrayList<Long> uids = new ArrayList<>();
         ArrayList<String> localListOfNotes = new ArrayList<>();
-        String remoteInternaldate;
-        String localInternaldate;
-
 
         // Get local list of notes uids
         File[] files = rootFolderAccount.listFiles();
         for (File file : files) {
             if (file.isFile() && (file.length() > 1)) {
-                localListOfNotes.add(file.getName());
+                localListOfNotes.add(Utilities.removeMailExt(file.getName()));
             }
         }
 
@@ -467,7 +469,12 @@ public class SyncUtils {
                 // Remove note from database
                 storedNotes.DeleteANote(suid, accountName);
                 // remove file from deleted
-                File toDelete = new File(rootFolderAccount, suid);
+                File toDelete;
+                toDelete = new File(rootFolderAccount, Utilities.addMailExt(suid));
+                //noinspection ResultOfMethodCallIgnored
+                toDelete.delete();
+                // old: only SUID is used
+                toDelete = new File(rootFolderAccount, suid);
                 //noinspection ResultOfMethodCallIgnored
                 toDelete.delete();
                 result = true;
@@ -524,8 +531,9 @@ public class SyncUtils {
         }
     }
 
-    synchronized void DeleteNote(int numMessage) throws MessagingException {
-        Log.d(TAG, "DeleteNote: " + numMessage);
+    synchronized void DeleteNote(String fileName) throws MessagingException {
+        Log.d(TAG, "DeleteNote: " + fileName);
+        int numMessage = Integer.parseInt(Utilities.removeMailExt(fileName));
         OpenRemoteIMAPNotesFolder(Folder.READ_WRITE);
         //Log.d(TAG,"UID to remove:"+numMessage);
         Message[] msgs = {((IMAPFolder) remoteIMAPNotesFolder).getMessageByUID(numMessage)};
