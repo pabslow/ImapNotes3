@@ -175,7 +175,7 @@ public class NotesDb extends SQLiteOpenHelper {
         db.close();
     }
 
-    public synchronized void UpdateANote(@NonNull String tmpuid,
+    public synchronized void UpdateANote(@NonNull String olduid,
                                          @NonNull String newuid,
                                          @NonNull String accountname) {
         /* TODO: use sql template and placeholders instead of string concatenation.

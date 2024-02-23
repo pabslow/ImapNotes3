@@ -273,12 +273,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d(TAG, "handleNewNotes uid: " + newuid);
 
             File to = new File(accountDir, Utilities.addMailExt(newuid));
-            fileInNew.renameTo(to);
-            // move new note from new dir, one level up
-            storedNotes.UpdateANote(suidFileNew, newuid, account.accountName);
-            List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
-            storedNotes.UpdateTags(tags, newuid, account.accountName);
-            storedNotes.SetSaveState(newuid, OneNote.SAVE_STATE_OK, account.accountName);
+            if (fileInNew.renameTo(to)) {
+                // move new note from new dir, one level up
+                storedNotes.UpdateANote("-" + suidFileNew, newuid, account.accountName);
+                List<String> tags = ListActivity.searchHTMLTags(accountDir, newuid, Utilities.HASHTAG_PATTERN, true);
+                storedNotes.UpdateTags(tags, newuid, account.accountName);
+                storedNotes.SetSaveState(newuid, OneNote.SAVE_STATE_OK, account.accountName);
+            }
         }
         return newNotesManaged;
     }
