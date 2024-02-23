@@ -68,6 +68,7 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
                     ImapNotesAccount.server,
                     ImapNotesAccount.portnum,
                     ImapNotesAccount.security,
+                    ImapNotesAccount.GetImapFolder(),
                     THREAD_ID
             );
             //accountConfigurationActivity = accountConfigurationActivity;

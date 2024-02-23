@@ -60,6 +60,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import static de.niendo.ImapNotes3.Miscs.Imaper.ResultCodeSuccess;
+import static de.niendo.ImapNotes3.Miscs.Imaper.ResultCodeImapFolderCreated;
 
 /// A SyncAdapter provides methods to be called by the Android
 /// framework when the framework is ready for the synchronization to
@@ -104,16 +105,16 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Connect to remote and get UIDValidity
         ImapNotesResult res = ConnectToRemote();
-        if (res.returnCode != ResultCodeSuccess) {
+        String errorMessage = "";
+
+        if (res.returnCode == ResultCodeImapFolderCreated) {
+            SaveAllNotesToNew();
+        } else if (res.returnCode != ResultCodeSuccess) {
             NotifySyncFinished(false, false, res.errorMessage);
             return;
-        }
-
-        String errorMessage = "";
-        // Compare UIDValidity to old saved one
-        //
-        if (!(res.UIDValidity.equals(
-                syncUtils.GetUIDValidity(accountArg, applicationContext)))) {
+        } else if (!(res.UIDValidity.equals(
+                SyncUtils.GetUIDValidity(accountArg, applicationContext)))) {
+            // Compare UIDValidity to old saved one
             // Replace local data by remote.  UIDs are no longer valid.
             try {
                 // delete notes in NotesDb for this account
@@ -127,27 +128,23 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 syncUtils.GetNotes(accountArg,
                         account.GetRootDirAccount(),
                         applicationContext, storedNotes);
-            } catch (MessagingException e) {
+            } catch (MessagingException | IOException e) {
                 // TODO Auto-generated catch block
                 errorMessage = e.getMessage();
-                e.printStackTrace();
-            } catch (IOException e) {
-                errorMessage = e.getMessage();
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            syncUtils.SetUIDValidity(accountArg, res.UIDValidity, applicationContext);
+            SyncUtils.SetUIDValidity(accountArg, res.UIDValidity, applicationContext);
             // Notify ListActivity that it's finished, and that it can refresh display
             Log.d(TAG, "end on perform :" + errorMessage);
             NotifySyncFinished(true, true, errorMessage);
             return;
         }
 
-        boolean isChanged = false;
+
 
         // Send new local messages to remote, move them to local folder
         // and update uids in database
-        if (handleNewNotes()) isChanged = true;
+        boolean isChanged = handleNewNotes();
 
         // Delete on remote messages that are deleted locally (if necessary)
         if (handleDeletedNotes()) isChanged = true;
@@ -282,6 +279,30 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
         return newNotesManaged;
+    }
+
+    /**
+     * Only needed, when the server mail folder not exists anymore (deleted or renamed)
+     * the folder is already created..so just save the notes here
+     */
+    private void SaveAllNotesToNew() {
+        Log.d(TAG, "SaveAllNotesToNew");
+        File accountDir = account.GetRootDirAccount();
+        File dirNew = new File(accountDir, "new");
+        String[] listOfNotes = accountDir.list();
+        for (String fileName : Objects.requireNonNull(listOfNotes)) {
+            File to = new File(dirNew, "-" + fileName);
+            File file = new File(accountDir, fileName);
+            if (file.isFile()) {
+                Log.d(TAG, "rename: " + file.getAbsolutePath() + " to " + to.getAbsolutePath());
+                if (file.renameTo(to)) {
+                    storedNotes.UpdateANote(fileName, "-" + fileName, account.accountName);
+                } else {
+                    Log.d(TAG, "rename failed");
+                }
+            }
+
+        }
     }
 
     private boolean handleDeletedNotes() {

@@ -172,6 +172,11 @@ public class SyncUtils {
                 if (remoteIMAPNotesFolder.create(Folder.HOLDS_MESSAGES)) {
                     remoteIMAPNotesFolder.setSubscribed(true);
                     Log.d(TAG, "Folder was created successfully");
+                    return new ImapNotesResult(Imaper.ResultCodeImapFolderCreated,
+                            "", -1);
+                } else {
+                    Exception e = new Exception("ImapFolder on server not found and could not created");
+                    throw new RuntimeException(e);
                 }
             }
             return new ImapNotesResult(Imaper.ResultCodeSuccess,

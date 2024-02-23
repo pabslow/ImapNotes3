@@ -30,11 +30,13 @@ import android.util.Log;
 
 import de.niendo.ImapNotes3.Data.Security;
 
+import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.util.MailSSLSocketFactory;
 
 import java.security.GeneralSecurityException;
 import java.util.Properties;
 
+import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -49,6 +51,7 @@ public class Imaper {
     public static final int ResultCodeSuccess = 0;
     public static final int ResultCodeException = -2;
     public static final int ResultCodeCantConnect = -1;
+    public static final int ResultCodeImapFolderCreated = 1;
 
 
     @NonNull
@@ -57,6 +60,7 @@ public class Imaper {
                                              String server,
                                              String portnum,
                                              @NonNull Security security,
+                                             @NonNull String ImapFolderName,
                                              int threadID) throws MessagingException {
 
         TrafficStats.setThreadStatsTag(threadID);
@@ -66,7 +70,7 @@ public class Imaper {
             sf = new MailSSLSocketFactory();
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
-            return new ImapNotesResult(-1,
+            return new ImapNotesResult(ResultCodeCantConnect,
                     "Can't connect to server",
                     -1);
         }
@@ -111,6 +115,26 @@ public class Imaper {
         store = session.getStore(proto);
         try {
             store.connect(server, username, password);
+
+            // Create folder, if not exists
+            Folder[] folders = store.getPersonalNamespaces();
+            Folder rootFolder = folders[0];
+            Log.d(TAG, "Personal Namespaces=" + rootFolder.getFullName());
+
+            String sfolder = ImapFolderName;
+            if (rootFolder.getFullName().length() > 0) {
+                char separator = rootFolder.getSeparator();
+                sfolder = rootFolder.getFullName() + separator + ImapFolderName;
+            }
+
+            // Get UIDValidity
+            IMAPFolder remoteIMAPNotesFolder = (IMAPFolder) store.getFolder(sfolder);
+            if (!remoteIMAPNotesFolder.exists()) {
+                if (remoteIMAPNotesFolder.create(Folder.HOLDS_MESSAGES)) {
+                    remoteIMAPNotesFolder.setSubscribed(true);
+                    Log.d(TAG, "Folder was created successfully");
+                }
+            }
 
             return new ImapNotesResult(ResultCodeSuccess,
                     "",

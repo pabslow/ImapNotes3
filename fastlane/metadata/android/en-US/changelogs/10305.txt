@@ -1,2 +1,3 @@
 user can create backup file
 saves files internal as *.eml
+save notes if IMAP folder on server is deleted or renamed
