@@ -161,7 +161,6 @@ public class SyncUtils {
             Log.d(TAG, "Personal Namespaces=" + rootFolder.getFullName());
             // TODO: this the wrong place to make decisions about the name of the notes folder, that
             // should be done where it is created.
-
             String sfolder = ImapFolderName;
             if (rootFolder.getFullName().length() > 0) {
                 char separator = rootFolder.getSeparator();
@@ -441,7 +440,7 @@ public class SyncUtils {
         for (int index = notesMessages.length - 1; index >= 0; index--) {
             try {
                 notesMessage = notesMessages[index];
-                Long uid = remoteIMAPNotesFolder.getUID(notesMessage);
+                long uid = remoteIMAPNotesFolder.getUID(notesMessage);
                 // Get FLAGS
                 //flags = notesMessage.getFlags();
                 boolean deleted = notesMessage.isSet(Flags.Flag.DELETED);
@@ -451,7 +450,7 @@ public class SyncUtils {
                 if (!deleted) {
                     uids.add(remoteIMAPNotesFolder.getUID(notesMessage));
                 }
-                String suid = uid.toString();
+                String suid = Long.toString(uid);
                 if (!(localListOfNotes.contains(suid))) {
                     String bgColor = HtmlNote.GetNoteFromMessage(notesMessage).color;
                     SaveNoteAndUpdateDatabase(rootFolderAccount, notesMessage, storedNotes, accountName, suid, bgColor);
@@ -536,7 +535,7 @@ public class SyncUtils {
         int numMessage = Integer.parseInt(Utilities.removeMailExt(fileName));
         OpenRemoteIMAPNotesFolder(Folder.READ_WRITE);
         //Log.d(TAG,"UID to remove:"+numMessage);
-        Message[] msgs = {((IMAPFolder) remoteIMAPNotesFolder).getMessageByUID(numMessage)};
+        Message[] msgs = {(remoteIMAPNotesFolder).getMessageByUID(numMessage)};
         remoteIMAPNotesFolder.setFlags(msgs, new Flags(Flags.Flag.DELETED), true);
         remoteIMAPNotesFolder.expunge(msgs);
     }

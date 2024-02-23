@@ -45,7 +45,7 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
     private final AccountConfigurationActivity accountConfigurationActivity;
 
     private final AccountConfigurationActivity.Actions action;
-    private FinishListener listener;
+    private final FinishListener listener;
 
     public LoginThread(ImapNotesAccount ImapNotesAccount,
                        AccountConfigurationActivity accountConfigurationActivity,
@@ -95,11 +95,11 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
             accountConfigurationActivity.setAccountAuthenticatorResult(result);
             setUserData(am, account);
             // Run the Sync Adapter Periodically
-            ContentResolver.setIsSyncable(account, accountConfigurationActivity.AUTHORITY, 1);
-            ContentResolver.setSyncAutomatically(account, accountConfigurationActivity.AUTHORITY, true);
+            ContentResolver.setIsSyncable(account, AccountConfigurationActivity.AUTHORITY, 1);
+            ContentResolver.setSyncAutomatically(account, AccountConfigurationActivity.AUTHORITY, true);
             // we can enable inexact timers in our periodic sync
-            SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval.time * 60, ImapNotesAccount.syncInterval.time * 60)
-                    .setSyncAdapter(account, accountConfigurationActivity.AUTHORITY).setExtras(new Bundle()).build();
+            SyncRequest request = new SyncRequest.Builder().syncPeriodic(ImapNotesAccount.syncInterval.time * 60L, ImapNotesAccount.syncInterval.time * 60L)
+                    .setSyncAdapter(account, AccountConfigurationActivity.AUTHORITY).setExtras(new Bundle()).build();
             if (ImapNotesAccount.syncInterval.time > 0) {
                 ContentResolver.requestSync(request);
             } else {

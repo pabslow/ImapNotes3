@@ -105,7 +105,6 @@ public class Imaper {
             props.put("mail.imap.socks.host", "10.0.2.2");
             props.put("mail.imap.socks.port", "1080");
         }
-
          */
         Session session = Session.getInstance(props, null);
 //session.setDebug(true);

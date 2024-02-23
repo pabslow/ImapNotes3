@@ -74,7 +74,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private NotesDb storedNotes;
     private ImapNotesAccount account;
 
-    private SyncUtils syncUtils;
+    private final SyncUtils syncUtils;
 
     SyncAdapter(@NonNull Context applicationContext) {
         super(applicationContext, true, false);
@@ -161,11 +161,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             remoteNotesManaged = syncUtils.handleRemoteNotes(account.GetRootDirAccount(),
                     storedNotes, accountArg.name);
-        } catch (MessagingException e) {
-            errorMessage = e.getMessage();
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (MessagingException | IOException e) {
             errorMessage = e.getMessage();
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -173,7 +169,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (remoteNotesManaged) isChanged = true;
 
         // Disconnect from remote
-        syncUtils.DisconnectFromRemote();
+        SyncUtils.DisconnectFromRemote();
         //Log.d(TAG, "Network synchronization complete of account: "+account.name);
         // Notify ListActivity that it's finished, and that it can refresh display
         boolean refreshTags = extras.getBoolean(ListActivity.REFRESH_TAGS);
@@ -217,7 +213,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private ImapNotesResult ConnectToRemote() {
         Log.d(TAG, "ConnectToRemote");
         AccountManager am = AccountManager.get(applicationContext);
-        ImapNotesResult res = syncUtils.ConnectToRemote(
+        ImapNotesResult res = SyncUtils.ConnectToRemote(
                 account.username,
                 //am.getUserData(account.GetAccount(), ConfigurationFieldNames.UserName),
                 am.getPassword(account.GetAccount()),
@@ -251,7 +247,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             // Read local new message from file
             File fileInNew = new File(dirNew, fileNew);
             storedNotes.SetSaveState("-" + suidFileNew, OneNote.SAVE_STATE_SYNCING, account.accountName);
-            Message message = syncUtils.ReadMailFromFile(dirNew, suidFileNew);
+            Message message = SyncUtils.ReadMailFromFile(dirNew, suidFileNew);
             try {
                 Log.d(TAG, "handleNewNotes message: " + message.getSize());
                 Log.d(TAG, "handleNewNotes message: " + fileInNew.length());
