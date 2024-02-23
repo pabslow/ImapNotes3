@@ -183,7 +183,7 @@ public class NotesDb extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String req = "update notesTable set number='" + newuid + "' where number='-" + tmpuid + "' and accountname='" + accountname + "'";
+        String req = "update notesTable set number='" + newuid + "' where number='" + olduid + "' and accountname='" + accountname + "'";
         db.execSQL(req);
         db.close();
     }
