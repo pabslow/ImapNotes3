@@ -53,6 +53,7 @@ import com.sun.mail.imap.AppendUID;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import javax.mail.Flags;
 import javax.mail.Message;
@@ -170,7 +171,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             //Log.d(TAG, "refreshTags");
             File directory = ImapNotes3.GetAccountDir(account.accountName);
             File[] listOfFiles = directory.listFiles();
-            for (File file : listOfFiles) {
+            for (File file : Objects.requireNonNull(listOfFiles)) {
                 if (file.isFile()) {
                     String uid = Utilities.removeMailExt(file.getName());
                     Log.d(TAG, "FilterResults: " + file.getName());
@@ -233,7 +234,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(TAG, "dn exists: " + dirNew.exists());
         String[] listOfNew = dirNew.list();
         AppendUID[] uids;
-        for (String fileNew : listOfNew) {
+        for (String fileNew : Objects.requireNonNull(listOfNew)) {
             String suidFileNew = Utilities.removeMailExt(fileNew);
             Log.d(TAG, "New Note to process:" + fileNew);
             newNotesManaged = true;
@@ -242,7 +243,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             storedNotes.SetSaveState("-" + suidFileNew, OneNote.SAVE_STATE_SYNCING, account.accountName);
             Message message = SyncUtils.ReadMailFromFile(dirNew, suidFileNew);
             try {
-                Log.d(TAG, "handleNewNotes message: " + message.getSize());
+                Log.d(TAG, "handleNewNotes message: " + Objects.requireNonNull(message).getSize());
                 Log.d(TAG, "handleNewNotes message: " + fileInNew.length());
             } catch (MessagingException e) {
                 continue;
@@ -311,7 +312,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         boolean deletedNotesManaged = false;
         File dirDeleted = new File(account.GetRootDirAccount(), "deleted");
         String[] listOfDeleted = dirDeleted.list();
-        for (String fileDeleted : listOfDeleted) {
+        for (String fileDeleted : Objects.requireNonNull(listOfDeleted)) {
             try {
                 syncUtils.DeleteNote(fileDeleted);
             } catch (Exception e) {
