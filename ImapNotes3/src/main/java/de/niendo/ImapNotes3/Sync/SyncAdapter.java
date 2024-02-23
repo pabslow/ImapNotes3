@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) 2022-2024 - Peter Korf <peter@niendo.de>
  * Copyright (C)      2016 - Axel Strübing
  * Copyright (C)      2016 - Martin Carpella
  * Copyright (C)      2015 - nb
@@ -101,10 +101,6 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         //SyncUtils.CreateLocalDirectories(accountArg.name, applicationContext);
         account.CreateLocalDirectories();
         storedNotes = NotesDb.getInstance(applicationContext);
-
-        AccountManager am = AccountManager.get(applicationContext);
-        //String syncInterval = am.getUserData(accountArg, "syncinterval");
-        //String syncInterval = account.GetSyncinterval();
 
         // Connect to remote and get UIDValidity
         ImapNotesResult res = ConnectToRemote();
