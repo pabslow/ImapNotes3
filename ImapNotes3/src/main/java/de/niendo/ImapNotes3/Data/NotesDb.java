@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) 2022-2024 - Peter Korf <peter@niendo.de>
  * Copyright (C) ?   -2016 - Martin Carpella
  * Copyright (C) ?   -2015 - nb
  * and Contributors.
