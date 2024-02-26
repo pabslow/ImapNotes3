@@ -1,4 +1,4 @@
-user can create backup file
-saves files internal as *.eml
-save notes if IMAP folder on server is deleted or renamed
+* user can create backup file
+* saves files internal as *.eml
+* save notes if IMAP folder on server is deleted or renamed
 * richeditor v3.0.1

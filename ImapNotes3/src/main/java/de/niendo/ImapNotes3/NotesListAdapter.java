@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Peter Korf
+ * Copyright (C) 2024 Peter Korf
  * Copyright (C) 2016 Martin Carpella
  * Copyright (C) 2015 nb
  * Copyright (C) 2006 The Android Open Source Project

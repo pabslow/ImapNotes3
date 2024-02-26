@@ -238,7 +238,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     Integer scale = Integer.valueOf(extras.getString(DLG_INSERT_IMAGE_SHRINK_FACTOR));
                     Uri uri = extras.getParcelable(Intent.EXTRA_STREAM);
                     double fileSize = extras.getDouble(DLG_INSERT_IMAGE_FILE_SIZE);
-                    editText.insertHTML(extras.getString(DLG_INSERT_LINK_IMAGE_ALT) + "\n<br>");
+                    editText.insertHTML(extras.getString(DLG_INSERT_LINK_IMAGE_ALT));
                     if (inline) {
                         if ((double) (Utilities.getRealSizeFromUri(this, uri) / (scale * scale)) > MAX_INSERT_FILE_SIZE_MB * 1024 * 1024) {
                             Log.d(TAG, "FileSize:" + fileSize / (scale * scale));
@@ -253,7 +253,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                 extras.getString(DLG_INSERT_LINK_IMAGE_ALT), extras.getString(DLG_INSERT_LINK_IMAGE_WIDTH),
                                 extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
                     }
-                    editText.insertHTML("\n<br>");
+                    editText.insertHTML("<br><br>");
 
                 }
                 case DLG_SELECT_ACCOUNT: {
