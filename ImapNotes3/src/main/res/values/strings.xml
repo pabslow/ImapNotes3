@@ -139,4 +139,5 @@
     </string>
     <string name="search_any_keyword">Search any keyword..</string>
     <string name="make_archive">Create Backup</string>
+    <string name="intent_import_note">Import Note(s)</string>
 </resources>

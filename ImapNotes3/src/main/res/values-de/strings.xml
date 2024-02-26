@@ -138,4 +138,5 @@
         Ein solches Passwort muss beim Provider erstellt werden.</string>
     <string name="search_any_keyword">beliebiger Suchbegriff</string>
     <string name="make_archive">Erstelle Backup</string>
+    <string name="intent_import_note">Importiere Notiz(en)</string>
 </resources>

@@ -58,8 +58,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
@@ -893,7 +897,8 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     }
 
     private void processShareIntent(Intent intent) {
-        String sharedData = "";
+        Log.d(TAG, "processShareIntent");
+        StringBuilder sharedData = new StringBuilder();
         // Share: Receive Data as new message
         String strAction = intent.getAction();
         if (!editText.hasFocus()) editText.focusEditor();
@@ -904,7 +909,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (uri != null) {
                 if (type.startsWith("image/")) {
-                    String finalSubject = subject;
                     Bundle extra = new Bundle();
                     extra.putParcelable(Intent.EXTRA_STREAM, uri);
                     double fileSize = Utilities.getRealSizeFromUri(this, uri);
@@ -955,14 +959,23 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     try {
                         bufferedInputStream =
                                 new BufferedInputStream(getContentResolver().openInputStream(uri));
-                        byte[] contents = new byte[1024];
-                        int bytesRead = 0;
-                        while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
-                            sharedData += new String(contents, 0, bytesRead);
+
+                        if (type.equals("message/rfc822")) {
+                            Log.d(TAG, "processShareIntent:" + uri.getPath());
+                            Properties props = new Properties();
+                            Session session = Session.getDefaultInstance(props);
+                            Message message = new MimeMessage(session, bufferedInputStream);
+                            sharedData.append(HtmlNote.GetNoteFromMessage(message).text);
+                        } else {
+                            byte[] contents = new byte[1024];
+                            int bytesRead = 0;
+                            while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
+                                sharedData.append(new String(contents, 0, bytesRead));
+                            }
                         }
                         bufferedInputStream.close();
-                        editText.insertHTML(sharedData);
-                    } catch (IOException e) {
+                        editText.insertHTML(sharedData.toString());
+                    } catch (IOException | MessagingException e) {
                         e.printStackTrace();
                     }
                 }
