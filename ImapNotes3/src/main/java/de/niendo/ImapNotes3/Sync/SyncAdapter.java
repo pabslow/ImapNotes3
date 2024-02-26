@@ -241,7 +241,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             // Read local new message from file
             File fileInNew = new File(dirNew, fileNew);
             storedNotes.SetSaveState("-" + suidFileNew, OneNote.SAVE_STATE_SYNCING, account.accountName);
-            Message message = SyncUtils.ReadMailFromFile(dirNew, suidFileNew);
+            Message message = SyncUtils.ReadMailFromNoteFile(dirNew, suidFileNew);
             try {
                 Log.d(TAG, "handleNewNotes message: " + Objects.requireNonNull(message).getSize());
                 Log.d(TAG, "handleNewNotes message: " + fileInNew.length());

@@ -399,7 +399,7 @@ public class NotesListAdapter extends BaseAdapter implements Filterable {
             pattern = Pattern.compile(Pattern.quote(searchTerm), Pattern.CASE_INSENSITIVE);
         }
 
-        String html = HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromFile(nameDir, uid)).text;
+        String html = HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromNoteFile(nameDir, uid)).text;
         Matcher matcher = pattern.matcher(html);
         return (matcher.find());
     }

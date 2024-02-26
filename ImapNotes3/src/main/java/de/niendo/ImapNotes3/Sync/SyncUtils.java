@@ -249,7 +249,7 @@ public class SyncUtils {
             uid = uid.substring(1);
             fileDir = new File(fileDir, "new");
         }
-        return ReadMailFromFile(fileDir, uid);
+        return ReadMailFromNoteFile(fileDir, uid);
     }
 
     /**
@@ -259,8 +259,8 @@ public class SyncUtils {
      * @return A Java mail message object.
      */
     @Nullable
-    public static Message ReadMailFromFile(@NonNull File nameDir,
-                                           @NonNull String uid) {
+    public static Message ReadMailFromNoteFile(@NonNull File nameDir,
+                                               @NonNull String uid) {
         Log.d(TAG, "ReadMailFromFile: " + nameDir.getPath() + " " + Utilities.addMailExt(uid));
 
         File mailFile;
@@ -276,7 +276,16 @@ public class SyncUtils {
                 }
             }
         }
+        return (ReadMailFromFile(mailFile));
+    }
 
+    /**
+     * @param mailFile Name of the account with which this message is associated, used to find the
+     *                 directory in which it is stored.
+     * @return A Java mail message object.
+     */
+    @Nullable
+    public static Message ReadMailFromFile(@NonNull File mailFile) {
         try (InputStream mailFileInputStream = new FileInputStream(mailFile)) {
             try {
                 Properties props = new Properties();

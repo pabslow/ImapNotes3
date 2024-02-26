@@ -589,7 +589,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             pattern = Pattern.compile(Pattern.quote(searchTerm), Pattern.CASE_INSENSITIVE);
         }
 
-        String html = Jsoup.parse(HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromFile(nameDir, uid)).text).text();
+        String html = Jsoup.parse(HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromNoteFile(nameDir, uid)).text).text();
 
         Matcher matcher = pattern.matcher(html);
         while (matcher.find()) {
