@@ -114,7 +114,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             NotifySyncFinished(false, false, res.errorMessage);
             return;
         } else if (!(res.UIDValidity.equals(
-                SyncUtils.GetUIDValidity(accountArg, applicationContext)))) {
+                syncUtils.GetUIDValidity(accountArg, applicationContext)))) {
             // Compare UIDValidity to old saved one
             // Replace local data by remote.  UIDs are no longer valid.
             try {
@@ -163,7 +163,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (remoteNotesManaged) isChanged = true;
 
         // Disconnect from remote
-        SyncUtils.DisconnectFromRemote();
+        syncUtils.DisconnectFromRemote();
         //Log.d(TAG, "Network synchronization complete of account: "+account.name);
         // Notify ListActivity that it's finished, and that it can refresh display
         boolean refreshTags = extras.getBoolean(ListActivity.REFRESH_TAGS);
@@ -207,7 +207,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     private ImapNotesResult ConnectToRemote() {
         Log.d(TAG, "ConnectToRemote");
         AccountManager am = AccountManager.get(applicationContext);
-        ImapNotesResult res = SyncUtils.ConnectToRemote(
+        ImapNotesResult res = syncUtils.ConnectToRemote(
                 account.username,
                 //am.getUserData(account.GetAccount(), ConfigurationFieldNames.UserName),
                 am.getPassword(account.GetAccount()),
