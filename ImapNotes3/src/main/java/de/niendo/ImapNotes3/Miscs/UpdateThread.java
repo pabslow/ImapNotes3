@@ -61,6 +61,7 @@ import javax.mail.internet.MimeMultipart;
 public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
 
     //https://stackoverflow.com/questions/54346609/returning-boolean-from-onpostexecute-and-doinbackground
+    //https://fernandocejas.com/2014/09/03/architecting-android-the-clean-way/
     private FinishListener listener;
     private static final String TAG = "IN_UpdateThread";
     private final ImapNotesAccount ImapNotesAccount;

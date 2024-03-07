@@ -83,7 +83,6 @@ import jp.wasabeef.richeditor.RichEditor;
 
 public class NoteDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SimpleDialog.OnDialogResultListener {
 
-    //region Intent item names
     public static final String selectedNote = "selectedNote";
     public static final String ActivityType = "ActivityType";
     public static final String ActivityTypeEdit = "ActivityTypeEdit";
@@ -132,7 +131,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private List<String> tagList;
     private MenuItem itemNext;
     private MenuItem itemPrevious;
-    //endregion
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -968,7 +966,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                             sharedData.append(HtmlNote.GetNoteFromMessage(message).text);
                         } else {
                             byte[] contents = new byte[1024];
-                            int bytesRead = 0;
+                            int bytesRead;
                             while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
                                 sharedData.append(new String(contents, 0, bytesRead));
                             }
@@ -988,11 +986,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         subject = "<b>" + subject + "</b><br>";
                     } else subject = "";
                     if (sharedText != null) {
-
                         if (type.equals("text/html")) {
                             editText.insertHTML(subject + sharedText);
                         } else if (type.startsWith("text/")) {
-                            editText.insertHTML(subject + Html.escapeHtml(sharedText));
+                            editText.insertHTML(subject + Html.escapeHtml(sharedText).replace("\n", "<br>"));
                         } else if (type.startsWith("image/")) {
                             editText.insertImage(sharedText, "shared image", "100", "", true);
                         }

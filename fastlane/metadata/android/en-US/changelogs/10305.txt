@@ -5,4 +5,5 @@
 * import *.eml files (via share)
 * updated chinese translation (thanks sr093906)
 * gradle 8.3
-* rework synchronization of imap  operations
+* rework synchronization of imap operations
+* update libs and build tools
