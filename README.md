@@ -38,6 +38,7 @@ src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android
 * light and dark mode support
 * color support for notes
 * share your notes
+* backup and restore your notes to/from a local zip archive
 * notes are saved as standard HTML E-mails
 * security can be plain text, SSL/TLS or STARTTLS
 * multiple IMAP accounts and/or notepads can be managed

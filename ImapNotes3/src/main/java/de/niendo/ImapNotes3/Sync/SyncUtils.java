@@ -24,6 +24,7 @@
 package de.niendo.ImapNotes3.Sync;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -31,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.net.TrafficStats;
+import android.net.Uri;
 import android.util.Log;
 
 import de.niendo.ImapNotes3.Data.NotesDb;
@@ -46,6 +48,7 @@ import com.sun.mail.imap.AppendUID;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.util.MailSSLSocketFactory;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -318,6 +321,32 @@ public class SyncUtils {
         return null;
     }
 
+    /**
+     * @param contentResolver
+     * @param uri
+     * @return A Java mail message object.
+     */
+    @Nullable
+    public static Message ReadMailFromUri(ContentResolver contentResolver, Uri uri) {
+        try (BufferedInputStream bufferedInputStream =
+                     new BufferedInputStream(contentResolver.openInputStream(uri))) {
+            try {
+                Log.d(TAG, "processShareIntent:" + uri.getPath());
+                Properties props = new Properties();
+                Session session = Session.getDefaultInstance(props);
+                return new MimeMessage(session, bufferedInputStream);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            } finally {
+                bufferedInputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
     synchronized void DisconnectFromRemote() {
         Log.d(TAG, "DisconnectFromRemote");
         try {
@@ -375,7 +404,7 @@ public class SyncUtils {
                                                         @NonNull NotesDb storedNotes,
                                                         @NonNull String accountName,
                                                         @NonNull String suid,
-                                                        @NonNull String bgColor) throws IOException, MessagingException {
+                                                        @NonNull String bgColor) throws IOException {
         File outfile = new File(directory, Utilities.addMailExt(suid));
         Log.d(TAG, "SaveNoteAndUpdateDatabase: " + outfile.getCanonicalPath() + " " + accountName);
         SaveNote(outfile, notesMessage);
@@ -409,7 +438,7 @@ public class SyncUtils {
         try {
             Date MessageInternaldate = notesMessage.getReceivedDate();
             internaldate = Utilities.internalDateFormat.format(MessageInternaldate);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

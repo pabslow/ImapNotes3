@@ -245,7 +245,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 Log.d(TAG, "handleNewNotes message: " + Objects.requireNonNull(message).getSize());
                 Log.d(TAG, "handleNewNotes message: " + fileInNew.length());
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 continue;
             }
             try {

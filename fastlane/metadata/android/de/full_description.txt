@@ -7,6 +7,7 @@
 * Hell- und Dunkelmodus
 * Jeder Notiz können Farben zugeordnet werden
 * Notizen auf dem Handy teilen
+* Notizen in ein lokales ZIP-Archive sichern und wiederherstellen
 * Notizen werden als normale E-Mails im HTML-Format gespeichert
 * verschiedene Verschlüsselungsarten werden unterstützt (Text, SSL/TLS oder STARTTLS)
 * mehrere IMAP-Konten bzw. Notizbücher können angelegt und verwaltet werden

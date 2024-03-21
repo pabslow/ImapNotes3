@@ -367,6 +367,36 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         startActivityForResult(intentActionSend, ListActivity.NEW_BUTTON);
                         intentActionSend = null;
                     });
+        } else if (action.equals(Intent.ACTION_SEND_MULTIPLE)) {
+            if (intent.getType().equals("message/rfc822")) {
+                Intent finalIntent = intent;
+                ImapNotes3.ShowAction(listview, R.string.insert_as_new_note, R.string.ok, 0,
+                        () -> {
+                            try {
+                                handleSendMultipleImages(finalIntent);
+                            } catch (Exception e) {
+                                Log.d(TAG, "Check_Action_Send: Exception Multiple");
+                            }
+                        });
+            }
+        }
+    }
+
+    void handleSendMultipleImages(Intent intent) {
+        Log.d(TAG, "handleSendMultipleImages");
+        ArrayList<Uri> messageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        String accountName = getSelectedAccountName();
+        //Integer i=0;
+        if (accountName.isEmpty()) {
+            ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
+            return;
+        }
+        if (messageUris != null) {
+            for (Uri uri : messageUris) {
+                HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromUri(getContentResolver(), uri));
+                UpdateList("", htmlNote.text, htmlNote.color, accountName, UpdateThread.Action.Insert);
+                Log.d(TAG, "handleSendMultipleImages: add " + uri.getPath());
+            }
         }
     }
 

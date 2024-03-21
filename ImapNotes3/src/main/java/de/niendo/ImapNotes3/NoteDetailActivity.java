@@ -58,12 +58,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
@@ -952,28 +948,26 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                             .show(this, DLG_INSERT_IMAGE);
                     //https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
 
+                } else if (type.equals("message/rfc822")) {
+                    try {
+                        sharedData.append(HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromUri(getContentResolver(), uri)).text);
+                        editText.insertHTML(sharedData.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     BufferedInputStream bufferedInputStream;
                     try {
                         bufferedInputStream =
                                 new BufferedInputStream(getContentResolver().openInputStream(uri));
-
-                        if (type.equals("message/rfc822")) {
-                            Log.d(TAG, "processShareIntent:" + uri.getPath());
-                            Properties props = new Properties();
-                            Session session = Session.getDefaultInstance(props);
-                            Message message = new MimeMessage(session, bufferedInputStream);
-                            sharedData.append(HtmlNote.GetNoteFromMessage(message).text);
-                        } else {
                             byte[] contents = new byte[1024];
                             int bytesRead;
                             while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
                                 sharedData.append(new String(contents, 0, bytesRead));
                             }
-                        }
                         bufferedInputStream.close();
                         editText.insertHTML(sharedData.toString());
-                    } catch (IOException | MessagingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

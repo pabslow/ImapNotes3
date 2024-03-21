@@ -51,7 +51,7 @@
             </intent-filter>
             <intent-filter android:label="@string/intent_import_note">
                 <action android:name="android.intent.action.SEND" />
-                <!-- LATER action android:name="android.intent.action.SEND_MULTIPLE" / -->
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="message/rfc822" />
             </intent-filter>
