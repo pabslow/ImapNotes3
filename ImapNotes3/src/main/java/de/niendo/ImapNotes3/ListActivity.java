@@ -157,7 +157,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static Account[] accounts = new Account[0];
     private static String OldStatus;
     private final OnClickListener clickListenerEditAccount = v -> {
-        if (getSelectedAccountName().equals("")) {
+        if (getSelectedAccountName().isEmpty()) {
             ImapNotes3.ShowMessage(R.string.select_one_account, accountSpinner, 3);
             return;
         }
@@ -321,7 +321,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case DLG_FILTER_HASHTAG:
                 if (which == BUTTON_POSITIVE) {
                     hashFilterSelected = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
-                    if (hashFilterSelected.size() == 0)
+                    if (hashFilterSelected.isEmpty())
                         hashFilter = null;
                     else {
                         hashFilter = new String[hashFilterSelected.size()];

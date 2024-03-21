@@ -134,7 +134,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
                 //Log.d(TAG, "Received request to add new message: " + noteBody + "===");
                 // Use the first line as the tile
-                String[] tok = Html.fromHtml(noteBody.substring(0, Math.min(noteBody.length(), 2000)), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
+                String[] tok = Html.fromHtml(noteBody.substring(0, Math.min(noteBody.length(), 500)), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
                 String title = tok[0];
                 //String position = "0 0 0 0";
                 String body = noteBody;

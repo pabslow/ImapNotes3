@@ -329,7 +329,6 @@ public class SyncUtils {
         }
     }
 
-
     /**
      * @param outfile      Name of local file in which to store the note.
      * @param notesMessage The note in the form of a mail message.
