@@ -79,6 +79,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     private final NotesDb storedNotes;
     private OneNote currentNote;
     private int indexToDelete;
+    private final ArrayList<Message> messages;
 
     /*
     Assign all fields in the constructor because we never reuse this object.  This makes the code
@@ -109,7 +110,39 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         this.action = action;
         this.storedNotes = NotesDb.getInstance(context);
         currentNote = null;
+        messages = null;
         indexToDelete = -1;
+    }
+
+
+    /*
+Assign all fields in the constructor because we never reuse this object.  This makes the code
+typesafe.  Make them final to prevent accidental reuse.
+*/
+    public UpdateThread(String accountName,
+                        FinishListener listener,
+                        ArrayList<OneNote> noteList,
+                        NotesListAdapter listToView,
+                        @StringRes int resId,
+                        ArrayList<Message> messages,
+                        Context context) {
+        //ImapNotesAccount ImapNotesAccount
+        //Log.d(TAG, "UpdateThread: " + noteBody);
+        this.accountName = accountName;
+        Account account = new Account(accountName, Utilities.PackageName);
+        this.ImapNotesAccount = new ImapNotesAccount(account, context);
+        this.listener = listener;
+        this.notesList = noteList;
+        this.adapter = listToView;
+        this.resId = resId;
+        this.action = Action.InsertMultipleMessages;
+        this.storedNotes = NotesDb.getInstance(context);
+        this.noteBody = null;
+        this.bgColor = null;
+
+        currentNote = null;
+        indexToDelete = -1;
+        this.messages = messages;
     }
 
     @Override
@@ -172,6 +205,39 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
                 bool_to_return = true;
             }
 
+            // Do we have a note to add?
+            if ((action == Action.InsertMultipleMessages)) {
+                for (Message message : messages) {
+                    Log.d(TAG, "Action InsertMultipleMessages:");
+                    HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
+                    //storedNotes.SetSaveState("", OneNote.SAVE_STATE_SAVING, accountName);
+
+                    String DATE_FORMAT = Utilities.internalDateFormatString;
+
+                    Date date = message.getSentDate();
+                    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
+                    String stringDate = sdf.format(date);
+                    currentNote = new OneNote(message.getSubject(), stringDate, "", accountName, htmlNote.color, OneNote.SAVE_STATE_SAVING);
+                    // Add note to database
+
+                    suid = storedNotes.GetTempNumber(currentNote);
+                    storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
+                    currentNote.SetUid(suid);
+                    // Here we ask to add the new note to the new note folder
+                    // Must be done AFTER uid has been set in currentNote
+                    Log.d(TAG, "doInBackground body: ");
+                    WriteMailToNew(currentNote, htmlNote.text);
+                    currentNote.SetState(OneNote.SAVE_STATE_OK);
+                    storedNotes.InsertANoteInDb(currentNote);
+
+                    // Add note to noteList but change date format before
+                    //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(applicationContext);
+                    String sdate = DateFormat.getDateTimeInstance().format(date);
+                    currentNote.SetDate(sdate);
+                    bool_to_return = true;
+                    indexToDelete = -1;
+                }
+            }
         } catch (Exception e) {
             Log.d(TAG, "Action: " + action);
             e.printStackTrace();
@@ -297,7 +363,8 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     public enum Action {
         Update,
         Insert,
-        Delete
+        Delete,
+        InsertMultipleMessages
     }
 
 }

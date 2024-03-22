@@ -97,6 +97,8 @@ import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
+import javax.mail.Message;
+
 
 public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
@@ -385,6 +387,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     void handleSendMultipleImages(Intent intent) {
         Log.d(TAG, "handleSendMultipleImages");
         ArrayList<Uri> messageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        ArrayList<Message> messages = new ArrayList<>();
         String accountName = getSelectedAccountName();
         //Integer i=0;
         if (accountName.isEmpty()) {
@@ -392,11 +395,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             return;
         }
         if (messageUris != null) {
+            status.setText(R.string.importing);
             for (Uri uri : messageUris) {
-                HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromUri(getContentResolver(), uri));
-                UpdateList("", htmlNote.text, htmlNote.color, accountName, UpdateThread.Action.Insert);
-                Log.d(TAG, "handleSendMultipleImages: add " + uri.getPath());
+                messages.add(SyncUtils.ReadMailFromUri(getContentResolver(), uri));
             }
+            UpdateList(messages, accountName);
         }
     }
 
@@ -501,6 +504,20 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         getApplicationContext(),
                         action).execute();
             }
+    }
+
+    private void UpdateList(
+            ArrayList<Message> messages,
+            String accountName) {
+        synchronized (this) {
+            updateThread = new UpdateThread(accountName,
+                    this,
+                    noteList,
+                    listToView,
+                    R.string.updating_notes_list,
+                    messages,
+                    getApplicationContext()).execute();
+        }
     }
 
     @Override
