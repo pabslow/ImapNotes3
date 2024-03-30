@@ -1,1 +1,2 @@
 * import multiple eml-files (message/rfc822)
+* Fix for certificate error reported when 'accept any certificate' selected (john-p-williams)
