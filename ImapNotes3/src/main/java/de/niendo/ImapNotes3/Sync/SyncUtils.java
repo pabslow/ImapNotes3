@@ -164,7 +164,7 @@ public class SyncUtils {
         }
          */
         try {
-            Session session = Session.getDefaultInstance(props);
+            Session session = Session.getInstance(props, null);
             //session.setDebug(true);
             store = session.getStore(proto);
             store.connect(server, username, password);
