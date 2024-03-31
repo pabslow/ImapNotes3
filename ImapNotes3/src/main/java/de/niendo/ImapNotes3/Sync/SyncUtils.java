@@ -42,7 +42,6 @@ import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.ListActivity;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.ImapNotesResult;
-import de.niendo.ImapNotes3.Miscs.Imaper;
 
 import com.sun.mail.imap.AppendUID;
 import com.sun.mail.imap.IMAPFolder;
@@ -98,13 +97,13 @@ public class SyncUtils {
     }
 
     @NonNull
-    ImapNotesResult ConnectToRemote(@NonNull String username,
-                                                        @NonNull String password,
-                                                        @NonNull String server,
-                                                        String portnum,
-                                                        @NonNull Security security,
-                                                        @NonNull String ImapFolderName,
-                                                        int threadID
+    public ImapNotesResult ConnectToRemote(@NonNull String username,
+                                           @NonNull String password,
+                                           @NonNull String server,
+                                           String portnum,
+                                           @NonNull Security security,
+                                           @NonNull String ImapFolderName,
+                                           int threadID
     ) {
         Log.d(TAG, "ConnectToRemote: " + username);
 
@@ -127,7 +126,7 @@ public class SyncUtils {
             sf = new MailSSLSocketFactory();
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
-            return new ImapNotesResult(Imaper.ResultCodeCantConnect,
+            return new ImapNotesResult(ImapNotesResult.ResultCodeCantConnect,
                     "Can't connect to server: " + e.getMessage(), -1);
         }
         Properties props = new Properties();
@@ -187,19 +186,19 @@ public class SyncUtils {
                 if (remoteIMAPNotesFolder.create(Folder.HOLDS_MESSAGES)) {
                     remoteIMAPNotesFolder.setSubscribed(true);
                     Log.d(TAG, "Folder was created successfully");
-                    return new ImapNotesResult(Imaper.ResultCodeImapFolderCreated,
+                    return new ImapNotesResult(ImapNotesResult.ResultCodeImapFolderCreated,
                             "", -1);
                 } else {
                     Exception e = new Exception("ImapFolder on server not found and could not created");
                     throw new RuntimeException(e);
                 }
             }
-            return new ImapNotesResult(Imaper.ResultCodeSuccess,
+            return new ImapNotesResult(ImapNotesResult.ResultCodeSuccess,
                     "",
                     remoteIMAPNotesFolder.getUIDValidity());
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
-            return new ImapNotesResult(Imaper.ResultCodeException,
+            return new ImapNotesResult(ImapNotesResult.ResultCodeException,
                     e.getMessage(),
                     -1);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) 2022-2024 - Peter Korf <peter@niendo.de>
  * Copyright (C)           - kwhitefoot
  * and Contributors.
  *
@@ -50,7 +50,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,7 +58,6 @@ import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.Security;
 import de.niendo.ImapNotes3.Data.SyncInterval;
-import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.LoginThread;
 import de.niendo.ImapNotes3.Miscs.Result;
 import de.niendo.ImapNotes3.Miscs.SmtpServerNameFinder;
@@ -96,7 +94,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         }
     };
     private AppCompatDelegate mDelegate;
-    public Imaper imapFolder;
     private TextView accountnameTextView;
     private TextView usernameTextView;
     private TextView passwordTextView;
@@ -323,7 +320,6 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         securitySpinner.setAdapter(dataAdapter);
         securitySpinner.setOnItemSelectedListener(this);
         securitySpinner.setSelection(Security.SSL_TLS.ordinal());
-        imapFolder = ((ImapNotes3) getApplicationContext()).GetImaper();
 
         Bundle extras = getIntent().getExtras();
         // TODO: find out if extras can be null.

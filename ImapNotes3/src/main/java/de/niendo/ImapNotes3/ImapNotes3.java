@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) 2022-2024 - Peter Korf <peter@niendo.de>
  * Copyright (C)         ? - kwhitefoot
  * and Contributors.
  *
@@ -32,14 +32,11 @@ import androidx.annotation.StringRes;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import de.niendo.ImapNotes3.Miscs.Imaper;
-
 import java.io.File;
 
 public class ImapNotes3 extends Application {
     private static Context mContext;
     private static View mContent;
-    private Imaper thisSessionImapFolder;
     public static Intent intent; // For Data-Exchange SyncAdapater
     private static final String ReservedChars = "[\\\\/:*?\"<>|'!]";
 
@@ -70,16 +67,6 @@ public class ImapNotes3 extends Application {
 
     public static void setContent(View content) {
         mContent = content;
-    }
-
-    // ?
-    public void SetImaper(Imaper currentImaper) {
-        this.thisSessionImapFolder = currentImaper;
-    }
-
-    // ?
-    public Imaper GetImaper() {
-        return this.thisSessionImapFolder;
     }
 
     public ImapNotes3() {

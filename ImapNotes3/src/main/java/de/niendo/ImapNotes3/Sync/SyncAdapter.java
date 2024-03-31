@@ -60,9 +60,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import static de.niendo.ImapNotes3.Miscs.Imaper.ResultCodeSuccess;
-import static de.niendo.ImapNotes3.Miscs.Imaper.ResultCodeImapFolderCreated;
-
 /// A SyncAdapter provides methods to be called by the Android
 /// framework when the framework is ready for the synchronization to
 /// occur.  The application does not need to consider threading
@@ -108,9 +105,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         ImapNotesResult res = ConnectToRemote();
         String errorMessage = "";
 
-        if (res.returnCode == ResultCodeImapFolderCreated) {
+        if (res.returnCode == ImapNotesResult.ResultCodeImapFolderCreated) {
             SaveAllNotesToNew();
-        } else if (res.returnCode != ResultCodeSuccess) {
+        } else if (res.returnCode != ImapNotesResult.ResultCodeSuccess) {
             NotifySyncFinished(false, false, res.errorMessage);
             return;
         } else if (!(res.UIDValidity.equals(
@@ -217,7 +214,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 account.GetImapFolder(),
                 THREAD_ID
         );
-        if (res.returnCode != ResultCodeSuccess) {
+        if (res.returnCode != ImapNotesResult.ResultCodeSuccess) {
             // TODO: Notify the user?
             Log.d(TAG, "Connection problem: " + res.errorMessage);
         }

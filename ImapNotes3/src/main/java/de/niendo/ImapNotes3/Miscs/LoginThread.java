@@ -36,6 +36,7 @@ import de.niendo.ImapNotes3.AccountConfigurationActivity;
 import de.niendo.ImapNotes3.Data.ConfigurationFieldNames;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.R;
+import de.niendo.ImapNotes3.Sync.SyncUtils;
 
 public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
     private static final String TAG = "LoginThread";
@@ -61,8 +62,8 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
     protected Result<String> doInBackground(Void... none) {
         Log.d(TAG, "doInBackground");
         try {
-
-            ImapNotesResult res = accountConfigurationActivity.imapFolder.ConnectToProvider(
+            SyncUtils syncUtils = new SyncUtils();
+            ImapNotesResult res = syncUtils.ConnectToRemote(
                     ImapNotesAccount.username,
                     ImapNotesAccount.password,
                     ImapNotesAccount.server,
@@ -71,8 +72,7 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
                     ImapNotesAccount.GetImapFolder(),
                     THREAD_ID
             );
-            //accountConfigurationActivity = accountConfigurationActivity;
-            if (res.returnCode != Imaper.ResultCodeSuccess) {
+            if (res.returnCode != ImapNotesResult.ResultCodeSuccess) {
                 Log.d(TAG, "doInBackground IMAP Failed");
                 return new Result<>(res.errorMessage, false);
             }

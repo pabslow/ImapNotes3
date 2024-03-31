@@ -68,7 +68,6 @@ import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.SyncInterval;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
-import de.niendo.ImapNotes3.Miscs.Imaper;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
 import de.niendo.ImapNotes3.Miscs.Utilities;
@@ -234,9 +233,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         listview.setAdapter(this.listToView);
 
         listview.setTextFilterEnabled(true);
-
-        Imaper imapFolder = new Imaper();
-        ((ImapNotes3) this.getApplicationContext()).SetImaper(imapFolder);
 
         storedNotes = NotesDb.getInstance(getApplicationContext());
 
