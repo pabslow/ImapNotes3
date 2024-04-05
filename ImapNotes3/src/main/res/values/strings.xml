@@ -68,8 +68,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="sort_color">Sort by Color</string>
-    <string name="license">License: GPL v3.0</string>
-    <string name="internet">Internet: github.com/niendo1/ImapNotes3/</string>
+    <string name="license">License:</string>
+    <string name="internet">Internet:</string>
     <string name="placeholder">Insert text here…</string>
     <string name="AccountList">Account List</string>
     <string name="Last_sync">"Last sync: "</string>
@@ -141,4 +141,7 @@
     <string name="make_archive">Create Backup</string>
     <string name="intent_import_note">Import Note(s)</string>
     <string name="importing">Importing ...</string>
+    <string name="appstore">App-Store:</string>
+    <string name="appstorelink">https://f-droid.org/en/packages/de.niendo.ImapNotes3/</string>
+    <string name="appstorename">F-Droid</string>
 </resources>

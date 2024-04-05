@@ -68,8 +68,8 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="sort_color">按颜色排序</string>
-    <string name="license">许可证： GPL v3.0</string>
-    <string name="internet">网页链接: github.com/niendo1/ImapNotes3/</string>
+    <string name="license">许可证：</string>
+    <string name="internet">网页链接:</string>
     <string name="placeholder">在此插入文本…</string>
     <string name="AccountList">账户列表</string>
     <string name="Last_sync">"最后同步："</string>

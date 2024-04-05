@@ -67,6 +67,7 @@ import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.SyncInterval;
+import de.niendo.ImapNotes3.Miscs.AboutDialogFragment;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
@@ -706,18 +707,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 return true;
             }
             case R.id.about:
-                String about = getString(R.string.license) + "<br>";
-                about += "ID: " + BuildConfig.APPLICATION_ID + "<br>";
-                about += "Version: " + BuildConfig.VERSION_NAME + "<br>";
-                about += "Code: " + BuildConfig.VERSION_CODE + "<br>";
-                about += "DB-Version: " + NotesDb.NOTES_VERSION + "<br>";
-                about += "Build typ: " + BuildConfig.BUILD_TYPE + "<br>";
-                about += getString(R.string.internet) + "<br>";
-                SimpleDialog.build()
-                        .title(getString(R.string.about) + " " + BuildConfig.APPLICATION_NAME)
-                        .icon(R.mipmap.ic_launcher)
-                        .msgHtml(about)
-                        .show(this);
+                AboutDialogFragment aboutDialogFragment = new AboutDialogFragment();
+                aboutDialogFragment.show(getSupportFragmentManager(), "about_dialog");
                 return true;
             case R.id.send_debug_report:
                 SendLogcatMail();
