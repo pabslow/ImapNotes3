@@ -52,15 +52,15 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
                        AccountConfigurationActivity accountConfigurationActivity,
                        AccountConfigurationActivity.Actions action) {
         this.ImapNotesAccount = ImapNotesAccount;
-        this.listener = (LoginThread.FinishListener) accountConfigurationActivity;
+        this.listener = accountConfigurationActivity;
         this.accountConfigurationActivity = accountConfigurationActivity;
         this.action = action;
-        //ImapNotes3.ShowMessage(R.string.logging_in, accountnameTextView, 3);
     }
 
     @NonNull
     protected Result<String> doInBackground(Void... none) {
         Log.d(TAG, "doInBackground");
+        boolean newFolder = false;
         try {
             SyncUtils syncUtils = new SyncUtils();
             ImapNotesResult res = syncUtils.ConnectToRemote(
@@ -72,7 +72,9 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
                     ImapNotesAccount.GetImapFolder(),
                     THREAD_ID
             );
-            if (res.returnCode != ImapNotesResult.ResultCodeSuccess) {
+            if (res.returnCode == ImapNotesResult.ResultCodeImapFolderCreated) {
+                newFolder = true;
+            } else if (res.returnCode != ImapNotesResult.ResultCodeSuccess) {
                 Log.d(TAG, "doInBackground IMAP Failed");
                 return new Result<>(res.errorMessage, false);
             }
@@ -80,6 +82,10 @@ public class LoginThread extends AsyncTask<Void, Void, Result<String>> {
             final Account account = new Account(ImapNotesAccount.accountName, Utilities.PackageName);
             final AccountManager am = AccountManager.get(accountConfigurationActivity);
             accountConfigurationActivity.setResult(AccountConfigurationActivity.TO_REFRESH);
+            if (newFolder) {
+                // Database and folder not valid..get Data from new directory
+                SyncUtils.SetUIDValidity(account, -1L, accountConfigurationActivity);
+            }
             int resultTxtId;
             if (action == AccountConfigurationActivity.Actions.EDIT_ACCOUNT) {
                 resultTxtId = R.string.account_modified;

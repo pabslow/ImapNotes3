@@ -103,14 +103,13 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static final int SEE_DETAIL = 2;
     public static final int DELETE_BUTTON = 3;
     private static final int NEW_BUTTON = 4;
-    private static final int SAVE_BUTTON = 5;
+    private static final int EDIT_ACCOUNT = 5;
     private static final int EDIT_BUTTON = 6;
     private static final int ADD_ACCOUNT = 7;
 
     public static final int ResultCodeSuccess = 0;
     public static final int ResultCodeError = -1;
 
-    //region Intent item names
     public static final String EDIT_ITEM_NUM_IMAP = "EDIT_ITEM_NUM_IMAP";
     public static final String EDIT_ITEM_TXT = "EDIT_ITEM_TXT";
     public static final String EDIT_ITEM_COLOR = "EDIT_ITEM_COLOR";
@@ -168,7 +167,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         res.setComponent(new ComponentName(mPackage, mPackage + mClass));
         res.putExtra(ACTION, AccountConfigurationActivity.Actions.EDIT_ACCOUNT);
         res.putExtra(AccountConfigurationActivity.ACCOUNTNAME, ListActivity.ImapNotesAccount.accountName);
-        startActivity(res);
+        startActivityForResult(res, ListActivity.EDIT_ACCOUNT);
     };
     private static final String TAG = "IN_Listactivity";
     //@Nullable
@@ -383,7 +382,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     void handleSendMultipleImages(Intent intent) {
         Log.d(TAG, "handleSendMultipleImages");
         ArrayList<Uri> messageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        ArrayList<Message> messages = new ArrayList<>();
         String accountName = getSelectedAccountName();
         //Integer i=0;
         if (accountName.isEmpty()) {
@@ -392,10 +390,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         }
         if (messageUris != null) {
             status.setText(R.string.importing);
-            for (Uri uri : messageUris) {
-                messages.add(SyncUtils.ReadMailFromUri(getContentResolver(), uri));
-            }
-            UpdateList(messages, accountName);
+            UpdateList(messageUris, accountName);
         }
     }
 
@@ -503,7 +498,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
     private void UpdateList(
-            ArrayList<Message> messages,
+            ArrayList<Uri> uris,
             String accountName) {
         synchronized (this) {
             updateThread = new UpdateThread(accountName,
@@ -511,7 +506,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     noteList,
                     listToView,
                     R.string.updating_notes_list,
-                    messages,
+                    uris,
                     getApplicationContext()).execute();
         }
     }
@@ -683,7 +678,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     toNew = intentActionSend;
                 else
                     toNew = new Intent(this, NoteDetailActivity.class);
-                //toNew.putExtra(NoteDetailActivity.useSticky, ListActivity.ImapNotesAccount.usesticky);
                 toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
                 toNew.putExtra(ListActivity.ACCOUNTNAME, getSelectedAccountName());
                 startActivityForResult(toNew, ListActivity.NEW_BUTTON);
@@ -804,8 +798,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     String suid = data.getStringExtra(EDIT_ITEM_NUM_IMAP);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
-                    //Log.d(TAG,"Received request to edit message:"+suid);
-                    //Log.d(TAG,"Received request to replace message with:"+txt);
                     ListActivity.ImapNotesAccount = new ImapNotesAccount(getAccountFromName(accountName), getApplicationContext());
                     UpdateList(suid, txt, bgcolor, accountName, UpdateThread.Action.Update);
                 }
@@ -813,9 +805,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             case ListActivity.NEW_BUTTON:
                 // Returning from NewNoteActivity
                 if (resultCode == ListActivity.EDIT_BUTTON) {
-                    //String res = data.getStringExtra(SAVE_ITEM);
                     String txt = ImapNotes3.AvoidLargeBundle; //data.getStringExtra(EDIT_ITEM_TXT);
-                    //Log.d(TAG,"Received request to save message:"+res);
                     String bgcolor = data.getStringExtra(EDIT_ITEM_COLOR);
                     String accountName = data.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
                     ListActivity.ImapNotesAccount = new ImapNotesAccount(getAccountFromName(accountName), getApplicationContext());
@@ -823,8 +813,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
                 break;
             case ListActivity.ADD_ACCOUNT:
-                Log.d(TAG, "onActivityResult AccountsUpdateListener");
-                // Hack! accountManager.addOnAccountsUpdatedListener
+                // Returning from ADD
                 if (resultCode == ResultCodeSuccess) {
                     EnableAccountsUpdate = true;
                     ListActivity.accountManager.addOnAccountsUpdatedListener(
@@ -838,6 +827,12 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         }
                     }
                     ;
+                }
+                break;
+            case ListActivity.EDIT_ACCOUNT:
+                // Returning from EDIT_ACCOUNT
+                if (resultCode == ResultCodeSuccess) {
+                    TriggerSync(true);
                 }
                 break;
             default:
@@ -1050,7 +1045,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     String mPackage = Utilities.PackageName;
                     String mClass = ".AccountConfigurationActivity";
                     res.setComponent(new ComponentName(mPackage, mPackage + mClass));
-                    // Hack! accountManager.addOnAccountsUpdatedListener
                     startActivityForResult(res, ListActivity.ADD_ACCOUNT);
                 }
             }

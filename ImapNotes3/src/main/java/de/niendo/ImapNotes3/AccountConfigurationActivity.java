@@ -71,9 +71,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
      * Cannot be final or NonNull because it needs the application context which is not available
      * until onCreate.
      */
-    //private ConfigurationFile settings;
 
-    //region Intent item names and values.
     public static final String ACTION = "ACTION";
     public static final String ACCOUNTNAME = "ACCOUNTNAME";
     public static final int TO_REFRESH = 999;
@@ -137,13 +135,10 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         if (result.succeeded) {
             Intent intent = new Intent();
             intent.putExtra(ListActivity.ACCOUNTNAME, GetTextViewText(accountnameTextView));
-            // Hack! accountManager.addOnAccountsUpdatedListener
             setResult(ListActivity.ResultCodeSuccess, intent);
             Clear();
             finish();
         } else {
-            //ImapNotes3.ShowMessage(result.result, accountConfigurationActivity.usernameTextView, 5);
-            // Hack! accountManager.addOnAccountsUpdatedListener
             setResult(ListActivity.ResultCodeError);
             new AlertDialog.Builder(this)
                     .setTitle(R.string.IMAP_operation_failed)
@@ -239,9 +234,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
 
     @Nullable
     private Actions action;
-    //    public static final String EDIT_ACCOUNT = "EDIT_ACCOUNT";
-//    public static final String CREATE_ACCOUNT = "CREATE_ACCOUNT";
-    //endregion
+
     private final OnClickListener clickListenerLogin = v -> {
         // Click on Login Button
         Log.d(TAG, "clickListenerLogin  onClick");
@@ -421,14 +414,11 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         // possible to remove all characters which causes the program to crash.  The easiest fix is
         // to add a zero at the beginning so that we are guaranteed to be able to parse it but that
         // leaves us with a zero sync. interval.
-      /*  Result<Integer> synchronizationInterval = GetSynchronizationInterval();
-        if (synchronizationInterval.succeeded) {
-*/
+
         new LoginThread(
                 ImapNotesAccount,
                 this,
                 action).execute();
-        //  }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

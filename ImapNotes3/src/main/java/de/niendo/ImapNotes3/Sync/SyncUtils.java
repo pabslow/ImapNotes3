@@ -48,6 +48,7 @@ import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.util.MailSSLSocketFactory;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -206,7 +207,7 @@ public class SyncUtils {
     }
 
     // Put values in shared preferences
-    synchronized static void SetUIDValidity(@NonNull Account account,
+    synchronized public static void SetUIDValidity(@NonNull Account account,
                                             Long UIDValidity,
                                             @NonNull Context ctx) {
         Log.d(TAG, "SetUIDValidity: " + account.name);
@@ -321,27 +322,17 @@ public class SyncUtils {
     }
 
     /**
-     * @param contentResolver
-     * @param uri
+     * @param msgString
      * @return A Java mail message object.
      */
     @Nullable
-    public static Message ReadMailFromUri(ContentResolver contentResolver, Uri uri) {
-        try (BufferedInputStream bufferedInputStream =
-                     new BufferedInputStream(contentResolver.openInputStream(uri))) {
+    public static Message ReadMailFromString(String msgString) {
             try {
-                Log.d(TAG, "processShareIntent:" + uri.getPath());
                 Properties props = new Properties();
                 Session session = Session.getDefaultInstance(props);
-                return new MimeMessage(session, bufferedInputStream);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            } finally {
-                bufferedInputStream.close();
-            }
-        } catch (IOException e) {
+                return new MimeMessage(session, new ByteArrayInputStream(msgString.getBytes()));
+            } catch (Exception e) {
             e.printStackTrace();
-
         }
         return null;
     }
