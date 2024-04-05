@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 - Peter Korf <peter@niendo.de>
+ * Copyright (C) 2022-2024 - Peter Korf <peter@niendo.de>
  * Copyright (C)      2016 - Martin Carpella
  * Copyright (C) 2014-2015 - nb
  * and Contributors.
@@ -23,6 +23,7 @@ package de.niendo.ImapNotes3.Miscs;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -34,7 +35,9 @@ import android.util.Log;
 import de.niendo.ImapNotes3.Data.ImapNotesAccount;
 import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
+import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.NotesListAdapter;
+import de.niendo.ImapNotes3.Sync.SyncUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,7 +82,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
     private final NotesDb storedNotes;
     private OneNote currentNote;
     private int indexToDelete;
-    private final ArrayList<Message> messages;
+    private final ArrayList<Uri> uris;
 
     /*
     Assign all fields in the constructor because we never reuse this object.  This makes the code
@@ -110,7 +113,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
         this.action = action;
         this.storedNotes = NotesDb.getInstance(context);
         currentNote = null;
-        messages = null;
+        uris = null;
         indexToDelete = -1;
     }
 
@@ -124,7 +127,7 @@ typesafe.  Make them final to prevent accidental reuse.
                         ArrayList<OneNote> noteList,
                         NotesListAdapter listToView,
                         @StringRes int resId,
-                        ArrayList<Message> messages,
+                        ArrayList<Uri> uris,
                         Context context) {
         //ImapNotesAccount ImapNotesAccount
         //Log.d(TAG, "UpdateThread: " + noteBody);
@@ -142,7 +145,7 @@ typesafe.  Make them final to prevent accidental reuse.
 
         currentNote = null;
         indexToDelete = -1;
-        this.messages = messages;
+        this.uris = uris;
     }
 
     @Override
@@ -207,35 +210,39 @@ typesafe.  Make them final to prevent accidental reuse.
 
             // Do we have a note to add?
             if ((action == Action.InsertMultipleMessages)) {
-                for (Message message : messages) {
+                Message message;
+                for (Uri uri : uris) {
                     Log.d(TAG, "Action InsertMultipleMessages:");
-                    HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
-                    //storedNotes.SetSaveState("", OneNote.SAVE_STATE_SAVING, accountName);
+                    message = SyncUtils.ReadMailFromString(ImapNotes3.UriToString(uri));
+                    if (message != null) {
+                        HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
+                        //storedNotes.SetSaveState("", OneNote.SAVE_STATE_SAVING, accountName);
 
-                    String DATE_FORMAT = Utilities.internalDateFormatString;
+                        String DATE_FORMAT = Utilities.internalDateFormatString;
 
-                    Date date = message.getSentDate();
-                    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
-                    String stringDate = sdf.format(date);
-                    currentNote = new OneNote(message.getSubject(), stringDate, "", accountName, htmlNote.color, OneNote.SAVE_STATE_SAVING);
-                    // Add note to database
+                        Date date = message.getSentDate();
+                        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
+                        String stringDate = sdf.format(date);
+                        currentNote = new OneNote(message.getSubject(), stringDate, "", accountName, htmlNote.color, OneNote.SAVE_STATE_SAVING);
+                        // Add note to database
 
-                    suid = storedNotes.GetTempNumber(currentNote);
-                    storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
-                    currentNote.SetUid(suid);
-                    // Here we ask to add the new note to the new note folder
-                    // Must be done AFTER uid has been set in currentNote
-                    Log.d(TAG, "doInBackground body: ");
-                    WriteMailToNew(currentNote, htmlNote.text);
-                    currentNote.SetState(OneNote.SAVE_STATE_OK);
-                    storedNotes.InsertANoteInDb(currentNote);
+                        suid = storedNotes.GetTempNumber(currentNote);
+                        storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
+                        currentNote.SetUid(suid);
+                        // Here we ask to add the new note to the new note folder
+                        // Must be done AFTER uid has been set in currentNote
+                        Log.d(TAG, "doInBackground body: ");
+                        WriteMailToNew(currentNote, htmlNote.text);
+                        currentNote.SetState(OneNote.SAVE_STATE_OK);
+                        storedNotes.InsertANoteInDb(currentNote);
 
-                    // Add note to noteList but change date format before
-                    //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(applicationContext);
-                    String sdate = DateFormat.getDateTimeInstance().format(date);
-                    currentNote.SetDate(sdate);
-                    bool_to_return = true;
-                    indexToDelete = -1;
+                        // Add note to noteList but change date format before
+                        //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(applicationContext);
+                        String sdate = DateFormat.getDateTimeInstance().format(date);
+                        currentNote.SetDate(sdate);
+                        bool_to_return = true;
+                        indexToDelete = -1;
+                    }
                 }
             }
         } catch (Exception e) {

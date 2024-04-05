@@ -24,6 +24,7 @@ package de.niendo.ImapNotes3;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.StrictMode;
 import android.view.View;
 
@@ -32,6 +33,7 @@ import androidx.annotation.StringRes;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 
 public class ImapNotes3 extends Application {
@@ -63,6 +65,24 @@ public class ImapNotes3 extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+    }
+
+    public static String UriToString(Uri uri) {
+        StringBuilder sharedData = new StringBuilder();
+        BufferedInputStream bufferedInputStream;
+        try {
+            bufferedInputStream =
+                    new BufferedInputStream(mContext.getContentResolver().openInputStream(uri));
+            byte[] contents = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
+                sharedData.append(new String(contents, 0, bytesRead));
+            }
+            bufferedInputStream.close();
+            return (sharedData.toString());
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     public static void setContent(View content) {

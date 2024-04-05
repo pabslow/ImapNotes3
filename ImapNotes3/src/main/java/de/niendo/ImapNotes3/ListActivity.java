@@ -96,9 +96,6 @@ import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
-import javax.mail.Message;
-
-
 public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
     public static final int DELETE_BUTTON = 3;

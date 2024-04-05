@@ -48,10 +48,8 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.FileProvider;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -189,10 +187,10 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                 return;
             }
         } else if (ChangeNote.equals(ActivityTypeAdd)) {   // new entry
-            accountName = intent.getStringExtra(ListActivity.ACCOUNTNAME);
+            accountName = intent.getStringExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME);
             SetupRichEditor();
         } else if (ChangeNote.equals(ActivityTypeAddShare)) {   // new Entry from Share
-            accountName = intent.getStringExtra(ListActivity.ACCOUNTNAME);
+            accountName = intent.getStringExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME);
             SetupRichEditor();
             processShareIntent(intent);
         }
@@ -950,26 +948,12 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
                 } else if (type.equals("message/rfc822")) {
                     try {
-                        sharedData.append(HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromUri(getContentResolver(), uri)).text);
-                        editText.insertHTML(sharedData.toString());
+                        editText.insertHTML(HtmlNote.GetNoteFromMessage(SyncUtils.ReadMailFromString(ImapNotes3.UriToString(uri))).text);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
-                    BufferedInputStream bufferedInputStream;
-                    try {
-                        bufferedInputStream =
-                                new BufferedInputStream(getContentResolver().openInputStream(uri));
-                            byte[] contents = new byte[1024];
-                            int bytesRead;
-                            while ((bytesRead = bufferedInputStream.read(contents)) != -1) {
-                                sharedData.append(new String(contents, 0, bytesRead));
-                            }
-                        bufferedInputStream.close();
-                        editText.insertHTML(sharedData.toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    editText.insertHTML(ImapNotes3.UriToString(uri));
                 }
             } else {
                 if (Utilities.IsUrlScheme(sharedText)) {
