@@ -108,24 +108,20 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     public static final int ResultCodeError = -1;
 
     public static final String EDIT_ITEM_NUM_IMAP = "EDIT_ITEM_NUM_IMAP";
-    public static final String EDIT_ITEM_TXT = "EDIT_ITEM_TXT";
     public static final String EDIT_ITEM_COLOR = "EDIT_ITEM_COLOR";
     public static final String EDIT_ITEM_ACCOUNTNAME = "EDIT_ITEM_ACCOUNTNAME";
-    public static final String ACCOUNTNAME = "ACCOUNTNAME";
     public static final String SYNCINTERVAL = "SYNCINTERVAL";
     public static final String CHANGED = "CHANGED";
     public static final String SYNCED = "SYNCED";
     public static final String REFRESH_TAGS = "REFRESH_TAGS";
     public static final String SYNCED_ERR_MSG = "SYNCED_ERR_MSG";
-    private static final String SAVE_ITEM_COLOR = "SAVE_ITEM_COLOR";
-    private static final String SAVE_ITEM = "SAVE_ITEM";
     private static final String DELETE_ITEM_NUM_IMAP = "DELETE_ITEM_NUM_IMAP";
     private static final String ACCOUNTSPINNER_POS = "ACCOUNTSPINNER_POS";
     private static final String SORT_BY_DATE = "SORT_BY_DATE";
     private static final String SORT_BY_TITLE = "SORT_BY_TITLE";
     private static final String SORT_BY_COLOR = "SORT_BY_COLOR";
     private static final String DLG_FILTER_HASHTAG = "DLG_FILTER_HASHTAG";
-    //endregion
+
     private Intent intentActionSend;
     private ArrayList<OneNote> noteList;
     private NotesListAdapter listToView;
@@ -272,7 +268,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             public void onChange(boolean selfChange) {
                 Log.d(TAG, "ContentObserver.OnChange");
                 if (selfChange || ImapNotes3.intent == null) return;
-                String accountName = ImapNotes3.intent.getStringExtra(ACCOUNTNAME);
+                String accountName = ImapNotes3.intent.getStringExtra(EDIT_ITEM_ACCOUNTNAME);
                 boolean isChanged = ImapNotes3.intent.getBooleanExtra(CHANGED, false);
                 boolean isSynced = ImapNotes3.intent.getBooleanExtra(SYNCED, false);
                 String errorMessage = ImapNotes3.intent.getStringExtra(SYNCED_ERR_MSG);
@@ -290,8 +286,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                         }
 
                         statusText = getText(R.string.Last_sync) + sdate;
-                        if (!syncInterval.equals("0"))
-                            statusText += " (" + getText(syncInterval.textID) + ")";
+                        statusText += " (" + getText(syncInterval.textID) + ")";
                     }
                     status.setBackgroundColor(getColor(R.color.StatusBgColor));
                     if (!errorMessage.isEmpty()) {
@@ -353,7 +348,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             intentActionSend = (Intent) intent.clone();
             intentActionSend.setClass(this, NoteDetailActivity.class);
             intentActionSend.setFlags(0);
-            intentActionSend.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, ImapNotesAccount.accountName);
+            intentActionSend.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, getSelectedAccountName());
             intentActionSend.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAddShare);
 
             ImapNotes3.ShowAction(listview, R.string.insert_as_new_note, R.string.ok, 0,
@@ -676,7 +671,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 else
                     toNew = new Intent(this, NoteDetailActivity.class);
                 toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
-                toNew.putExtra(ListActivity.ACCOUNTNAME, getSelectedAccountName());
+                toNew.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, getSelectedAccountName());
                 startActivityForResult(toNew, ListActivity.NEW_BUTTON);
                 if (intentActionSend != null)
                     intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);
@@ -816,7 +811,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     ListActivity.accountManager.addOnAccountsUpdatedListener(
                             new AccountsUpdateListener(), null, true);
                     if (data != null) {
-                        Integer pos = getSpinnerPos(data.getStringExtra(ACCOUNTNAME));
+                        Integer pos = getSpinnerPos(data.getStringExtra(EDIT_ITEM_ACCOUNTNAME));
                         if (pos > 0) {
                             accountSpinner.setSelection(pos);
                             Account account = ListActivity.accounts[pos - 1];

@@ -134,7 +134,7 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
 
         if (result.succeeded) {
             Intent intent = new Intent();
-            intent.putExtra(ListActivity.ACCOUNTNAME, GetTextViewText(accountnameTextView));
+            intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, GetTextViewText(accountnameTextView));
             setResult(ListActivity.ResultCodeSuccess, intent);
             Clear();
             finish();

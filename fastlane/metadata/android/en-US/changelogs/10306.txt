@@ -2,3 +2,4 @@
 * Fix for certificate error reported when 'accept any certificate' selected (john-p-williams)
 * if Imap Folder is changed, use notes in this folder
 * sync after editing the account data
+* fix handling shared data with more then one account

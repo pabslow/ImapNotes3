@@ -186,7 +186,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                                     String errorMessage) {
         Log.d(TAG, "NotifySyncFinished: " + isChanged + " " + isSynced);
         if (ImapNotes3.intent == null) ImapNotes3.intent = new Intent(SyncService.SYNC_FINISHED);
-        ImapNotes3.intent.putExtra(ListActivity.ACCOUNTNAME, account.accountName);
+        ImapNotes3.intent.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, account.accountName);
         ImapNotes3.intent.putExtra(ListActivity.CHANGED, isChanged);
         ImapNotes3.intent.putExtra(ListActivity.SYNCED, isSynced);
         ImapNotes3.intent.putExtra(ListActivity.SYNCINTERVAL, account.syncInterval.name());
