@@ -48,7 +48,8 @@ public class AboutDialogFragment extends DialogFragment {
         about += "Build typ: " + BuildConfig.BUILD_TYPE + "<br>";
         about += getString(R.string.internet) + " <a href=\"https://github.com/niendo1/ImapNotes3/\">github.com/niendo1/ImapNotes3</a><br>";
         about += getString(R.string.appstore) + " <a href=\"" + getString(R.string.appstorelink) + "\">" + getString(R.string.appstorename) + "</a><br>";
-        builder.setTitle("About")
+        builder.setTitle(R.string.about)
+                .setIcon(R.mipmap.ic_launcher)
                 .setMessage(Html.fromHtml(about, Html.FROM_HTML_MODE_LEGACY))
                 .setPositiveButton(getString(R.string.ok), (dialog, id) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
