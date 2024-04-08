@@ -4,3 +4,4 @@
 * sync after editing the account data
 * fix handling shared data with more then one account
 * rework about dialog
+* create archive in download directory instead of sharing (code is copied from woheller69)

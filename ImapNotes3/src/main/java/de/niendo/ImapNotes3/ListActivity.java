@@ -43,8 +43,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.content.FileProvider;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -96,6 +96,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
@@ -906,15 +907,21 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
             title = title + "_" + currentDateTime.format(formatter);
         }
-
-        File outfile = new File(getApplicationContext().getCacheDir().toString(), title + ".zip");
+        File extStorage = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS);
+        File outfile = new File(extStorage, title + ".zip");
 
         try {
+
+            if (!ZipUtils.checkPermissionStorage(this)) {
+                ZipUtils.requestPermission(this);
+            }
             ZipUtils.zipDirectory(directory, outfile.toString());
+            ImapNotes3.ShowMessage(getResources().getString(R.string.archive_created) + outfile, listview, 5);
         } catch (IOException e) {
-            e.printStackTrace();
+            ImapNotes3.ShowMessage(getResources().getString(R.string.archive_not_created) + e.getMessage(), listview, 5);
         }
 
+        /*
         Uri logUri =
                 FileProvider.getUriForFile(
                         getApplicationContext(),
@@ -930,7 +937,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
         Intent shareIntent = Intent.createChooser(sendIntent, title);
         startActivity(shareIntent);
-
+*/
     }
 
     @Nullable

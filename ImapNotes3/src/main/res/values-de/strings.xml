@@ -143,4 +143,9 @@
     <string name="appstore">App-Store:</string>
     <string name="appstorelink">https://f-droid.org/de/packages/de.niendo.ImapNotes3/</string>
     <string name="appstorename">F-Droid</string>
+    <string name="permission_required">Erlaubnis benötigt</string>
+    <string name="permission_message">Bitte erteilen Sie die Erlaubnis, um das Archiv in den Download-Ordner zu speichern</string>
+    <string name="archive_created">Backup erstellt: </string>
+    <string name="archive_not_created">Backup-Erstellung fehlgeschlagen!: </string>
+
 </resources>
