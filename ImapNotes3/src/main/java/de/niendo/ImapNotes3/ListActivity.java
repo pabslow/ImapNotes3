@@ -916,7 +916,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 ZipUtils.requestPermission(this);
             }
             ZipUtils.zipDirectory(directory, outfile.toString());
-            ImapNotes3.ShowMessage(getResources().getString(R.string.archive_created) + outfile, listview, 5);
+            ImapNotes3.ShowMessage(getResources().getString(R.string.archive_created) + outfile, listview, 15);
         } catch (IOException e) {
             ImapNotes3.ShowMessage(getResources().getString(R.string.archive_not_created) + e.getMessage(), listview, 5);
         }

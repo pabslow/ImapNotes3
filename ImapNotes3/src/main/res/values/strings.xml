@@ -145,7 +145,7 @@
     <string name="appstorelink">https://f-droid.org/en/packages/de.niendo.ImapNotes3/</string>
     <string name="appstorename">F-Droid</string>
     <string name="permission_required">permission required</string>
-    <string name="permission_message">please grant permission to write backup to download directory</string>
+    <string name="permission_message">please grant permission to write backup to documents directory</string>
     <string name="archive_created">archive created: </string>
     <string name="archive_not_created">Creating archive failed!: </string>
 </resources>
