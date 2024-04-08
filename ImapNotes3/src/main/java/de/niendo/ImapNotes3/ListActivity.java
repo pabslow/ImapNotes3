@@ -796,6 +796,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
                 break;
             case ListActivity.ADD_ACCOUNT:
+            case ListActivity.EDIT_ACCOUNT:
                 // Returning from ADD
                 if (resultCode == ResultCodeSuccess) {
                     EnableAccountsUpdate = true;
@@ -809,12 +810,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
                         }
                     }
-                    ;
-                }
-                break;
-            case ListActivity.EDIT_ACCOUNT:
-                // Returning from EDIT_ACCOUNT
-                if (resultCode == ResultCodeSuccess) {
                     TriggerSync(true);
                 }
                 break;
