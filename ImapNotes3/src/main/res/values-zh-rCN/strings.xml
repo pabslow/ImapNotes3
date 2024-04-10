@@ -144,4 +144,8 @@
     <string name="appstore">应用商店：</string>
     <string name="appstorelink">https://f-droid.org/en/packages/de.niendo.ImapNotes3/</string>
     <string name="appstorename">F-Droid</string>
+    <string name="permission_required">需要权限</string>
+    <string name="permission_message">请授予权限，让应用将备份文件写入文档目录</string>
+    <string name="archive_created">已创建存档：</string>
+    <string name="archive_not_created">创建存档失败了！：</string>
 </resources>
