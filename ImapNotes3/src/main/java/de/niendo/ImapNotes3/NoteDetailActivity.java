@@ -250,11 +250,15 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                                 extras.getString(DLG_INSERT_LINK_IMAGE_HEIGHT), relative);
                     }
                     editText.insertHTML("<br><br>");
-
+                    return true;
                 }
                 case DLG_SELECT_ACCOUNT: {
                     accountName = extras.getString(DLG_SELECT_ACCOUNT_ACCOUNT);
                     saveNote(extras.getBoolean(DLG_SELECT_ACCOUNT_FINISH));
+                    return true;
+                }
+                default: {
+                    Log.d(TAG, "unknown dialog");
                 }
             }
         }
