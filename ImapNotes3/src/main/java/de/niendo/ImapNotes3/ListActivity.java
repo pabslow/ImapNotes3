@@ -139,7 +139,6 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static CharSequence mFilterString = "";
     static String[] hashFilter;
     private static ArrayList<String> hashFilterSelected = new ArrayList<>();
-    @NonNull
     private ContentObserver mObserver;
 
     // FIXME

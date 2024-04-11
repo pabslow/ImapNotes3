@@ -5,3 +5,4 @@
 * fix handling shared data with more then one account
 * rework about dialog
 * create archive in Documents instead of sharing (code is copied from woheller69)
+* fix color picker dialog

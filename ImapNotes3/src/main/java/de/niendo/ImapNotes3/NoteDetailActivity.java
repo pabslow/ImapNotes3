@@ -203,11 +203,21 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             switch (dialogTag) {
                 case DLG_HTML_TXT_COLOR:
                     lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
-                    editText.setTextColor(lastTxtColor);
+                    editText.requestFocusFromTouch();
+                    editText.setOnJSDataListener(value -> {
+                        editText.requestFocusFromTouch();
+                        editText.setTextColor(lastTxtColor);
+                    });
+                    editText.getSelectedHtml(); // just a dirty Hack!
                     return true;
                 case DLG_HTML_BG_COLOR:
                     lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
-                    editText.setTextBackgroundColor(lastBgColor);
+                    editText.requestFocusFromTouch();
+                    editText.setOnJSDataListener(value -> {
+                        editText.requestFocusFromTouch();
+                        editText.setTextBackgroundColor(lastBgColor);
+                    });
+                    editText.getSelectedHtml(); // just a dirty Hack!
                     return true;
                 case DLG_TABLE_DIMENSION:
                     editText.insertTable(Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_COL)), Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_ROW)));
@@ -388,24 +398,31 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .show(this, DLG_HTML_BG_COLOR);
                 break;
             case R.id.action_font_size_1:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(1);
                 break;
             case R.id.action_font_size_2:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(2);
                 break;
             case R.id.action_font_size_3:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(3);
                 break;
             case R.id.action_font_size_4:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(4);
                 break;
             case R.id.action_font_size_5:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(5);
                 break;
             case R.id.action_font_size_6:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(6);
                 break;
             case R.id.action_font_size_7:
+                editText.requestFocusFromTouch();
                 editText.setFontSize(7);
                 break;
             case R.id.action_font_serif:
@@ -894,7 +911,6 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
     private void processShareIntent(Intent intent) {
         Log.d(TAG, "processShareIntent");
-        StringBuilder sharedData = new StringBuilder();
         // Share: Receive Data as new message
         String strAction = intent.getAction();
         if (!editText.hasFocus()) editText.focusEditor();
