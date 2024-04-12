@@ -147,5 +147,6 @@
     <string name="permission_message">Bitte erteilen Sie die Erlaubnis, um das Archiv in den Dokumenten-Ordner zu speichern</string>
     <string name="archive_created">Backup erstellt: </string>
     <string name="archive_not_created">Backup-Erstellung fehlgeschlagen!: </string>
+    <string name="default_color">Vorgabe</string>
 
 </resources>

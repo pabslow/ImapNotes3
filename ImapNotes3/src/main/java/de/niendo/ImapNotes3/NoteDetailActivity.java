@@ -199,25 +199,27 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
+        if (which == BUTTON_NEUTRAL) {
+            editText.requestFocusFromTouch();
+            switch (dialogTag) {
+                case DLG_HTML_TXT_COLOR:
+                    editText.setTextColor("initial");
+                    return true;
+                case DLG_HTML_BG_COLOR:
+                    editText.setTextBackgroundColor("initial");
+                    return true;
+            }
+        }
         if (which == BUTTON_POSITIVE) {
+            editText.requestFocusFromTouch();
             switch (dialogTag) {
                 case DLG_HTML_TXT_COLOR:
                     lastTxtColor = extras.getInt(SimpleColorDialog.COLOR);
-                    editText.requestFocusFromTouch();
-                    editText.setOnJSDataListener(value -> {
-                        editText.requestFocusFromTouch();
-                        editText.setTextColor(lastTxtColor);
-                    });
-                    editText.getSelectedHtml(); // just a dirty Hack!
+                    editText.setTextColor(lastTxtColor);
                     return true;
                 case DLG_HTML_BG_COLOR:
                     lastBgColor = extras.getInt(SimpleColorDialog.COLOR);
-                    editText.requestFocusFromTouch();
-                    editText.setOnJSDataListener(value -> {
-                        editText.requestFocusFromTouch();
-                        editText.setTextBackgroundColor(lastBgColor);
-                    });
-                    editText.getSelectedHtml(); // just a dirty Hack!
+                    editText.setTextBackgroundColor(lastBgColor);
                     return true;
                 case DLG_TABLE_DIMENSION:
                     editText.insertTable(Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_COL)), Integer.valueOf(extras.getString(DLG_TABLE_DIMENSION_ROW)));
@@ -385,6 +387,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .setupColorWheelAlpha(false)
                         .allowCustom(true)
                         .neg(R.string.cancel)
+                        .neut(R.string.default_color)
                         .show(this, DLG_HTML_TXT_COLOR);
                 break;
             case R.id.action_bg_color:
@@ -395,6 +398,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                         .setupColorWheelAlpha(false)
                         .allowCustom(true)
                         .neg(R.string.cancel)
+                        .neut(R.string.default_color)
                         .show(this, DLG_HTML_BG_COLOR);
                 break;
             case R.id.action_font_size_1:
