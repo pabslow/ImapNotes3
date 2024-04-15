@@ -148,4 +148,5 @@
     <string name="permission_message">请授予权限，让应用将备份文件写入文档目录</string>
     <string name="archive_created">已创建存档：</string>
     <string name="archive_not_created">创建存档失败了！：</string>
+    <string name="default_color">默认</string>
 </resources>
