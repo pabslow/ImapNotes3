@@ -452,10 +452,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
 
     private void RefreshList() {
         listToView.setSortOrder(getSortOrder());
-        listToView.setAccountName(getSelectedAccountName());
+        String accountName = getSelectedAccountName();
+        listToView.setAccountName(accountName);
         synchronized (this) {
             new SyncThread(
-                    getSelectedAccountName(),
+                    accountName,
                     noteList,
                     listToView,
                     R.string.refreshing_notes_list,

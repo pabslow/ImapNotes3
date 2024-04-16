@@ -839,7 +839,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
     private void saveNote(boolean finish) {
         Log.d(TAG, "saveNote");
 
-        if (accountName == null || accountName.equals("")) {
+        if (accountName == null || accountName.isEmpty()) {
             Bundle extra = new Bundle();
             extra.putBoolean(DLG_SELECT_ACCOUNT_FINISH, finish);
 
