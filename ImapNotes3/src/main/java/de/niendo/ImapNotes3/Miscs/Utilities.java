@@ -29,6 +29,8 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -106,6 +108,15 @@ public final class Utilities {
     public static boolean IsUrlScheme(String url) {
         Uri uri = Uri.parse(url);
         return (uri.getScheme() != null);
+    }
+
+    public static boolean IsUrl(String stringURL) {
+        try {
+            URL url = new URL(stringURL);
+        } catch (MalformedURLException e) {
+            return false;
+        }
+        return true;
     }
 
     public static int getRealSizeFromUri(Context context, Uri uri) {

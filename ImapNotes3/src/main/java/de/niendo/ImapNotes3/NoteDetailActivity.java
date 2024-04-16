@@ -922,6 +922,7 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
             String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
             String type = intent.getType();
             String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+            if (subject == null) subject = "";
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (uri != null) {
                 if (type.startsWith("image/")) {
@@ -980,13 +981,15 @@ public class NoteDetailActivity extends AppCompatActivity implements AdapterView
                     editText.insertHTML(ImapNotes3.UriToString(uri));
                 }
             } else {
-                if (Utilities.IsUrlScheme(sharedText)) {
-                    if (subject == null) subject = sharedText;
+                if (Utilities.IsUrl(sharedText)) {
+                    if (subject.isEmpty()) {
+                        subject = sharedText;
+                    }
                     editText.insertLink(sharedText, subject, subject);
                 } else {
-                    if (subject != null) {
+                    if (!subject.isEmpty()) {
                         subject = "<b>" + subject + "</b><br>";
-                    } else subject = "";
+                    }
                     if (sharedText != null) {
                         if (type.equals("text/html")) {
                             editText.insertHTML(subject + sharedText);
