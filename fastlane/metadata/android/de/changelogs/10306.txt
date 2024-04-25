@@ -1,0 +1,9 @@
+* Importieren Sie mehrere eml-Dateien (Nachricht/rfc822) (schließt #47)
+* Fix für Zertifikatsfehler gemeldet, wenn 'accept any Certificate' ausgewählt (john-p-williams)
+* wenn Imap Ordner geändert wird, verwenden Sie Notizen in diesem Ordner
+* synchronisieren nach der Bearbeitung der Kontodaten
+* Beheben Sie die Behandlung von geteilten Daten mit mehr als einem Konto
+* Nacharbeiten zum Dialog
+* Archiv in Dokumenten erstellen anstatt zu teilen (Code wird von woheller69 kopiert)
+* Fixieren Sie Farbwähler Dialogverhalten
+* Text und Hintergrundfarbe können auf seine Standardwerte im Farbwähler-Dialog eingestellt werden
