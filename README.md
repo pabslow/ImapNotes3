@@ -7,7 +7,7 @@
 <a href="https://github.com/niendo1/richeditor-android"><img alt="GitHub Release RichEditor" src="https://img.shields.io/github/v/release/niendo1/richeditor-android?label=RichEditor"></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License_GPL_v3"/></a>
 <a href="https://f-droid.org/packages/de.niendo.ImapNotes3/"><img alt="F-Droid Version" src="https://img.shields.io/f-droid/v/de.niendo.ImapNotes3"></a>
-<a href="https://hosted.weblate.org/projects/ImapNotes3/"><img src="https://hosted.weblate.org/projects/ImapNotes3/-/strings-xml/svg-badge.svg" alt="Translation state"/></a>  
+<a href="https://hosted.weblate.org/projects/ImapNotes3/"><img src="https://img.shields.io/weblate/progress/ImapNotes3" alt="Translation state"/></a>
 </p>
 
 ImapNotes3
