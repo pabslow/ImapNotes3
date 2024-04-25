@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name" translatable="false">ImapNotes3</string>
     <string name="new_account">Neues Konto</string>
     <string name="new_note">Neue Notiz</string>
     <string name="refresh">Abgleichen</string>
@@ -75,7 +76,6 @@
     <string name="Last_sync">"Letzter Abgl.: "</string>
     <string name="share">Teilen</string>
     <string name="shared_note_from">"geteilte Notiz von "</string>
-    <string name="app_name">ImapNotes3</string>
     <string name="account_modified">Konto wurde geändert</string>
     <string name="intent_save_as_note">Als Notiz speichern</string>
     <string name="share_file_error">Dateifehler beim Teilen:</string>
