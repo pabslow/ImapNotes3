@@ -148,5 +148,7 @@
     <string name="archive_created">Backup erstellt: </string>
     <string name="archive_not_created">Backup-Erstellung fehlgeschlagen!: </string>
     <string name="default_color">Vorgabe</string>
+    <string name="restore_archive">restore from archive</string>
+    <string name="account_name_restore">Target Account/Notebook for import</string>
 
 </resources>

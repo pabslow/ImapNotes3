@@ -44,7 +44,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -68,11 +67,11 @@ import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.SyncInterval;
 import de.niendo.ImapNotes3.Miscs.AboutDialogFragment;
+import de.niendo.ImapNotes3.Miscs.BackupDialog;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
 import de.niendo.ImapNotes3.Miscs.Utilities;
-import de.niendo.ImapNotes3.Miscs.ZipUtils;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.list.SimpleListDialog;
@@ -85,8 +84,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -96,7 +93,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
-import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
@@ -715,7 +711,11 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 SendLogcatMail();
                 return true;
             case R.id.make_archive:
-                SendArchive(getSelectedAccountName());
+                BackupDialog.CreateArchive(listview, this, getSelectedAccountName());
+                return true;
+            case R.id.restore_archive:
+                BackupDialog backupDialog = new BackupDialog();
+                backupDialog.RestoreArchive(this, "/sdcard/Download/ImapNotes3_gmail_20240408_212047.zip");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -889,56 +889,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         startActivity(Intent.createChooser(emailIntent, "Send email..."));
     }
 
-    public void SendArchive(String accountname) {
-        Log.d(TAG, "SendArchive");
-        String directory;
-        String title;
 
-        if (accountname.isEmpty()) {
-            directory = ImapNotes3.GetRootDir().toString();
-            title = Utilities.ApplicationName + "_" + getString(R.string.all_accounts);
-        } else {
-            directory = ImapNotes3.GetAccountDir(accountname).toString();
-            title = Utilities.ApplicationName + "_" + accountname;
-        }
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-            title = title + "_" + currentDateTime.format(formatter);
-        }
-        File extStorage = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS);
-        File outfile = new File(extStorage, title + ".zip");
-
-        try {
-
-            if (!ZipUtils.checkPermissionStorage(this)) {
-                ZipUtils.requestPermission(this);
-            }
-            ZipUtils.zipDirectory(directory, outfile.toString());
-            ImapNotes3.ShowMessage(getResources().getString(R.string.archive_created) + outfile, listview, 15);
-        } catch (IOException e) {
-            ImapNotes3.ShowMessage(getResources().getString(R.string.archive_not_created) + e.getMessage(), listview, 5);
-        }
-
-        /*
-        Uri logUri =
-                FileProvider.getUriForFile(
-                        getApplicationContext(),
-                        Utilities.PackageName, outfile);
-
-        Intent sendIntent = new Intent();
-
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.setType("application/zip");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, title);
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
-        sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
-
-        Intent shareIntent = Intent.createChooser(sendIntent, title);
-        startActivity(shareIntent);
-*/
-    }
 
     @Nullable
     @Override
