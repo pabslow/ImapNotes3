@@ -29,8 +29,11 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -67,11 +70,12 @@ import de.niendo.ImapNotes3.Data.NotesDb;
 import de.niendo.ImapNotes3.Data.OneNote;
 import de.niendo.ImapNotes3.Data.SyncInterval;
 import de.niendo.ImapNotes3.Miscs.AboutDialogFragment;
-import de.niendo.ImapNotes3.Miscs.BackupDialog;
+import de.niendo.ImapNotes3.Miscs.BackupRestore;
 import de.niendo.ImapNotes3.Miscs.HtmlNote;
 import de.niendo.ImapNotes3.Miscs.SyncThread;
 import de.niendo.ImapNotes3.Miscs.UpdateThread;
 import de.niendo.ImapNotes3.Miscs.Utilities;
+import de.niendo.ImapNotes3.Miscs.ZipUtils;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.list.SimpleListDialog;
@@ -101,6 +105,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static final int EDIT_ACCOUNT = 5;
     private static final int EDIT_BUTTON = 6;
     private static final int ADD_ACCOUNT = 7;
+    private static final int SELECT_ARCHIVE_FOR_RESTORE = 8;
 
     public static final int ResultCodeSuccess = 0;
     public static final int ResultCodeError = -1;
@@ -711,14 +716,34 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 SendLogcatMail();
                 return true;
             case R.id.make_archive:
-                BackupDialog.CreateArchive(listview, this, getSelectedAccountName());
+                BackupRestore.CreateArchive(listview, this, getSelectedAccountName());
                 return true;
             case R.id.restore_archive:
-                BackupDialog backupDialog = new BackupDialog();
-                backupDialog.RestoreArchive(this, "/sdcard/Download/ImapNotes3_gmail_20240408_212047.zip");
+                openFileSelector();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    public void openFileSelector() {
+        Context context = ImapNotes3.getAppContext();
+
+        if (!ZipUtils.checkPermissionStorage(context)) {
+            ZipUtils.requestPermission(this);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType("application/zip");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+            try {
+                startActivityForResult(
+                        Intent.createChooser(intent, "Select a ZIP file"),
+                        SELECT_ARCHIVE_FOR_RESTORE);
+            } catch (ActivityNotFoundException ex) {
+                ImapNotes3.ShowMessage("Please install a file manager.", listview, 3000);
+            }
         }
     }
 
@@ -814,8 +839,17 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     TriggerSync(true);
                 }
                 break;
+            case ListActivity.SELECT_ARCHIVE_FOR_RESTORE:
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        Uri uri = data.getData();
+                        if (uri != null) {
+                            BackupRestore.RestoreArchive(this, uri);
+                        }
+                    }
+                }
             default:
-                Log.d(TAG, "Received wrong request to save message");
+                Log.d(TAG, "onActivityResult: unknown result code");
         }
     }
 

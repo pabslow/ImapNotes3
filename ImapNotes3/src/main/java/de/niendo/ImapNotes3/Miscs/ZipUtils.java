@@ -22,6 +22,7 @@ package de.niendo.ImapNotes3.Miscs;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.appcompat.app.AlertDialog;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -40,6 +42,7 @@ import java.util.zip.ZipOutputStream;
 
 import android.Manifest;
 
+import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.R;
 
 public class ZipUtils {
@@ -104,11 +107,11 @@ public class ZipUtils {
     }
 
     // Function to list all directories in a zip file
-    public static List<String> listDirectories(String zipFilePath) throws IOException {
+    public static List<String> listDirectories(Context context, Uri zipFile) throws IOException {
         List<String> directories = new ArrayList<>();
-        directories.add("test");
-        /*
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
+        InputStream src = context.getContentResolver().openInputStream(zipFile);
+        directories.add("");
+        try (ZipInputStream zis = new ZipInputStream(src)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
@@ -116,35 +119,31 @@ public class ZipUtils {
                 }
             }
         }
-
-         */
         return directories;
     }
 
     // Function to list all files in a directory in a zip file
-    public static List<String> listFilesInDirectory(String zipFilePath, String directory) throws IOException {
+    public static List<String> listFilesInDirectory(Context context, Uri zipFile, String directory) throws IOException {
         List<String> files = new ArrayList<>();
-        files.add("datei 1");
-        files.add("datei 2");
-        files.add("datei 3");
-        /*
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
+        InputStream src = context.getContentResolver().openInputStream(zipFile);
+
+        try (ZipInputStream zis = new ZipInputStream(src)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
-                if (!entry.isDirectory() && entry.getName().startsWith(directory + "/")) {
+                if (!entry.isDirectory() && (entry.getName().startsWith(directory + "/") || directory.isEmpty())) {
                     files.add(entry.getName());
                 }
             }
         }
 
-         */
         return files;
     }
 
     // Function to extract a given file from a zip file
-    public static void extractFile(String zipFilePath, String fileName, String destDirectory) throws IOException {
+    public static void extractFile(Context context, Uri zipFile, String fileName, String destDirectory) throws IOException {
         byte[] buffer = new byte[1024];
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
+        InputStream src = context.getContentResolver().openInputStream(zipFile);
+        try (ZipInputStream zis = new ZipInputStream(src)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (!entry.isDirectory() && entry.getName().equals(fileName)) {
@@ -163,6 +162,5 @@ public class ZipUtils {
         }
         System.out.println("File not found in the zip file.");
     }
-
 
 }

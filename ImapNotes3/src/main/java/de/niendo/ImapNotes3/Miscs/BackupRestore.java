@@ -3,21 +3,15 @@ package de.niendo.ImapNotes3.Miscs;
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 import android.app.Activity;
-import android.app.backup.BackupDataOutput;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 import android.widget.ListView;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
@@ -27,8 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import de.niendo.ImapNotes3.ImapNotes3;
-import de.niendo.ImapNotes3.ListActivity;
-import de.niendo.ImapNotes3.NoteDetailActivity;
 import de.niendo.ImapNotes3.R;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.form.Check;
@@ -37,12 +29,10 @@ import eltos.simpledialogfragment.form.Hint;
 import eltos.simpledialogfragment.form.Input;
 import eltos.simpledialogfragment.form.SimpleFormDialog;
 
-public class BackupDialog extends AppCompatActivity implements SimpleDialog.OnDialogResultListener {
+public class BackupRestore implements SimpleDialog.OnDialogResultListener {
     public static final String TAG = "IN_BackupDialog";
     private static final String ACCOUNTNAME = "ACCOUNTNAME";
     private static final String BACKUP_RESTORE_DIALOG = "BACKUP_RESTORE_DIALOG";
-    private static final int FILE_SELECT_CODE = 0;
-    private View view;
 
     static public void CreateArchive(ListView listview, Activity activity, String accountname) {
         Log.d(TAG, "SendArchive");
@@ -76,78 +66,15 @@ public class BackupDialog extends AppCompatActivity implements SimpleDialog.OnDi
         } catch (IOException e) {
             ImapNotes3.ShowMessage(context.getResources().getString(R.string.archive_not_created) + e.getMessage(), listview, 5);
         }
-
-        /*
-        Uri logUri =
-                FileProvider.getUriForFile(
-                        getApplicationContext(),
-                        Utilities.PackageName, outfile);
-
-        Intent sendIntent = new Intent();
-
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.setType("application/zip");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, title);
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, title);
-        sendIntent.putExtra(Intent.EXTRA_STREAM, logUri);
-
-        Intent shareIntent = Intent.createChooser(sendIntent, title);
-        startActivity(shareIntent);
-*/
     }
 
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_main); // Uncomment this line if you have a layout file
-    }
-
-    public void openFileSelector(View view) {
-        this.view = view;
-        //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        Intent intent = new Intent(view.getContext(), BackupDialog.class);
-        intent.setType("application/zip");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        try {
-            startActivityForResult(
-                    Intent.createChooser(intent, "Select a ZIP file"),
-                    FILE_SELECT_CODE);
-        } catch (ActivityNotFoundException ex) {
-            ImapNotes3.ShowMessage("Please install a file manager.", view, 3000);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == FILE_SELECT_CODE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                Uri uri = data.getData();
-                if (uri != null) {
-                    String path = uri.getPath();
-                    if (path != null) {
-                        File file = new File(path);
-                        if (file.exists()) {
-                            RestoreArchive(this, file.toString());
-                            // Do something with the selected file
-                            // For example, you can get the file path like this: file.getAbsolutePath()
-                            //Toast.makeText(this, "Selected file: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean RestoreArchive(FragmentActivity activity, String zipFilePath) {
+    public static boolean RestoreArchive(FragmentActivity activity, Uri uri) {
 
         try {
 
-            List<String> directories = ZipUtils.listDirectories(zipFilePath);
+            List<String> directories = ZipUtils.listDirectories(activity, uri);
             for (String dir : directories) {
-                List<String> files = ZipUtils.listFilesInDirectory(zipFilePath, dir);
-
+                List<String> files = ZipUtils.listFilesInDirectory(activity, uri, dir);
 
                 int i = files.size();
                 FormElement[] formElements = new FormElement[i + 2];
