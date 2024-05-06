@@ -135,7 +135,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     private static AccountManager accountManager;
     @Nullable
     private static NotesDb storedNotes = null;
-    private static List<String> currentList;
+    private static List<String> accountList;
     private static Menu actionMenu;
     private static CharSequence mFilterString = "";
     static String[] hashFilter;
@@ -198,7 +198,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.ActionBgColor)));
 
         this.accountSpinner = findViewById(R.id.accountSpinner);
-        ListActivity.currentList = new ArrayList<>();
+        ListActivity.accountList = new ArrayList<>();
 
         this.accountSpinner.setOnItemSelectedListener(this);
         ImapNotes3.setContent(findViewById(android.R.id.content));
@@ -211,7 +211,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         status = findViewById(R.id.status);
 
         spinnerList = new ArrayAdapter<>
-                (this, R.layout.account_spinner_item, ListActivity.currentList);
+                (this, R.layout.account_spinner_item, ListActivity.accountList);
         accountSpinner.setAdapter(spinnerList);
 
         this.noteList = new ArrayList<>();
@@ -844,7 +844,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     if (data != null) {
                         Uri uri = data.getData();
                         if (uri != null) {
-                            BackupRestore backupRestore = new BackupRestore(this, uri, new ArrayList<>(currentList));
+                            BackupRestore backupRestore = new BackupRestore(this, uri, new ArrayList<>(accountList));
                             backupRestore.RestoreArchive();
                         }
                     }
@@ -874,17 +874,17 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
         setPreferences();
         long id = this.accountSpinner.getSelectedItemId();
         // only one account active..disable selection
-        if (ListActivity.currentList.size() == 2) {
+        if (ListActivity.accountList.size() == 2) {
             this.accountSpinner.setEnabled(false);
             this.accountSpinner.setSelection(1);
             id = 1;
         }
-        if ((id == android.widget.AdapterView.INVALID_ROW_ID) || (id >= ListActivity.currentList.size())) {
+        if ((id == android.widget.AdapterView.INVALID_ROW_ID) || (id >= ListActivity.accountList.size())) {
             this.accountSpinner.setSelection(1);
             id = 1;
         }
 
-        if ((ListActivity.currentList.size() > 1) && (id >= 1)) {
+        if ((ListActivity.accountList.size() > 1) && (id >= 1)) {
             Account account = ListActivity.accounts[(int) id - 1];
             ListActivity.ImapNotesAccount = new ImapNotesAccount(account, getApplicationContext());
         }
@@ -963,7 +963,7 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 if (newList.size() == 1) return;
 
                 boolean equalLists = true;
-                ListIterator<String> iter = ListActivity.currentList.listIterator();
+                ListIterator<String> iter = ListActivity.accountList.listIterator();
                 boolean first = true;
                 while (iter.hasNext()) {
                     // skip first entry (All)
@@ -985,8 +985,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
                 first = true;
                 for (String accountName : newList) {
-                    if (!(ListActivity.currentList.contains(accountName))) {
-                        ListActivity.currentList.add(accountName);
+                    if (!(ListActivity.accountList.contains(accountName))) {
+                        ListActivity.accountList.add(accountName);
                         equalLists = false;
                         // skip first entry (All)
                         if (!first)
