@@ -73,10 +73,10 @@ public class ZipUtils {
         dialog.show();
     }
 
-    public static void zipDirectory(String sourceDirPath, String zipFilePath) throws IOException {
+    public static void zipDirectory(String sourceDirPath, String zipFilePath, String basePath) throws IOException {
         FileOutputStream fos = new FileOutputStream(zipFilePath);
         ZipOutputStream zos = new ZipOutputStream(fos);
-        zipDirectoryContents(new File(sourceDirPath), zos, "");
+        zipDirectoryContents(new File(sourceDirPath), zos, basePath);
         zos.close();
         fos.close();
     }
@@ -110,12 +110,18 @@ public class ZipUtils {
     public static List<String> listDirectories(Context context, Uri zipFile) throws IOException {
         List<String> directories = new ArrayList<>();
         InputStream src = context.getContentResolver().openInputStream(zipFile);
-        directories.add("");
         try (ZipInputStream zis = new ZipInputStream(src)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
+                String fname = entry.getName();
+
                 if (entry.isDirectory()) {
-                    directories.add(entry.getName());
+                    directories.add(fname);
+                } else if (fname.contains("/")) {
+                    String dir = fname.split("/")[0];
+                    if (!directories.contains(dir)) {
+                        directories.add(dir);
+                    }
                 }
             }
         }
@@ -130,7 +136,7 @@ public class ZipUtils {
         try (ZipInputStream zis = new ZipInputStream(src)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
-                if (!entry.isDirectory() && (entry.getName().startsWith(directory + "/") || directory.isEmpty())) {
+                if ((!entry.isDirectory() && (entry.getName().startsWith(directory + "/"))) || directory.isEmpty()) {
                     files.add(entry.getName());
                 }
             }

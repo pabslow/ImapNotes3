@@ -844,7 +844,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     if (data != null) {
                         Uri uri = data.getData();
                         if (uri != null) {
-                            BackupRestore.RestoreArchive(this, uri);
+                            BackupRestore backupRestore = new BackupRestore(this, uri, new ArrayList<>(currentList));
+                            backupRestore.RestoreArchive();
                         }
                     }
                 }

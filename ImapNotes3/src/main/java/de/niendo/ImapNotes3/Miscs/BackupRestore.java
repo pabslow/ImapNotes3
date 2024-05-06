@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.niendo.ImapNotes3.ImapNotes3;
@@ -33,6 +34,18 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
     public static final String TAG = "IN_BackupDialog";
     private static final String ACCOUNTNAME = "ACCOUNTNAME";
     private static final String BACKUP_RESTORE_DIALOG = "BACKUP_RESTORE_DIALOG";
+    private static final String BACKUP_RESTORE_DIALOG_ACCOUNT = "BACKUP_RESTORE_DIALOG_ACCOUNT";
+    private final FragmentActivity activity;
+    private final Uri uri;
+    private final List<String> accountList;
+    private List<String> dirsInZip;
+
+    public BackupRestore(FragmentActivity activity, Uri uri, List<String> accountList) {
+        this.activity = activity;
+        this.uri = uri;
+        accountList.remove(0);
+        this.accountList = accountList;
+    }
 
     static public void CreateArchive(ListView listview, Activity activity, String accountname) {
         Log.d(TAG, "SendArchive");
@@ -61,56 +74,94 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
             if (!ZipUtils.checkPermissionStorage(context)) {
                 ZipUtils.requestPermission(activity);
             }
-            ZipUtils.zipDirectory(directory, outfile.toString());
+            String basePath = accountname.isEmpty() ? "" : accountname + "/";
+            ZipUtils.zipDirectory(directory, outfile.toString(), basePath);
             ImapNotes3.ShowMessage(context.getResources().getString(R.string.archive_created) + outfile, listview, 15);
         } catch (IOException e) {
             ImapNotes3.ShowMessage(context.getResources().getString(R.string.archive_not_created) + e.getMessage(), listview, 5);
         }
     }
 
-    public static boolean RestoreArchive(FragmentActivity activity, Uri uri) {
 
+    public boolean RestoreArchive() {
         try {
-
-            List<String> directories = ZipUtils.listDirectories(activity, uri);
-            for (String dir : directories) {
-                List<String> files = ZipUtils.listFilesInDirectory(activity, uri, dir);
-
-                int i = files.size();
-                FormElement[] formElements = new FormElement[i + 2];
-                i = 0;
-                formElements[i++] = Input.spinner(ACCOUNTNAME, "Account 1", "Account 2")
-                        .hint(R.string.account_name_restore)
-                        .required(false);
-                formElements[i++] = Hint.plain("R.string.import from: " + dir);
-
-
-                for (String file : files) {
-                    formElements[i++] = Check.box(file).label(file);
-                    // ZipUtils.extractFile(zipFilePath, file, destDirectory);
-                }
-
-
+            dirsInZip = ZipUtils.listDirectories(activity, uri);
+            if (dirsInZip.isEmpty()) dirsInZip.add(""); // old zip format, notes in root
+            if (dirsInZip.size() == 1) {
+                SelectNotesDialog("");
+            } else {
                 SimpleFormDialog.build()
-                        .fullscreen()
-                        .title("R.string.select_notes_for_restore")
-                        .msg("R.string.please_fill_in_form")
-                        .fields(formElements)
-                        .show(activity, BACKUP_RESTORE_DIALOG);
-
-
+                        //.fullscreen(true) //theme is broken
+                        .title("R.string.Restore_from_Backup")
+                        .msg("R.string.more_then_one_account_found")
+                        .fields(
+                                Input.spinner(ACCOUNTNAME, (ArrayList<String>) dirsInZip)
+                                        .hint("R.string.account_name_restore_import")
+                                        .required(true))
+                        .neg(R.string.cancel)
+                        .show(activity, BACKUP_RESTORE_DIALOG_ACCOUNT);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         return true;
     }
 
-    ;
+    private boolean SelectNotesDialog(String dir) {
+        //for (String dir : dirsInZip) {
+        try {
+            List<String> files = ZipUtils.listFilesInDirectory(activity, uri, dir);
+            int i = files.size();
+            FormElement[] formElements = new FormElement[i + 2];
+            i = 0;
+            formElements[i++] = Input.spinner(ACCOUNTNAME, (ArrayList<String>) accountList)
+                    .hint(R.string.account_name_restore)
+                    .required(true);
+            formElements[i++] = Hint.plain("R.string.import from: " + dir);
+
+
+            for (String file : files) {
+                formElements[i++] = Check.box(file).label(file);
+                // ZipUtils.extractFile(zipFilePath, file, destDirectory);
+            }
+
+
+            SimpleFormDialog.build()
+                    //.fullscreen(true) //theme is broken
+                    .title("R.string.select_notes_for_restore")
+                    .msg("R.string.please_fill_in_form")
+                    .fields(formElements)
+                    .neg(R.string.cancel)
+                    .show(activity, BACKUP_RESTORE_DIALOG);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        //  }
+
+        return true;
+    }
+
 
     @Override
-    public boolean onResult(@NonNull String s, int i, @NonNull Bundle bundle) {
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
+        if (which == BUTTON_NEGATIVE) return false;
+        switch (dialogTag) {
+            case BACKUP_RESTORE_DIALOG_ACCOUNT:
+                String dir = bundle.getString(ACCOUNTNAME);
+                SelectNotesDialog(dir);
+                break;
+            case BACKUP_RESTORE_DIALOG:
+                //String dir = bundle.getString(ACCOUNTNAME);
+
+                break;
+
+        }
+
         return false;
     }
 
