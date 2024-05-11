@@ -741,6 +741,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                 startActivityForResult(
                         Intent.createChooser(intent, "Select a ZIP file"),
                         SELECT_ARCHIVE_FOR_RESTORE);
+
+
             } catch (ActivityNotFoundException ex) {
                 ImapNotes3.ShowMessage("Please install a file manager.", listview, 3000);
             }
@@ -844,8 +846,8 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
                     if (data != null) {
                         Uri uri = data.getData();
                         if (uri != null) {
-                            BackupRestore backupRestore = new BackupRestore(this, uri, new ArrayList<>(accountList));
-                            backupRestore.RestoreArchive();
+                            BackupRestore backupRestore = new BackupRestore(uri, new ArrayList<>(accountList));
+                            backupRestore.show(getSupportFragmentManager(), "restore_dialog");
                         }
                     }
                 }

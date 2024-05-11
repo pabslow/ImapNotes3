@@ -3,6 +3,8 @@ package de.niendo.ImapNotes3.Miscs;
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -12,7 +14,8 @@ import android.util.Log;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,21 +33,30 @@ import eltos.simpledialogfragment.form.Hint;
 import eltos.simpledialogfragment.form.Input;
 import eltos.simpledialogfragment.form.SimpleFormDialog;
 
-public class BackupRestore implements SimpleDialog.OnDialogResultListener {
+public class BackupRestore extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     public static final String TAG = "IN_BackupDialog";
     private static final String ACCOUNTNAME = "ACCOUNTNAME";
     private static final String BACKUP_RESTORE_DIALOG = "BACKUP_RESTORE_DIALOG";
     private static final String BACKUP_RESTORE_DIALOG_ACCOUNT = "BACKUP_RESTORE_DIALOG_ACCOUNT";
-    private final FragmentActivity activity;
+    private final Context context;
     private final Uri uri;
     private final List<String> accountList;
     private List<String> dirsInZip;
 
-    public BackupRestore(FragmentActivity activity, Uri uri, List<String> accountList) {
-        this.activity = activity;
+    public BackupRestore(Uri uri, List<String> accountList) {
+        this.context = ImapNotes3.getAppContext();
         this.uri = uri;
         accountList.remove(0);
         this.accountList = accountList;
+    }
+
+
+    @NonNull
+    //@Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        RestoreArchive();
+        return builder.create();
     }
 
     static public void CreateArchive(ListView listview, Activity activity, String accountname) {
@@ -85,7 +97,7 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
 
     public boolean RestoreArchive() {
         try {
-            dirsInZip = ZipUtils.listDirectories(activity, uri);
+            dirsInZip = ZipUtils.listDirectories(context, uri);
             if (dirsInZip.isEmpty()) dirsInZip.add(""); // old zip format, notes in root
             if (dirsInZip.size() == 1) {
                 SelectNotesDialog("");
@@ -99,7 +111,7 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
                                         .hint("R.string.account_name_restore_import")
                                         .required(true))
                         .neg(R.string.cancel)
-                        .show(activity, BACKUP_RESTORE_DIALOG_ACCOUNT);
+                        .show(this, BACKUP_RESTORE_DIALOG_ACCOUNT);
             }
 
         } catch (IOException e) {
@@ -112,7 +124,7 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
     private boolean SelectNotesDialog(String dir) {
         //for (String dir : dirsInZip) {
         try {
-            List<String> files = ZipUtils.listFilesInDirectory(activity, uri, dir);
+            List<String> files = ZipUtils.listFilesInDirectory(context, uri, dir);
             int i = files.size();
             FormElement[] formElements = new FormElement[i + 2];
             i = 0;
@@ -134,7 +146,7 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
                     .msg("R.string.please_fill_in_form")
                     .fields(formElements)
                     .neg(R.string.cancel)
-                    .show(activity, BACKUP_RESTORE_DIALOG);
+                    .show(this, BACKUP_RESTORE_DIALOG);
 
 
         } catch (IOException e) {
@@ -151,6 +163,10 @@ public class BackupRestore implements SimpleDialog.OnDialogResultListener {
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
         if (which == BUTTON_NEGATIVE) return false;
         switch (dialogTag) {
+            case TAG:
+
+                break;
+
             case BACKUP_RESTORE_DIALOG_ACCOUNT:
                 String dir = bundle.getString(ACCOUNTNAME);
                 SelectNotesDialog(dir);
