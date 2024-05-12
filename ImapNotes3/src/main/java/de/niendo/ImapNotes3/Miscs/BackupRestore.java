@@ -41,6 +41,7 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     private final Context context;
     private final Uri uri;
     private final List<String> accountList;
+    private List<String> allNotes;
     private List<String> dirsInZip;
 
     public BackupRestore(Uri uri, List<String> accountList) {
@@ -120,12 +121,13 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         }
         return true;
     }
+    private INotesRestore mCallback;
 
     private boolean SelectNotesDialog(String dir) {
         //for (String dir : dirsInZip) {
         try {
-            List<String> files = ZipUtils.listFilesInDirectory(context, uri, dir);
-            int i = files.size();
+            allNotes = ZipUtils.listFilesInDirectory(context, uri, dir);
+            int i = allNotes.size();
             FormElement[] formElements = new FormElement[i + 2];
             i = 0;
             formElements[i++] = Input.spinner(ACCOUNTNAME, (ArrayList<String>) accountList)
@@ -134,9 +136,10 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
             formElements[i++] = Hint.plain("R.string.import from: " + dir);
 
 
-            for (String file : files) {
-                formElements[i++] = Check.box(file).label(file);
-                // ZipUtils.extractFile(zipFilePath, file, destDirectory);
+            for (String file : allNotes) {
+                formElements[i++] = Check.box(file)
+                        .label("Note: " + file.replace(dir, ""))
+                        .check(false);
             }
 
 
@@ -146,6 +149,7 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                     .msg("R.string.please_fill_in_form")
                     .fields(formElements)
                     .neg(R.string.cancel)
+                    .neut(R.string.select_all_notes_for_restore)
                     .show(this, BACKUP_RESTORE_DIALOG);
 
 
@@ -158,28 +162,48 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         return true;
     }
 
-
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
         if (which == BUTTON_NEGATIVE) return false;
         switch (dialogTag) {
-            case TAG:
-
-                break;
-
             case BACKUP_RESTORE_DIALOG_ACCOUNT:
                 String dir = bundle.getString(ACCOUNTNAME);
                 SelectNotesDialog(dir);
                 break;
             case BACKUP_RESTORE_DIALOG:
-                //String dir = bundle.getString(ACCOUNTNAME);
-
+                String accountName = bundle.getString(ACCOUNTNAME);
+                ArrayList<Uri> messageUris = new ArrayList<Uri>();
+                for (String file : allNotes) {
+                    if (bundle.getBoolean(file) || which == BUTTON_NEUTRAL) {
+                        String destDirectory = context.getCacheDir().toString() + "/Import/" + accountName;
+                        try {
+                            File ExtractedNote = new File(ZipUtils.extractFile(context, uri, file, destDirectory));
+                            messageUris.add(Uri.fromFile(ExtractedNote));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    ;
+                }
+                if (!messageUris.isEmpty()) mCallback.onSelectedData(messageUris, accountName);
                 break;
-
         }
-
         return false;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (INotesRestore) activity;
+        } catch (ClassCastException e) {
+            Log.d(TAG, "Activity doesn't implement the INotesRestore interface");
+        }
+    }
+
+    public interface INotesRestore {
+        void onSelectedData(ArrayList<Uri> messageUris, String accountName);
+    }
 
 }

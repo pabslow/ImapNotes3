@@ -98,7 +98,7 @@ import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
-public class ListActivity extends AppCompatActivity implements OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
+public class ListActivity extends AppCompatActivity implements BackupRestore.INotesRestore, OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
     public static final int DELETE_BUTTON = 3;
     private static final int NEW_BUTTON = 4;
@@ -927,11 +927,15 @@ public class ListActivity extends AppCompatActivity implements OnItemSelectedLis
     }
 
 
-
     @Nullable
     @Override
     public Filter getFilter() {
         return null;
+    }
+
+    @Override
+    public void onSelectedData(ArrayList<Uri> messageUris, String accountName) {
+        UpdateList(messageUris, accountName);
     }
 
     private class AccountsUpdateListener implements OnAccountsUpdateListener {
