@@ -192,11 +192,11 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
 
         try {
-            mCallback = (INotesRestore) activity;
+            mCallback = (INotesRestore) context;
         } catch (ClassCastException e) {
             Log.d(TAG, "Activity doesn't implement the INotesRestore interface");
         }
