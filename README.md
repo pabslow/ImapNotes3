@@ -49,8 +49,9 @@ src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android
 
 ### Translations
 
-This app is translated at: <a href="https://hosted.weblate.org/projects/ImapNotes3/">
+This app can be translated at: <a href="https://hosted.weblate.org/projects/ImapNotes3/">
 https://hosted.weblate.org</a>. Your help is greatly appreciated.
+If your favourite language is missing, just drop me an email.
 
 ### History
 
