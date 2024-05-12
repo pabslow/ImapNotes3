@@ -41,13 +41,14 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import android.Manifest;
+import android.util.Log;
 
-import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.R;
 
 public class ZipUtils {
 
     public static final int PERMISSION_REQUEST_CODE = 123;
+    public static final String TAG = "IN_ZipUtils";
 
     public static boolean checkPermissionStorage(Context context) {
         int result = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -146,7 +147,7 @@ public class ZipUtils {
     }
 
     // Function to extract a given file from a zip file
-    public static void extractFile(Context context, Uri zipFile, String fileName, String destDirectory) throws IOException {
+    public static String extractFile(Context context, Uri zipFile, String fileName, String destDirectory) throws IOException {
         byte[] buffer = new byte[1024];
         InputStream src = context.getContentResolver().openInputStream(zipFile);
         try (ZipInputStream zis = new ZipInputStream(src)) {
@@ -161,12 +162,13 @@ public class ZipUtils {
                             fos.write(buffer, 0, len);
                         }
                     }
-                    System.out.println("File extracted successfully: " + outFile.getAbsolutePath());
-                    return;
+                    Log.d(TAG, "File extracted successfully: " + outFile.getAbsolutePath());
+                    return outFile.getAbsolutePath();
                 }
             }
         }
-        System.out.println("File not found in the zip file.");
+        Log.d(TAG, "File not found in the zip file.");
+        return "";
     }
 
 }

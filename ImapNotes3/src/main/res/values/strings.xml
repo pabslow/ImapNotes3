@@ -150,5 +150,6 @@
     <string name="archive_not_created">Creating archive failed!: </string>
     <string name="default_color">Default</string>
     <string name="restore_archive">restore from archive</string>
-    <string name="account_name_restore">Target Account/Notebook for import</string>
+    <string name="account_name_restore">Target Account/Notebook for restore</string>
+    <string name="select_all_notes_for_restore">all</string>
 </resources>
