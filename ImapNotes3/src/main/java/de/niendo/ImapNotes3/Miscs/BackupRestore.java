@@ -40,9 +40,9 @@ import eltos.simpledialogfragment.form.SimpleFormDialog;
 
 public class BackupRestore extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     public static final String TAG = "IN_BackupDialog";
-    private static final String ACCOUNTNAME = "ACCOUNTNAME";
-    private static final String BACKUP_RESTORE_DIALOG = "BACKUP_RESTORE_DIALOG";
-    private static final String BACKUP_RESTORE_DIALOG_ACCOUNT = "BACKUP_RESTORE_DIALOG_ACCOUNT";
+    private static final String DLG_ACCOUNTNAME = "DLG_ACCOUNTNAME";
+    private static final String DLG_BACKUP_RESTORE_DIALOG = "DLG_BACKUP_RESTORE_DIALOG";
+    private static final String DLG_BACKUP_RESTORE_DIALOG_ACCOUNT = "DLG_BACKUP_RESTORE_DIALOG_ACCOUNT";
     private static final String DLG_BACKUP_RESTORE_DIALOG_DEST_DIR = "DLG_BACKUP_RESTORE_DIALOG_DEST_DIR";
     private final Context context;
     private final Uri uri;
@@ -58,7 +58,7 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
 
 
     @NonNull
-    //@Override
+    @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         RestoreArchive();
@@ -109,17 +109,15 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                 SelectNotesDialog("");
             } else {
                 SimpleFormDialog.build()
-                        //.fullscreen(true) //theme is broken
-
                         .title("R.string.Restore_from_Backup")
                         .msg("R.string.more_then_one_account_found")
                         .fields(
-                                Input.spinner(ACCOUNTNAME, (ArrayList<String>) dirsInZip)
+                                Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) dirsInZip)
                                         .hint("R.string.account_name_restore_import")
                                         .required(true))
                         .neg(R.string.cancel)
                         .pos(R.string.ok)
-                        .show(this, BACKUP_RESTORE_DIALOG_ACCOUNT);
+                        .show(this, DLG_BACKUP_RESTORE_DIALOG_ACCOUNT);
             }
 
         } catch (IOException e) {
@@ -129,14 +127,13 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     private INotesRestore mCallback;
 
     private void SelectNotesDialog(String dir) {
-        //for (String dir : dirsInZip) {
         Bundle extra = new Bundle();
         try {
             allNotes = ZipUtils.listFilesInDirectory(context, uri, dir);
             int i = allNotes.size();
-            FormElement<?, ?>[] formElements = new FormElement[2 * i + 2];
+            FormElement<?, ?>[] formElements = new FormElement[(2 * i) + 2];
             i = 0;
-            formElements[i++] = Input.spinner(ACCOUNTNAME, (ArrayList<String>) accountList)
+            formElements[i++] = Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) accountList)
                     .hint(R.string.account_name_restore)
                     .required(true);
             formElements[i++] = Hint.plain("R.string.import from: " + dir);
@@ -151,10 +148,11 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                         formElements[i++] = Check.box(file)
                                 .label(message.getSubject())
                                 .check(false);
+
                         formElements[i++] = Hint.plain(DateFormat.getDateTimeInstance().format(message.getSentDate()));
                     }
                 } catch (IOException | MessagingException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
 
 
@@ -169,7 +167,7 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                     .extra(extra)
                     .neg(R.string.cancel)
                     .neut(R.string.select_all_notes_for_restore)
-                    .show(this, BACKUP_RESTORE_DIALOG);
+                    .show(this, DLG_BACKUP_RESTORE_DIALOG);
 
 
         } catch (IOException e) {
@@ -181,12 +179,12 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
         if (which == BUTTON_NEGATIVE) return false;
         switch (dialogTag) {
-            case BACKUP_RESTORE_DIALOG_ACCOUNT:
-                String dir = bundle.getString(ACCOUNTNAME);
+            case DLG_BACKUP_RESTORE_DIALOG_ACCOUNT:
+                String dir = bundle.getString(DLG_ACCOUNTNAME);
                 SelectNotesDialog(dir);
                 break;
-            case BACKUP_RESTORE_DIALOG:
-                String accountName = bundle.getString(ACCOUNTNAME);
+            case DLG_BACKUP_RESTORE_DIALOG:
+                String accountName = bundle.getString(DLG_ACCOUNTNAME);
                 ArrayList<Uri> messageUris = new ArrayList<>();
                 for (String file : allNotes) {
                     if (bundle.getBoolean(file) || which == BUTTON_NEUTRAL) {
