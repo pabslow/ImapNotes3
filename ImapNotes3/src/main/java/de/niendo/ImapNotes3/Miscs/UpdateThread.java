@@ -65,7 +65,7 @@ public class UpdateThread extends AsyncTask<Object, Void, Boolean> {
 
     //https://stackoverflow.com/questions/54346609/returning-boolean-from-onpostexecute-and-doinbackground
     //https://fernandocejas.com/2014/09/03/architecting-android-the-clean-way/
-    private FinishListener listener;
+    private final FinishListener listener;
     private static final String TAG = "IN_UpdateThread";
     private final ImapNotesAccount ImapNotesAccount;
     private final @StringRes
@@ -172,14 +172,10 @@ typesafe.  Make them final to prevent accidental reuse.
                 // Use the first line as the tile
                 String[] tok = Html.fromHtml(noteBody.substring(0, Math.min(noteBody.length(), 500)), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
                 String title = tok[0];
-                //String position = "0 0 0 0";
-                String body = noteBody;
-
                 //"<html><head></head><body>" + noteBody + "</body></html>";
 
-                String DATE_FORMAT = Utilities.internalDateFormatString;
                 Date date = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
+                SimpleDateFormat sdf = new SimpleDateFormat(Utilities.internalDateFormatString, Locale.ROOT);
                 String stringDate = sdf.format(date);
                 currentNote = new OneNote(title, stringDate, "", accountName, bgColor, OneNote.SAVE_STATE_SAVING);
                 // Add note to database
@@ -192,7 +188,7 @@ typesafe.  Make them final to prevent accidental reuse.
                 // Here we ask to add the new note to the new note folder
                 // Must be done AFTER uid has been set in currentNote
                 Log.d(TAG, "doInBackground body: ");
-                WriteMailToNew(currentNote, body);
+                WriteMailToNew(currentNote, noteBody);
                 if ((action == Action.Update) && (!oldSuid.startsWith("-"))) {
                     MoveMailToDeleted(oldSuid);
                 }
@@ -218,10 +214,8 @@ typesafe.  Make them final to prevent accidental reuse.
                         HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
                         //storedNotes.SetSaveState("", OneNote.SAVE_STATE_SAVING, accountName);
 
-                        String DATE_FORMAT = Utilities.internalDateFormatString;
-
                         Date date = message.getSentDate();
-                        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ROOT);
+                        SimpleDateFormat sdf = new SimpleDateFormat(Utilities.internalDateFormatString, Locale.ROOT);
                         String stringDate = sdf.format(date);
                         currentNote = new OneNote(message.getSubject(), stringDate, "", accountName, htmlNote.color, OneNote.SAVE_STATE_SAVING);
                         // Add note to database
@@ -350,7 +344,8 @@ typesafe.  Make them final to prevent accidental reuse.
         File outfile = new File(directory, Utilities.addMailExt(uid));
         try {
             outfile.delete();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
+
         }
         OutputStream str = new FileOutputStream(outfile, false);
         message.writeTo(str);
