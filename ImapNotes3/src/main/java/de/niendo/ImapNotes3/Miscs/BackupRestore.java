@@ -69,14 +69,17 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         Log.d(TAG, "SendArchive");
         String directory;
         String title;
+        String basePath;
         Context context = ImapNotes3.getAppContext();
 
         if (accountname.isEmpty()) {
             directory = ImapNotes3.GetRootDir().toString();
             title = Utilities.ApplicationName + "_" + context.getString(R.string.all_accounts);
+            basePath = "";
         } else {
             directory = ImapNotes3.GetAccountDir(accountname).toString();
             title = Utilities.ApplicationName + "_" + ImapNotes3.RemoveReservedChars(accountname);
+            basePath = ImapNotes3.RemoveReservedChars(accountname) + "/";
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -92,7 +95,6 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
             if (!ZipUtils.checkPermissionStorage(context)) {
                 ZipUtils.requestPermission(activity);
             }
-            String basePath = accountname.isEmpty() ? "" : ImapNotes3.RemoveReservedChars(accountname) + "/";
             ZipUtils.zipDirectory(directory, outfile.toString(), basePath);
             ImapNotes3.ShowMessage(context.getResources().getString(R.string.archive_created) + outfile, listview, 15);
         } catch (IOException e) {
@@ -106,14 +108,15 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
             List<String> dirsInZip = ZipUtils.listDirectories(context, uri);
             if (dirsInZip.isEmpty()) dirsInZip.add(""); // old zip format, notes in root
             if (dirsInZip.size() == 1) {
-                SelectNotesDialog("");
+                SelectNotesDialog(dirsInZip.get(0));
             } else {
                 SimpleFormDialog.build()
-                        .title("R.string.Restore_from_Backup")
-                        .msg("R.string.more_then_one_account_found")
+                        .title(R.string.restore_archive)
+                        .msg(R.string.restore_more_then_one_account_found)
+                        .icon(R.drawable.ic_action_restore_archive)
                         .fields(
                                 Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) dirsInZip)
-                                        .hint("R.string.account_name_restore_import")
+                                        .hint(R.string.select_account_name_restore_import)
                                         .required(true))
                         .neg(R.string.cancel)
                         .pos(R.string.ok)
@@ -131,12 +134,11 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         try {
             allNotes = ZipUtils.listFilesInDirectory(context, uri, dir);
             int i = allNotes.size();
-            FormElement<?, ?>[] formElements = new FormElement[(2 * i) + 2];
+            FormElement<?, ?>[] formElements = new FormElement[(2 * i) + 1];
             i = 0;
             formElements[i++] = Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) accountList)
                     .hint(R.string.account_name_restore)
                     .required(true);
-            formElements[i++] = Hint.plain("R.string.import from: " + dir);
 
             String destDirectory = context.getCacheDir().toString() + "/Import/" + dir + "/";
 
@@ -154,15 +156,15 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                 } catch (IOException | MessagingException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             extra.putString(DLG_BACKUP_RESTORE_DIALOG_DEST_DIR, destDirectory);
+            String msg = getResources().getString(R.string.select_notes_for_restore, dir);
             SimpleFormDialog.build()
                     //.fullscreen(true) //theme is broken
-                    .title("R.string.select_notes_for_restore")
-                    .msg("R.string.please_fill_in_form")
+                    .title(R.string.restore_archive)
+                    .msg(msg) // sometimes not shown
+                    .icon(R.drawable.ic_action_restore_archive)
                     .fields(formElements)
                     .extra(extra)
                     .neg(R.string.cancel)
