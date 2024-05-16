@@ -32,6 +32,8 @@ import de.niendo.ImapNotes3.ImapNotes3;
 import de.niendo.ImapNotes3.R;
 import de.niendo.ImapNotes3.Sync.SyncUtils;
 import eltos.simpledialogfragment.SimpleDialog;
+import eltos.simpledialogfragment.SimpleProgressDialog;
+import eltos.simpledialogfragment.SimpleProgressTask;
 import eltos.simpledialogfragment.form.Check;
 import eltos.simpledialogfragment.form.FormElement;
 import eltos.simpledialogfragment.form.Hint;
@@ -41,13 +43,17 @@ import eltos.simpledialogfragment.form.SimpleFormDialog;
 public class BackupRestore extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     public static final String TAG = "IN_BackupDialog";
     private static final String DLG_ACCOUNTNAME = "DLG_ACCOUNTNAME";
+    private static final String DLG_DIR_ACCOUNTNAME = "DLG_DIR_ACCOUNTNAME";
     private static final String DLG_BACKUP_RESTORE_DIALOG = "DLG_BACKUP_RESTORE_DIALOG";
     private static final String DLG_BACKUP_RESTORE_DIALOG_ACCOUNT = "DLG_BACKUP_RESTORE_DIALOG_ACCOUNT";
-    private static final String DLG_BACKUP_RESTORE_DIALOG_DEST_DIR = "DLG_BACKUP_RESTORE_DIALOG_DEST_DIR";
+    private static final String PROGRESS_DIALOG = "PROGRESS_DIALOG";
     private final Context context;
     private final Uri uri;
     private final List<String> accountList;
-    private List<String> allNotes;
+    private final List<String> allNotes = new ArrayList<>();
+    private final List<String> allMessages = new ArrayList<>();
+    private final List<String> allMessageDates = new ArrayList<>();
+
 
     public BackupRestore(Uri uri, List<String> accountList) {
         this.context = ImapNotes3.getAppContext();
@@ -115,7 +121,7 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                         .msg(R.string.restore_more_then_one_account_found)
                         .icon(R.drawable.ic_action_restore_archive)
                         .fields(
-                                Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) dirsInZip)
+                                Input.spinner(DLG_DIR_ACCOUNTNAME, (ArrayList<String>) dirsInZip)
                                         .hint(R.string.select_account_name_restore_import)
                                         .required(true))
                         .neg(R.string.cancel)
@@ -130,35 +136,50 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     private INotesRestore mCallback;
 
     private void SelectNotesDialog(String dir) {
+        MyProgressTask task = new MyProgressTask(dir,
+                //UpdateThread.FinishListener listener,
+                allNotes,
+                allMessages,
+                allMessageDates,
+                uri,
+                context);
+        task.execute();
+
+        boolean cancelable = true;
+        boolean autoDismiss = true;
         Bundle extra = new Bundle();
-        try {
-            allNotes = ZipUtils.listFilesInDirectory(context, uri, dir);
-            int i = allNotes.size();
-            FormElement<?, ?>[] formElements = new FormElement[(2 * i) + 1];
-            i = 0;
+        extra.putString(DLG_DIR_ACCOUNTNAME, dir);
+
+        SimpleProgressDialog.buildBar()
+                .extra(extra)
+                .title(R.string.restore_archive)
+                .msg("R.string.creating_user_profile_wait")
+                .task(task, cancelable, autoDismiss)  // <-- your task
+                .show(this, PROGRESS_DIALOG);
+    }
+
+    @Override
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
+        if (which == SimpleProgressDialog.COMPLETED) {
+            String dir = bundle.getString(DLG_DIR_ACCOUNTNAME);
+
+            FormElement<?, ?>[] formElements = new FormElement[(2 * allMessages.size()) + 1];
+            int i = 0;
             formElements[i++] = Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) accountList)
                     .hint(R.string.account_name_restore)
                     .required(true);
 
-            String destDirectory = context.getCacheDir().toString() + "/Import/" + dir + "/";
-
+            int idx = 0;
             for (String file : allNotes) {
 
-                try {
-                    Message message = SyncUtils.ReadMailFromFile(new File(ZipUtils.extractFile(context, uri, file, destDirectory)));
-                    if (!(message == null)) {
-                        formElements[i++] = Check.box(file)
-                                .label(message.getSubject())
-                                .check(false);
+                formElements[i++] = Check.box(file)
+                        .label(allMessages.get(idx))
+                        .check(false);
 
-                        formElements[i++] = Hint.plain(DateFormat.getDateTimeInstance().format(message.getSentDate()));
-                    }
-                } catch (IOException | MessagingException e) {
-                    e.printStackTrace();
-                }
+                formElements[i++] = Hint.plain(allMessageDates.get(idx++));
             }
-
-            extra.putString(DLG_BACKUP_RESTORE_DIALOG_DEST_DIR, destDirectory);
+            Bundle extra = new Bundle();
+            extra.putString(DLG_DIR_ACCOUNTNAME, dir);
             String msg = getResources().getString(R.string.select_notes_for_restore, dir);
             SimpleFormDialog.build()
                     //.fullscreen(true) //theme is broken
@@ -169,33 +190,30 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                     .extra(extra)
                     .neg(R.string.cancel)
                     .neut(R.string.select_all_notes_for_restore)
+
                     .show(this, DLG_BACKUP_RESTORE_DIALOG);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            return true;
         }
-    }
-
-    @Override
-    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
         if (which == BUTTON_NEGATIVE) return false;
         switch (dialogTag) {
-            case DLG_BACKUP_RESTORE_DIALOG_ACCOUNT:
-                String dir = bundle.getString(DLG_ACCOUNTNAME);
+            case DLG_BACKUP_RESTORE_DIALOG_ACCOUNT: {
+                String dir = bundle.getString(DLG_DIR_ACCOUNTNAME);
                 SelectNotesDialog(dir);
                 break;
-            case DLG_BACKUP_RESTORE_DIALOG:
+            }
+            case DLG_BACKUP_RESTORE_DIALOG: {
                 String accountName = bundle.getString(DLG_ACCOUNTNAME);
+                String dir = bundle.getString(DLG_DIR_ACCOUNTNAME);
                 ArrayList<Uri> messageUris = new ArrayList<>();
                 for (String file : allNotes) {
                     if (bundle.getBoolean(file) || which == BUTTON_NEUTRAL) {
-                        String destDirectory = bundle.getString(DLG_BACKUP_RESTORE_DIALOG_DEST_DIR);
+                        String destDirectory = context.getCacheDir().toString() + "/Import/" + dir + "/";
                         messageUris.add(Uri.fromFile(new File(destDirectory + file)));
                     }
                 }
                 if (!messageUris.isEmpty()) mCallback.onSelectedData(messageUris, accountName);
                 break;
+            }
         }
         return false;
     }
@@ -213,6 +231,61 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
 
     public interface INotesRestore {
         void onSelectedData(ArrayList<Uri> messageUris, String accountName);
+    }
+
+
+    static class MyProgressTask extends SimpleProgressTask<Void, Integer, Void> {
+        private final List<String> allNotes;
+        private final List<String> allMessages;
+        private final List<String> allMessageDates;
+        String dir;
+        Context context;
+        Uri uri;
+
+        public MyProgressTask(String dir,
+                              //UpdateThread.FinishListener listener,
+                              List<String> allNotes,
+                              List<String> allMessages,
+                              List<String> allMessagesDate,
+                              Uri uri,
+                              Context context) {
+            this.dir = dir;
+            this.context = context;
+            this.uri = uri;
+            this.allNotes = allNotes;
+            this.allMessages = allMessages;
+            this.allMessageDates = allMessagesDate;
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                List<String> allNotesTmp = ZipUtils.listFilesInDirectory(context, uri, dir);
+                String destDirectory = context.getCacheDir().toString() + "/Import/" + dir + "/";
+                int i = 0;
+                for (String file : allNotesTmp) {
+                    publishProgress(i, allNotesTmp.size());
+                    try {
+                        Message message = SyncUtils.ReadMailFromFile(new File(ZipUtils.extractFile(context, uri, file, destDirectory)));
+                        allNotes.add(file);
+                        if (!(message == null)) {
+                            allMessages.add(message.getSubject());
+                            allMessageDates.add(DateFormat.getDateTimeInstance().format(message.getSentDate()));
+                        } else {
+                            allMessages.add("Error reading: " + file);
+                            allMessageDates.add("");
+                        }
+                    } catch (IOException | MessagingException e) {
+                        e.printStackTrace();
+                    }
+                    i++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 }
