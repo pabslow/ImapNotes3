@@ -146,7 +146,7 @@
     <string name="appstorename">F-Droid</string>
     <string name="permission_required">需要权限</string>
     <string name="permission_message">请授予权限，让应用将备份文件写入文档目录</string>
-    <string name="archive_created">已创建存档：</string>
+    <string name="create_archive">创建备份： </string>
     <string name="archive_not_created">创建存档失败了！：</string>
     <string name="default_color">默认</string>
     <string name="restore_archive">从存档恢复</string>
@@ -155,4 +155,7 @@
     <string name="restore_more_then_one_account_found">该存档文件包含超过一个账户/笔记本</string>
     <string name="select_account_name_restore_import">选择要恢复的账户/笔记本</string>
     <string name="select_notes_for_restore">选择一则或几则笔记来从 %s 还原</string>
+    <string name="failed">失败了</string>
+    <string name="archiving">存档中…</string>
+    <string name="success">成功了</string>
 </resources>
