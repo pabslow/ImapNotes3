@@ -11,11 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +46,8 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     private static final String DLG_DIR_ACCOUNTNAME = "DLG_DIR_ACCOUNTNAME";
     private static final String DLG_BACKUP_RESTORE_DIALOG = "DLG_BACKUP_RESTORE_DIALOG";
     private static final String DLG_BACKUP_RESTORE_DIALOG_ACCOUNT = "DLG_BACKUP_RESTORE_DIALOG_ACCOUNT";
-    private static final String PROGRESS_DIALOG = "PROGRESS_DIALOG";
+    private static final String PROGRESS_DIALOG_RESTORE = "PROGRESS_DIALOG_RESTORE";
+    private static final String PROGRESS_DIALOG_BACKUP = "PROGRESS_DIALOG_BACKUP";
     private final Context context;
     private final Uri uri;
     private final List<String> accountList;
@@ -62,50 +63,17 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         this.accountList = accountList;
     }
 
-
+    public BackupRestore() {
+        this.context = ImapNotes3.getAppContext();
+        this.uri = null;
+        this.accountList = null;
+    }
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         RestoreArchive();
         return builder.create();
-    }
-
-    static public void CreateArchive(ListView listview, Activity activity, String accountname) {
-        Log.d(TAG, "SendArchive");
-        String directory;
-        String title;
-        String basePath;
-        Context context = ImapNotes3.getAppContext();
-
-        if (accountname.isEmpty()) {
-            directory = ImapNotes3.GetRootDir().toString();
-            title = Utilities.ApplicationName + "_" + context.getString(R.string.all_accounts);
-            basePath = "";
-        } else {
-            directory = ImapNotes3.GetAccountDir(accountname).toString();
-            title = Utilities.ApplicationName + "_" + ImapNotes3.RemoveReservedChars(accountname);
-            basePath = ImapNotes3.RemoveReservedChars(accountname) + "/";
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-            title = title + "_" + currentDateTime.format(formatter);
-        }
-        File extStorage = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS);
-        File outfile = new File(extStorage, title + ".zip");
-
-        try {
-
-            if (!ZipUtils.checkPermissionStorage(context)) {
-                ZipUtils.requestPermission(activity);
-            }
-            ZipUtils.zipDirectory(directory, outfile.toString(), basePath);
-            ImapNotes3.ShowMessage(context.getResources().getString(R.string.archive_created) + outfile, listview, 15);
-        } catch (IOException e) {
-            ImapNotes3.ShowMessage(context.getResources().getString(R.string.archive_not_created) + e.getMessage(), listview, 5);
-        }
     }
 
 
@@ -135,8 +103,55 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
     }
     private INotesRestore mCallback;
 
+    static public void CreateArchive(Activity activity, String accountname) {
+        Log.d(TAG, "CreateArchive");
+        String directory;
+        String title;
+        String basePath;
+        Context context = ImapNotes3.getAppContext();
+
+        if (accountname.isEmpty()) {
+            directory = ImapNotes3.GetRootDir().toString();
+            title = Utilities.ApplicationName + "_" + context.getString(R.string.all_accounts);
+            basePath = "";
+        } else {
+            directory = ImapNotes3.GetAccountDir(accountname).toString();
+            title = Utilities.ApplicationName + "_" + ImapNotes3.RemoveReservedChars(accountname);
+            basePath = ImapNotes3.RemoveReservedChars(accountname) + "/";
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            title = title + "_" + currentDateTime.format(formatter);
+        }
+        File extStorage = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS);
+        File outfile = new File(extStorage, title + ".zip");
+
+        if (!ZipUtils.checkPermissionStorage(context)) {
+            ZipUtils.requestPermission(activity);
+        }
+
+        SimpleProgressDialog sd = new SimpleProgressDialog();
+        BackupTask task = new BackupTask(directory,
+                outfile.toString(),
+                basePath,
+                context,
+                sd);
+        task.execute();
+
+        boolean cancelable = true;
+        boolean autoDismiss = false;
+        String msg = context.getResources().getString(R.string.archive_created) + outfile;
+        sd.type(SimpleProgressDialog.Type.CIRCLE);
+        sd.title(R.string.make_archive);
+        sd.msg(msg);
+        sd.task(task, cancelable, autoDismiss);  // <-- your task
+        sd.show((FragmentActivity) activity, PROGRESS_DIALOG_BACKUP);
+    }
+
     private void SelectNotesDialog(String dir) {
-        MyProgressTask task = new MyProgressTask(dir,
+        RestoreTask task = new RestoreTask(dir,
                 //UpdateThread.FinishListener listener,
                 allNotes,
                 allMessages,
@@ -155,44 +170,60 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                 .title(R.string.restore_archive)
                 .msg("R.string.creating_user_profile_wait")
                 .task(task, cancelable, autoDismiss)  // <-- your task
-                .show(this, PROGRESS_DIALOG);
+                .show(this, PROGRESS_DIALOG_RESTORE);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        try {
+            mCallback = (INotesRestore) context;
+        } catch (ClassCastException e) {
+            Log.d(TAG, "Activity doesn't implement the INotesRestore interface");
+        }
     }
 
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle bundle) {
         if (which == SimpleProgressDialog.COMPLETED) {
-            String dir = bundle.getString(DLG_DIR_ACCOUNTNAME);
+            if (dialogTag.equals(PROGRESS_DIALOG_RESTORE)) {
+                String dir = bundle.getString(DLG_DIR_ACCOUNTNAME);
 
-            FormElement<?, ?>[] formElements = new FormElement[(2 * allMessages.size()) + 1];
-            int i = 0;
-            formElements[i++] = Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) accountList)
-                    .hint(R.string.account_name_restore)
-                    .required(true);
+                FormElement<?, ?>[] formElements = new FormElement[(2 * allMessages.size()) + 1];
+                int i = 0;
+                formElements[i++] = Input.spinner(DLG_ACCOUNTNAME, (ArrayList<String>) accountList)
+                        .hint(R.string.account_name_restore)
+                        .required(true);
 
-            int idx = 0;
-            for (String file : allNotes) {
+                int idx = 0;
+                for (String file : allNotes) {
 
-                formElements[i++] = Check.box(file)
-                        .label(allMessages.get(idx))
-                        .check(false);
+                    formElements[i++] = Check.box(file)
+                            .label(allMessages.get(idx))
+                            .check(false);
 
-                formElements[i++] = Hint.plain(allMessageDates.get(idx++));
+                    formElements[i++] = Hint.plain(allMessageDates.get(idx++));
+                }
+                Bundle extra = new Bundle();
+                extra.putString(DLG_DIR_ACCOUNTNAME, dir);
+                String msg = getResources().getString(R.string.select_notes_for_restore, dir);
+                SimpleFormDialog.build()
+                        //.fullscreen(true) //theme is broken
+                        .title(R.string.restore_archive)
+                        .msg(msg) // sometimes not shown
+                        .icon(R.drawable.ic_action_restore_archive)
+                        .fields(formElements)
+                        .extra(extra)
+                        .neg(R.string.cancel)
+                        .neut(R.string.select_all_notes_for_restore)
+
+                        .show(this, DLG_BACKUP_RESTORE_DIALOG);
+                return true;
+            } else if (dialogTag.equals(PROGRESS_DIALOG_BACKUP)) {
+
+                return true;
             }
-            Bundle extra = new Bundle();
-            extra.putString(DLG_DIR_ACCOUNTNAME, dir);
-            String msg = getResources().getString(R.string.select_notes_for_restore, dir);
-            SimpleFormDialog.build()
-                    //.fullscreen(true) //theme is broken
-                    .title(R.string.restore_archive)
-                    .msg(msg) // sometimes not shown
-                    .icon(R.drawable.ic_action_restore_archive)
-                    .fields(formElements)
-                    .extra(extra)
-                    .neg(R.string.cancel)
-                    .neut(R.string.select_all_notes_for_restore)
-
-                    .show(this, DLG_BACKUP_RESTORE_DIALOG);
-            return true;
         }
         if (which == BUTTON_NEGATIVE) return false;
         switch (dialogTag) {
@@ -218,23 +249,11 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         return false;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        try {
-            mCallback = (INotesRestore) context;
-        } catch (ClassCastException e) {
-            Log.d(TAG, "Activity doesn't implement the INotesRestore interface");
-        }
-    }
-
     public interface INotesRestore {
         void onSelectedData(ArrayList<Uri> messageUris, String accountName);
     }
 
-
-    static class MyProgressTask extends SimpleProgressTask<Void, Integer, Void> {
+    static class RestoreTask extends SimpleProgressTask<Void, Integer, Void> {
         private final List<String> allNotes;
         private final List<String> allMessages;
         private final List<String> allMessageDates;
@@ -242,13 +261,13 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         Context context;
         Uri uri;
 
-        public MyProgressTask(String dir,
-                              //UpdateThread.FinishListener listener,
-                              List<String> allNotes,
-                              List<String> allMessages,
-                              List<String> allMessagesDate,
-                              Uri uri,
-                              Context context) {
+        public RestoreTask(String dir,
+                           //UpdateThread.FinishListener listener,
+                           List<String> allNotes,
+                           List<String> allMessages,
+                           List<String> allMessagesDate,
+                           Uri uri,
+                           Context context) {
             this.dir = dir;
             this.context = context;
             this.uri = uri;
@@ -284,6 +303,40 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return null;
+        }
+    }
+
+    static class BackupTask extends SimpleProgressTask<Void, Integer, Void> {
+        private final String directory;
+        private final String outfile;
+        private final String basePath;
+        private final SimpleProgressDialog sd;
+        private final Context context;
+
+        public BackupTask(String directory,
+                          String outfile,
+                          String basePath,
+                          Context context,
+                          SimpleProgressDialog sd) {
+            this.directory = directory;
+            this.outfile = outfile;
+            this.basePath = basePath;
+            this.sd = sd;
+            this.context = context;
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            sd.updateInfoText(context.getResources().getString(R.string.archiving));
+            try {
+                ZipUtils.zipDirectory(directory, outfile, basePath);
+                sd.updateInfoText(context.getResources().getString(R.string.success));
+            } catch (IOException e) {
+                sd.updateInfoText(context.getResources().getString(R.string.failed) + e.getMessage());
+            }
+            // sd.updateFinished(); // crash
             return null;
         }
     }

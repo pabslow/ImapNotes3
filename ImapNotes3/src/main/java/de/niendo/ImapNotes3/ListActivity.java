@@ -716,7 +716,7 @@ public class ListActivity extends AppCompatActivity implements BackupRestore.INo
                 SendLogcatMail();
                 return true;
             case R.id.make_archive:
-                BackupRestore.CreateArchive(listview, this, getSelectedAccountName());
+                BackupRestore.CreateArchive(this, getSelectedAccountName());
                 return true;
             case R.id.restore_archive:
                 openFileSelector();
