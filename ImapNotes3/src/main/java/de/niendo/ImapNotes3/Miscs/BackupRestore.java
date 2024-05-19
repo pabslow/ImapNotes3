@@ -142,11 +142,11 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
 
         boolean cancelable = true;
         boolean autoDismiss = false;
-        String msg = context.getResources().getString(R.string.archive_created) + outfile;
+        String msg = context.getResources().getString(R.string.create_archive) + outfile;
         sd.type(SimpleProgressDialog.Type.CIRCLE);
         sd.title(R.string.make_archive);
         sd.msg(msg);
-        sd.task(task, cancelable, autoDismiss);  // <-- your task
+        sd.task(task, cancelable, autoDismiss);
         sd.show((FragmentActivity) activity, PROGRESS_DIALOG_BACKUP);
     }
 
@@ -336,7 +336,6 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
             } catch (IOException e) {
                 sd.updateInfoText(context.getResources().getString(R.string.failed) + e.getMessage());
             }
-            // sd.updateFinished(); // crash
             return null;
         }
     }

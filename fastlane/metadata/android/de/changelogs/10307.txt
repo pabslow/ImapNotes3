@@ -1,1 +1,3 @@
 * Übersetzungen mit Weblate hinzugefügt
+* Wiederherstellen aller oder einzelner Notizen aus einem ZIP-Archiv
+* CreateArchive in einem extra Thread ausführen
