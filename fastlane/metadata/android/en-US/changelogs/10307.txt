@@ -1,3 +1,4 @@
 * add translation with WebLate
 * restore all or just one note from a zip archive
 * new thread for CreateArchive
+* added spanish translation (thanks to gallegonovato)
