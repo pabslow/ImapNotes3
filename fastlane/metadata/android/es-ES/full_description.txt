@@ -1,0 +1,24 @@
+* Editor para tus notas con muchas funciones.
+   - atributos de fuente
+   - mesas
+   - casillas de verificación
+   - listas
+   - insertar imágenes, enlaces, etc.
+   - deshacer rehacer
+   - mucho más
+* sincronizar notas HTML entre dispositivos Android y servidores IMAP.
+* para ser utilizado con diferentes servidores IMAP (Gmail, Yahoo, AOL, Posteo y su servidor)
+* crear listas de verificación
+* búsqueda de texto completo
+* filtra y organiza tus notas por #HashTags
+* soporte de modo claro y oscuro
+* soporte de color para notas
+* comparte tus notas
+* haga una copia de seguridad de sus notas en un archivo zip local
+* restaurar todas o solo una nota de un archivo local
+* las notas se guardan como correos electrónicos HTML estándar
+* la seguridad puede ser texto sin formato, SSL/TLS o STARTTLS
+* Se pueden administrar múltiples cuentas IMAP y/o blocs de notas
+* funciona sin conexión y la sincronización se realiza en segundo plano
+* solo se requiere un mínimo de permisos de usuario
+* código totalmente abierto: sin rastreadores ni publicidad
