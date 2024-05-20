@@ -137,7 +137,6 @@
     <string name="appstorename">F-Droid</string>
     <string name="permission_required">permiso requerido</string>
     <string name="permission_message">Por favor, dé permiso para guardar el archivo en la carpeta Documentos</string>
-    <string name="archive_not_created">¡Error al crear el archivo!:</string>
     <string name="default_color">Por defecto</string>
     <string name="create_archive">Crear copia de seguridad:</string>
     <string name="restore_archive">restaurar desde el archivo</string>

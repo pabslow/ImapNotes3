@@ -147,7 +147,6 @@
     <string name="permission_required">需要权限</string>
     <string name="permission_message">请授予权限，让应用将备份文件写入文档目录</string>
     <string name="create_archive">创建备份： </string>
-    <string name="archive_not_created">创建存档失败了！：</string>
     <string name="default_color">默认</string>
     <string name="restore_archive">从存档恢复</string>
     <string name="account_name_restore">选择目标账户/笔记本</string>

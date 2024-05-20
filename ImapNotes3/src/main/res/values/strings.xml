@@ -147,7 +147,6 @@
     <string name="permission_required">permission required</string>
     <string name="permission_message">please grant permission to write backup to documents directory</string>
     <string name="create_archive">Create backup: </string>
-    <string name="archive_not_created">Creating archive failed!: </string>
     <string name="default_color">Default</string>
     <string name="restore_archive">restore from archive</string>
     <string name="account_name_restore">Select target account/notebook</string>
