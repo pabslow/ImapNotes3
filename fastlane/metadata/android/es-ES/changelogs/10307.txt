@@ -1,0 +1,3 @@
+* agregar traducción con WebLate
+* restaurar todas o solo una nota desde un archivo zip
+* nuevo hilo para CreateArchive
