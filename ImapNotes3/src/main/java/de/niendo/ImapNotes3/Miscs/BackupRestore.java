@@ -152,7 +152,6 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
 
     private void SelectNotesDialog(String dir) {
         RestoreTask task = new RestoreTask(dir,
-                //UpdateThread.FinishListener listener,
                 allNotes,
                 allMessages,
                 allMessageDates,
@@ -168,8 +167,8 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         SimpleProgressDialog.buildBar()
                 .extra(extra)
                 .title(R.string.restore_archive)
-                .msg("R.string.creating_user_profile_wait")
-                .task(task, cancelable, autoDismiss)  // <-- your task
+                .msg(R.string.reading_archive_file)
+                .task(task, cancelable, autoDismiss)
                 .show(this, PROGRESS_DIALOG_RESTORE);
     }
 
@@ -262,7 +261,6 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
         Uri uri;
 
         public RestoreTask(String dir,
-                           //UpdateThread.FinishListener listener,
                            List<String> allNotes,
                            List<String> allMessages,
                            List<String> allMessagesDate,
@@ -285,6 +283,7 @@ public class BackupRestore extends DialogFragment implements SimpleDialog.OnDial
                 int i = 0;
                 for (String file : allNotesTmp) {
                     publishProgress(i, allNotesTmp.size());
+                    if (isCancelled()) return null;
                     try {
                         Message message = SyncUtils.ReadMailFromFile(new File(ZipUtils.extractFile(context, uri, file, destDirectory)));
                         allNotes.add(file);

@@ -271,8 +271,8 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
     private void CheckNameAndLogIn() {
         String name = accountnameTextView.getText().toString();
         if (name.isEmpty()) {
-            accountnameTextView.setText(R.string.account_name_description);
             name = GetTextViewText(usernameTextView);
+            accountnameTextView.setText(name);
         }
         if (name.contains("'") || name.contains("\""))
             ImapNotes3.ShowMessage(R.string.quotation_marks_not_allowed, accountnameTextView, 3);

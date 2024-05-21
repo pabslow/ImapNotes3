@@ -156,5 +156,6 @@
     <string name="failed">fehlgeschlagen</string>
     <string name="archiving">archiviere…</string>
     <string name="success">erfolgreich</string>
+    <string name="reading_archive_file">Einlesen der Archiv-Datei</string>
 
 </resources>

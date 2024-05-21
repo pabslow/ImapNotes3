@@ -157,4 +157,5 @@
     <string name="failed">failed</string>
     <string name="archiving">archiving…</string>
     <string name="success">successfully</string>
+    <string name="reading_archive_file">Reading archiv file</string>
 </resources>
