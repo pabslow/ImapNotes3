@@ -153,4 +153,7 @@
     <string name="t15min">15 minutos</string>
     <string name="insert_link">Introducir un enlace</string>
     <string name="image_size_relative">El tamaño de la imagen es relativo al ancho de la página</string>
+    <string name="account_name_description">Mi bloc de notas</string>
+    <string name="select_account_name_restore_import">Selecciona una cuenta/bloc de notas para restaurar</string>
+    <string name="reading_archive_file">Leyendo el archivo del almacenamiento</string>
 </resources>
