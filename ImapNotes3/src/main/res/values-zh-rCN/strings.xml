@@ -157,4 +157,5 @@
     <string name="failed">失败了</string>
     <string name="archiving">存档中…</string>
     <string name="success">成功了</string>
+    <string name="reading_archive_file">正读取存档文件</string>
 </resources>

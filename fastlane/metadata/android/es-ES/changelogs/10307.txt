@@ -1,3 +1,4 @@
-* agregar traducción con WebLate
-* restaurar todas o solo una nota desde un archivo zip
+* añadir traducción con WebLate
+* restaurar todas o sólo una nota de un archivo zip
 * nuevo hilo para CreateArchive
+* añadida traducción al español (gracias a gallegonovato)
