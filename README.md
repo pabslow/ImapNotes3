@@ -27,6 +27,8 @@ src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android
 src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png"/>
 <img width="29%" style="border:5px"
 src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png"/>
+<img width="29%" style="border:5px"
+src="https://github.com/niendo1/ImapNotes3/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png"/>
 
 ### Features
 
