@@ -79,15 +79,6 @@
                 android:value="de.niendo.ImapNotes3.ListActivity" />
         </activity>
 
-
-        <activity
-            android:name=".Miscs.BackupRestore"
-            android:parentActivityName="de.niendo.ImapNotes3.ListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.niendo.ImapNotes3.ListActivity" />
-        </activity>
-
         <service
             android:name="de.niendo.ImapNotes3.Sync.ImapNotesAuthenticatorService"
             android:exported="false">
