@@ -157,5 +157,5 @@
     <string name="archiving">archiviere…</string>
     <string name="success">erfolgreich</string>
     <string name="reading_archive_file">Einlesen der Archiv-Datei</string>
-
+    <string name="imap_server_changed_new_password">Servername geändert, Passwort erneut eingeben!</string>
 </resources>

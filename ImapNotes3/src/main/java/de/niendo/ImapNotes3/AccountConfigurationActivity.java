@@ -398,7 +398,13 @@ public class AccountConfigurationActivity extends AccountAuthenticatorActivity i
         //password will not shown if account is edit and have to be loaded;
         String password = GetTextViewText(passwordTextView);
         if ((action == Actions.EDIT_ACCOUNT) && (password.isEmpty())) {
-            password = accountManager.getPassword(myAccount);
+            // Server name edited: new password required (avoid password spoofing)
+            if (GetTextViewText(serverTextView).equals(GetConfigValue(ConfigurationFieldNames.Server))) {
+                password = accountManager.getPassword(myAccount);
+            } else {
+                ImapNotes3.ShowMessage(R.string.imap_server_changed_new_password, accountnameTextView, 3);
+                return;
+            }
         }
 
         final ImapNotesAccount ImapNotesAccount = new ImapNotesAccount(
