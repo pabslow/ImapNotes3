@@ -139,7 +139,7 @@
     <string name="permission_message">Por favor, dé permiso para guardar el archivo en la carpeta Documentos</string>
     <string name="default_color">Por defecto</string>
     <string name="create_archive">Crear copia de seguridad:</string>
-    <string name="restore_archive">restaurar desde el archivo</string>
+    <string name="restore_archive">Restaurar desde el archivo</string>
     <string name="account_name_restore">Seleccionar cuenta/portátil de destino</string>
     <string name="select_all_notes_for_restore">todo</string>
     <string name="restore_more_then_one_account_found">El archivo contiene más de una cuenta/bloc de notas</string>
@@ -155,5 +155,6 @@
     <string name="image_size_relative">El tamaño de la imagen es relativo al ancho de la página</string>
     <string name="account_name_description">Mi bloc de notas</string>
     <string name="select_account_name_restore_import">Selecciona una cuenta/bloc de notas para restaurar</string>
-    <string name="reading_archive_file">Leyendo el archivo del almacenamiento</string>
+    <string name="reading_archive_file">Leyendo el archivo comprimido</string>
+    <string name="imap_server_changed_new_password">¡Se cambió el nombre del servidor, ingrese la contraseña nuevamente!</string>
 </resources>
