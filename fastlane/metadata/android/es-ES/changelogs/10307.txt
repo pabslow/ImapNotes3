@@ -1,4 +1,5 @@
-* añadir traducción con WebLate
-* restaurar todas o sólo una nota de un archivo zip
-* nuevo hilo para CreateArchive
-* añadida traducción al español (gracias a gallegonovato)
+* Traducciones agregadas con Weblate
+* Restaurar todas las notas o notas individuales desde un archivo ZIP
+* Ejecute CreateArchive en un hilo separado
+* Se agregó traducción al español (gracias a gallegonovato)
+* Cambio de servidor Imap, requiere volver a ingresar la contraseña
