@@ -11,7 +11,7 @@
     <string name="remove">Löschen</string>
     <string name="save">Speichern</string>
     <string name="check_and_create_account"><![CDATA[Prüfen & Konto anlegen]]></string>
-    <string name="logging_in">Anmelden</string>
+    <string name="logging_in">Anmelden…</string>
     <string name="account_already_exists_or_is_null">Konto existiert oder ist ungültig</string>
     <string name="account_added">Konto angelegt</string>
     <string name="add_account">Konto/Notizblock hinzufügen</string>
@@ -40,10 +40,10 @@
     <string name="port_number">Portnummer</string>
     <string name="notes_folder_optional">Ordner für Notizen auf Server (optional)</string>
     <string name="manually_set_full_imap_path_to_notes_folder">Notes</string>
-    <string name="refreshing_notes_list">Abgleich der Notizenliste</string>
-    <string name="updating_notes_list">Aktualisieren der Notizenliste</string>
+    <string name="refreshing_notes_list">Abgleich der Notizen…</string>
+    <string name="updating_notes_list">Aktualisieren der Notizenliste…</string>
     <string name="editAccount">Konto bearbeiten</string>
-    <string name="Waiting_for_sync">Abgleich abwarten..</string>
+    <string name="Waiting_for_sync">Abgleich abwarten</string>
     <string name="Invalid_Message">Ungültige Daten</string>
     <string name="sort_date">Nach Datum sortieren</string>
     <string name="sort_title">Nach Titel sortieren</string>
@@ -75,7 +75,7 @@
     <string name="AccountList">Kontoliste</string>
     <string name="Last_sync">"Letzter Abgl.: "</string>
     <string name="share">Teilen</string>
-    <string name="shared_note_from">"geteilte Notiz von "</string>
+    <string name="shared_note_from">geteilte Notiz von</string>
     <string name="account_modified">Konto wurde geändert</string>
     <string name="intent_save_as_note">Als Notiz speichern</string>
     <string name="share_file_error">Dateifehler beim Teilen:</string>
@@ -128,9 +128,9 @@
     <string name="insert_image_as_inline">Bild in Notiz einbetten (kein Link)</string>
     <string name="insert_image_shrink">Auflösung reduzieren um Faktor</string>
     <string name="insert_shared_image">Geteiltes Bild einfügen</string>
-    <string name="Invalid_Note">Invalid note</string>
+    <string name="Invalid_Note">Ungültige Daten/Notiz</string>
     <string name="IMAP_operation_failed">IMAP-Verbindungsaufbau fehlgeschlagen</string>
-    <string name="select_one_account">Ein Konto/Notizbuch wählen!</string>
+    <string name="select_one_account">Ein Konto/Notizbuch wählen</string>
     <string name="all_accounts">Alle</string>
     <string name="help">Hilfe</string>
     <string name="imap_help_text">Bei Problemen mit der Anmeldung:\n
