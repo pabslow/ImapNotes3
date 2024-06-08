@@ -10,7 +10,7 @@
     <string name="quotation_marks_not_allowed">Konto/Notizbuch darf keine Anführungszeichen enthalten</string>
     <string name="remove">Löschen</string>
     <string name="save">Speichern</string>
-    <string name="check_and_create_account"><![CDATA[Prüfen & Konto anlegen]]></string>
+    <string name="check_and_create_account">Prüfen &amp; Konto anlegen</string>
     <string name="logging_in">Anmelden…</string>
     <string name="account_already_exists_or_is_null">Konto existiert oder ist ungültig</string>
     <string name="account_added">Konto angelegt</string>
@@ -133,9 +133,9 @@
     <string name="select_one_account">Ein Konto/Notizbuch wählen</string>
     <string name="all_accounts">Alle</string>
     <string name="help">Hilfe</string>
-    <string name="imap_help_text">Bei Problemen mit der Anmeldung:\n
-    Einige Provider (gmail, gmx) verlangen ein app Passwort für die Anmeldung an einem Imap-Server. Dieses ist für die Aktivierung der Zwei-Faktor-Authentifizierung notwendig\n
-        Ein solches Passwort muss beim Provider erstellt werden.</string>
+    <string name="imap_help_text">Bei Problemen mit der Anmeldung:
+\n Einige Provider (gmail, gmx) verlangen ein app Passwort für die Anmeldung an einem Imap-Server. Dieses ist für die Aktivierung der Zwei-Faktor-Authentifizierung notwendig
+\n Ein solches Passwort muss beim Provider erstellt werden.</string>
     <string name="search_any_keyword">beliebiger Suchbegriff</string>
     <string name="make_archive">Erstelle Sicherung</string>
     <string name="intent_import_note">Importiere Notiz(en)</string>
@@ -145,7 +145,7 @@
     <string name="appstorename">F-Droid</string>
     <string name="permission_required">Erlaubnis benötigt</string>
     <string name="permission_message">Bitte erteilen Sie die Erlaubnis, um das Archiv in den Dokumenten-Ordner zu speichern</string>
-    <string name="create_archive">Backup wird erstellt: </string>
+    <string name="create_archive">Backup wird erstellt:</string>
     <string name="default_color">Vorgabe</string>
     <string name="restore_archive">Wiederherstellen</string>
     <string name="account_name_restore">Ziel-Konto/Notizbuch wählen</string>
