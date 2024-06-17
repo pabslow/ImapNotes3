@@ -1,0 +1,2 @@
+* add russian translation (thanks to weblate)
+* add italian translation (thanks to weblate)
