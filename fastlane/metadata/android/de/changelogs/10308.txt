@@ -1,2 +1,3 @@
-* russische übersetzung hinzufügen (danke zu weblate)
-* italienische übersetzung hinzufügen (danke zu weblate)
+* russische Übersetzung hinzugefügt (Dank an weblate)
+* italienische Übersetzung hinzugefügt (Dank an weblate)
+* schwebender Button für Neue Note
