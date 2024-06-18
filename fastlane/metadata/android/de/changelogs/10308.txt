@@ -1,0 +1,2 @@
+* russische übersetzung hinzufügen (danke zu weblate)
+* italienische übersetzung hinzufügen (danke zu weblate)

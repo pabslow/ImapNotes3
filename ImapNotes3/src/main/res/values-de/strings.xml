@@ -90,7 +90,7 @@
     <string name="select_link_video">Link/URL eines Videos markieren</string>
     <string name="select_link_youtube">Link/URL eines Youtube-Videos markieren</string>
     <string name="open_link">Öffne Link in einem externen Browser</string>
-    <string name="no_program_found">kein passendes Programm gefunden.</string>
+    <string name="no_program_found">kein passendes Programm gefunden</string>
     <string name="made_changes">Ungespeicherte Änderungen</string>
     <string name="save_changes">Möchten Sie die Änderungen vor dem Beenden speichern?</string>
     <string name="off">Aus</string>
@@ -136,7 +136,7 @@
     <string name="imap_help_text">Bei Problemen mit der Anmeldung:
 \n Einige Provider (gmail, gmx) verlangen ein app Passwort für die Anmeldung an einem Imap-Server. Dieses ist für die Aktivierung der Zwei-Faktor-Authentifizierung notwendig
 \n Ein solches Passwort muss beim Provider erstellt werden.</string>
-    <string name="search_any_keyword">beliebiger Suchbegriff</string>
+    <string name="search_any_keyword">beliebiger Suchbegriff..</string>
     <string name="make_archive">Erstelle Sicherung</string>
     <string name="intent_import_note">Importiere Notiz(en)</string>
     <string name="importing">Importiere …</string>
