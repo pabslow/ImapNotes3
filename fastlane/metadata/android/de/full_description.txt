@@ -1,7 +1,7 @@
 * Umfangreicher Editor für Ihre Notizen mit HTML-Funktionalität
    - Schrifteigenschaften
    - Tabellen
-   - Checkboxen
+   - Check-Boxen
    - Listen
    - Einfügen von Bildern, Links etc.
    - Undo / Redo
