@@ -98,6 +98,8 @@ import java.util.regex.PatternSyntaxException;
 
 import static de.niendo.ImapNotes3.AccountConfigurationActivity.ACTION;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 public class ListActivity extends AppCompatActivity implements BackupRestore.INotesRestore, OnItemSelectedListener, Filterable, SimpleDialog.OnDialogResultListener, UpdateThread.FinishListener {
     private static final int SEE_DETAIL = 2;
     public static final int DELETE_BUTTON = 3;
@@ -597,6 +599,12 @@ public class ListActivity extends AppCompatActivity implements BackupRestore.INo
         else
             actionMenu.findItem(R.id.sort_date).setChecked(true);
 
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> newNote());
+
+
+
         return true;
     }
 
@@ -668,16 +676,7 @@ public class ListActivity extends AppCompatActivity implements BackupRestore.INo
                     TriggerSync(true);
                 return true;
             case R.id.newnote:
-                Intent toNew;
-                if (intentActionSend != null)
-                    toNew = intentActionSend;
-                else
-                    toNew = new Intent(this, NoteDetailActivity.class);
-                toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
-                toNew.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, getSelectedAccountName());
-                startActivityForResult(toNew, ListActivity.NEW_BUTTON);
-                if (intentActionSend != null)
-                    intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);
+                newNote();
                 return true;
             case R.id.sort_date:
             case R.id.sort_title:
@@ -868,6 +867,20 @@ public class ListActivity extends AppCompatActivity implements BackupRestore.INo
     }
 
     ;
+
+    private void newNote() {
+        Intent toNew;
+        if (intentActionSend != null)
+            toNew = intentActionSend;
+        else
+            toNew = new Intent(this, NoteDetailActivity.class);
+        toNew.putExtra(NoteDetailActivity.ActivityType, NoteDetailActivity.ActivityTypeAdd);
+        toNew.putExtra(ListActivity.EDIT_ITEM_ACCOUNTNAME, getSelectedAccountName());
+        startActivityForResult(toNew, ListActivity.NEW_BUTTON);
+        if (intentActionSend != null)
+            intentActionSend.putExtra(NoteDetailActivity.ActivityTypeProcessed, true);
+
+    }
 
     private void updateAccountSpinner() {
         Log.d(TAG, "updateAccountSpinner");

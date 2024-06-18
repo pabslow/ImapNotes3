@@ -1,9 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/new_note"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/red"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <LinearLayout
+        android:id="@+id/main_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/AccountBgColor"
+        android:orientation="horizontal"
+        android:textColor="@color/AccountTxtColor"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <Spinner
+            android:id="@+id/accountSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2"
+            android:contentDescription="@string/AccountList"
+            android:popupBackground="@color/AccountBgColor" />
+
+        <Button
+            android:id="@+id/editAccountButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/ic_action_user_edit"
+            android:contentDescription="@string/editAccount" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/status"
@@ -14,39 +61,21 @@
         android:maxLines="1"
         android:text="@string/welcome"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_marginTop="0px"
-        android:layout_marginBottom="0px"
         android:textColor="@color/StatusTxtColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_layout"
         tools:ignore="TextContrastCheck" />
-
-    <LinearLayout
-        android:id="@+id/main_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/AccountBgColor"
-        android:orientation="horizontal"
-        android:textColor="@color/AccountTxtColor">
-
-        <Spinner
-            android:id="@+id/accountSpinner"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="2"
-            android:contentDescription="@string/AccountList"
-            android:popupBackground="@color/AccountBgColor" />
-        <Button
-            android:id="@+id/editAccountButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/editAccount"
-            android:background="@drawable/ic_action_user_edit" />
-
-    </LinearLayout>
 
     <ListView
         android:id="@+id/notesList"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/status" />
 
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
