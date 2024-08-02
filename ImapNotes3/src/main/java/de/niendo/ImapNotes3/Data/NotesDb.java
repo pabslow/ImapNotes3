@@ -144,13 +144,18 @@ public class NotesDb extends SQLiteOpenHelper {
         }
     }
 
-    public synchronized void InsertANoteInDb(@NonNull OneNote noteElement) {
+    public synchronized void RemoveTempNumber(@NonNull OneNote noteElement) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         // delete DS with TempNumber
         db.execSQL("delete from notesTable where number = '" + noteElement.GetUid() +
                 "' and accountname = '" + noteElement.GetAccount() + "' and date = '" + noteElement.GetDate() + "'");
+        db.close();
+    }
 
+    public synchronized void InsertANoteInDb(@NonNull OneNote noteElement) {
+        RemoveTempNumber(noteElement);
+
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues tableRow = new ContentValues();
         tableRow.put(COL_TITLE_NOTE, noteElement.GetTitle());
         tableRow.put(COL_DATE, noteElement.GetDate());

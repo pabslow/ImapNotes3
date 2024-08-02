@@ -34,6 +34,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
@@ -44,11 +45,13 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -246,6 +249,9 @@ public class ListActivity extends AppCompatActivity implements BackupRestore.INo
             } else if (saveState.equals(OneNote.SAVE_STATE_SYNCING)) {
                 ImapNotes3.ShowMessage(R.string.sync_wait_necessary, listview, 3);
                 return;
+            } else if (saveState.equals(OneNote.SAVE_STATE_FAILED)) {
+                // message was not correctly saved, discard changes silently
+                // FIXME: inform user
             }
 
             if (intentActionSend != null)

@@ -151,12 +151,10 @@ typesafe.  Make them final to prevent accidental reuse.
     @Override
     protected Boolean doInBackground(Object... stuffs) {
         Log.d(TAG, "doInBackground");
-        try {
             // Do we have a note to remove?
             if (action == Action.Delete) {
-                //Log.d(TAG,"Received request to delete message #"+suid);
+                Log.d(TAG, "Received request to delete message #" + suid);
                 // Here we delete the note from the local notes list
-                //Log.d(TAG,"Delete note in Listview");
                 indexToDelete = getIndexByNumber(suid);
                 storedNotes.DeleteANote(suid, accountName);
                 MoveMailToDeleted(suid);
@@ -168,7 +166,6 @@ typesafe.  Make them final to prevent accidental reuse.
                 Log.d(TAG, "Action Insert/Update:" + suid);
                 String oldSuid = suid;
                 storedNotes.SetSaveState(suid, OneNote.SAVE_STATE_SAVING, accountName);
-                //Log.d(TAG, "Received request to add new message: " + noteBody + "===");
                 // Use the first line as the tile
                 String[] tok = Html.fromHtml(noteBody.substring(0, Math.min(noteBody.length(), 500)), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE).toString().split("\n", 2);
                 String title = tok[0];
@@ -188,7 +185,15 @@ typesafe.  Make them final to prevent accidental reuse.
                 // Here we ask to add the new note to the new note folder
                 // Must be done AFTER uid has been set in currentNote
                 Log.d(TAG, "doInBackground body: ");
-                WriteMailToNew(currentNote, noteBody);
+                try {
+                    WriteMailToNew(currentNote, noteBody);
+                } catch (MessagingException | IOException e) {
+                    // something went wrong; set new state for message
+                    // for now all changes are lost
+                    storedNotes.SetSaveState(oldSuid, OneNote.SAVE_STATE_FAILED, accountName);
+                    bool_to_return = false;
+                    return bool_to_return;
+                }
                 if ((action == Action.Update) && (!oldSuid.startsWith("-"))) {
                     MoveMailToDeleted(oldSuid);
                 }
@@ -204,7 +209,7 @@ typesafe.  Make them final to prevent accidental reuse.
                 bool_to_return = true;
             }
 
-            // Do we have a note to add?
+        // Do we have multiple notes to add?
             if ((action == Action.InsertMultipleMessages)) {
                 Message message;
                 for (Uri uri : uris) {
@@ -214,10 +219,23 @@ typesafe.  Make them final to prevent accidental reuse.
                         HtmlNote htmlNote = HtmlNote.GetNoteFromMessage(message);
                         //storedNotes.SetSaveState("", OneNote.SAVE_STATE_SAVING, accountName);
 
-                        Date date = message.getSentDate();
+                        Date date;
+                        try {
+                            date = message.getSentDate();
+                        } catch (MessagingException e) {
+                            date = new Date();
+                        }
                         SimpleDateFormat sdf = new SimpleDateFormat(Utilities.internalDateFormatString, Locale.ROOT);
                         String stringDate = sdf.format(date);
-                        currentNote = new OneNote(message.getSubject(), stringDate, "", accountName, htmlNote.color, OneNote.SAVE_STATE_SAVING);
+
+                        String subject;
+                        try {
+                            subject = message.getSubject();
+                        } catch (MessagingException e) {
+                            subject = "subject not found: " + e;
+                        }
+
+                        currentNote = new OneNote(subject, stringDate, "", accountName, htmlNote.color, OneNote.SAVE_STATE_SAVING);
                         // Add note to database
 
                         suid = storedNotes.GetTempNumber(currentNote);
@@ -226,7 +244,13 @@ typesafe.  Make them final to prevent accidental reuse.
                         // Here we ask to add the new note to the new note folder
                         // Must be done AFTER uid has been set in currentNote
                         Log.d(TAG, "doInBackground body: ");
-                        WriteMailToNew(currentNote, htmlNote.text);
+                        try {
+                            WriteMailToNew(currentNote, htmlNote.text);
+                        } catch (MessagingException | IOException e) {
+                            // something went wrong; undo all actions in database
+                            storedNotes.RemoveTempNumber(currentNote);
+                            continue;
+                        }
                         currentNote.SetState(OneNote.SAVE_STATE_OK);
                         storedNotes.InsertANoteInDb(currentNote);
 
@@ -239,11 +263,6 @@ typesafe.  Make them final to prevent accidental reuse.
                     }
                 }
             }
-        } catch (Exception e) {
-            Log.d(TAG, "Action: " + action);
-            e.printStackTrace();
-            bool_to_return = false;
-        }
         return bool_to_return;
     }
 
