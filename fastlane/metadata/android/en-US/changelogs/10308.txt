@@ -1,3 +1,4 @@
 * add russian translation (thanks to weblate)
 * add italian translation (thanks to weblate)
 * add floating action button for new note
+* update for API 35

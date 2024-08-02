@@ -16,7 +16,7 @@ android {
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "de.niendo.ImapNotes3"
-        targetSdkVersion 34
+        targetSdkVersion 35
         minSdkVersion 25
         signingConfig signingConfigs.release
         buildConfigField 'String', 'APPLICATION_NAME', '"ImapNotes3"'
@@ -47,8 +47,8 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all {
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
             outputFileName = "${project.name}-${variant.versionName}-${variant.buildType.name}.apk"
         }
     }
@@ -87,7 +87,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.16.1'
     implementation 'com.github.niendo1:richeditor-android:3.0.2'
     implementation 'org.jetbrains:annotations:24.1.0'
-    implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'org.jsoup:jsoup:1.18.1'
     implementation 'io.github.eltos:simpledialogfragments:3.8.3'
 }
 

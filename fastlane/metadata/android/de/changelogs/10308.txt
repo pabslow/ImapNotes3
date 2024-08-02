@@ -1,3 +1,5 @@
 * russische Übersetzung hinzugefügt (Dank an weblate)
 * italienische Übersetzung hinzugefügt (Dank an weblate)
 * schwebender Button für Neue Note
+* Updates für API 35
+
