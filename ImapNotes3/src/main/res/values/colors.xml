@@ -9,20 +9,20 @@
     <color name="gray">#B7B6B6</color>
     <color name="black">#000000</color>
     <color name="red">#FA8C82</color>
-    <color name="none">@color/yellow</color>
+    <color name="none">@color/white</color>
 
-    <color name="ActionBgColor">#C7C49E</color>
+    <color name="ActionBgColor">#FFFFAE</color>
     <color name="ActionTxtColor">#3C490D</color>
 
-    <color name="ListBgColor">#FFFFAE</color>
+    <color name="ListBgColor">#FFFFFF</color>
     <color name="ListTxtColor">#3C490D</color>
     <color name="ListInfoTxtColor">#6F6E5A</color>
 
-    <color name="StatusBgColor">#FFFFAE</color>
+    <color name="StatusBgColor">#FFFFFF</color>
     <color name="StatusBgErrColor">#FE877C</color>
     <color name="StatusTxtColor">#C7C49E</color>
 
-    <color name="AccountBgColor">#FFFFAE</color>
+    <color name="AccountBgColor">#FFFFFF</color>
     <color name="AccountTxtColor">#3C490D</color>
     <color name="AccountHintColor">#C7C49E</color>
 
